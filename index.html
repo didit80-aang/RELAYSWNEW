@@ -16,7 +16,7 @@
 :root{
   --bg:#e6efff;--card:#fff;--ink:#1d2340;--mut:#5b6486;--line:#1d2340;--off:#e4e9f7;
   --blue:#4c8dff;--ok:#2fcf8a;--wn:#ffc233;--er:#ff6b6b;--er-ink:#c62828;--vi:#a58bff;--dk:#1d2340;--scrim:rgba(29,35,64,.55);
-  --font:ui-rounded,"SF Pro Rounded","Nunito","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  --font:ui-rounded,"SF Pro Rounded","Nunito","Segoe UI",system-ui,-apple-system,Roboto,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Twemoji Mozilla";
   --mono:ui-monospace,Menlo,Consolas,monospace;
   --safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
 }
@@ -92,6 +92,15 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-o
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 18px;font-size:14px;font-weight:800;white-space:nowrap;background:var(--off);color:var(--ink);border:3px solid var(--line);border-radius:14px;box-shadow:0 4px 0 var(--line);cursor:pointer}
 .btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.btn .ico,.ic{flex:none}
+.ic{display:inline-block;vertical-align:middle}
+.brand-mark{color:var(--dk)}
+.uid-row{display:flex;gap:10px;align-items:stretch}
+.field .uid-row input[type=text]{flex:1;min-width:0;width:auto}
+.uid-row .btn{min-height:50px;padding:0 14px}
+.load-note{display:none;margin-top:8px;padding:8px 12px;font-size:12px;line-height:1.5;color:var(--dk);background:var(--ok);border:2px solid var(--line);border-radius:10px}
+.load-note.show{display:block}
+.load-note.warn{background:var(--wn)}
 .btn-primary{background:var(--blue);color:var(--dk)}
 .btn-danger{background:var(--er);color:var(--dk)}
 .btn-ghost{background:var(--card)}
@@ -231,6 +240,8 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-o
 .btn:disabled{opacity:.4;pointer-events:none}
 .device-card[hidden]{display:none}
 .toolbar{max-width:1440px;margin:0 auto;padding:14px 16px 0;display:flex;flex-direction:column;gap:10px}
+.tb-row:has(.chips){flex-wrap:wrap}
+@media (max-width:640px){.tb-row:has(.chips) .chips{flex:1 1 100%}.tb-row:has(.chips) .tb-sort{flex:1 1 100%}}
 .toolbar[hidden]{display:none}
 .tb-row{display:flex;gap:10px;align-items:center}
 .tb-search{flex:1;min-width:0;margin:0}
@@ -282,20 +293,20 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
 
 <header class="topbar">
   <div class="brand">
-    <div class="brand-mark">🔌</div>
+    <div class="brand-mark"><span data-ic="plug" data-size="22"></span></div>
     <div class="brand-text">
       <div class="brand-title">Relay Control</div>
       <div class="brand-sub"><span class="sim-pill wait" id="mqttPill">Menyambung…</span><span id="deviceCount">0 device</span></div>
     </div>
   </div>
-  <button class="icon-btn" id="setBtn" title="Pengaturan" aria-label="Pengaturan">⚙️</button>
-  <button class="icon-btn" id="listBtn" title="Daftar device" aria-label="Daftar device">📋</button>
+  <button class="icon-btn" id="setBtn" title="Pengaturan" aria-label="Pengaturan"><span data-ic="settings" data-size="22"></span></button>
+  <button class="icon-btn" id="listBtn" title="Daftar device" aria-label="Daftar device"><span data-ic="list" data-size="22"></span></button>
 </header>
 
 <div class="toolbar" id="toolbar" hidden>
   <div class="tb-row">
     <input type="search" id="viewSearch" class="icon-search tb-search" placeholder="Cari device, UID, atau relay…" autocomplete="off" spellcheck="false" aria-label="Cari device">
-    <button type="button" class="btn tb-org" id="orgBtn" aria-pressed="false">✥ Atur</button>
+    <button type="button" class="btn tb-org" id="orgBtn" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ico"><path d="M12 3v18M3 12h18"/><path d="M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"/></svg> Atur</button>
   </div>
   <div class="tb-row">
     <div class="chips" id="filterChips">
@@ -308,8 +319,8 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
     </select>
   </div>
   <div class="globalbar" id="globalBar" hidden>
-    <button type="button" class="btn btn-ok" id="allOn">⏻ Nyalakan semua</button>
-    <button type="button" class="btn btn-danger" id="allOff">⏼ Matikan semua</button>
+    <button type="button" class="btn btn-ok" id="allOn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ico"><path d="M12 3v9"/><path d="M6.4 6.8a8 8 0 1 0 11.2 0"/></svg> Nyalakan semua</button>
+    <button type="button" class="btn btn-danger" id="allOff"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ico"><path d="M12 3v9"/><path d="M6.4 6.8a8 8 0 1 0 11.2 0"/><path d="M4 4l16 16"/></svg> Matikan semua</button>
   </div>
   <div class="tb-hint" id="orgHint" hidden></div>
 </div>
@@ -323,7 +334,7 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
 
 <main class="grid" id="grid"></main>
 <div class="nomatch" id="noMatch" hidden>
-  <div style="font-size:34px">🔎</div>
+  <div data-ic="search" data-size="34"></div>
   <p style="margin:8px 0 14px;font-weight:700">Tidak ada device yang cocok dengan pencarian atau filter.</p>
   <button type="button" class="btn btn-primary" id="noMatchReset">Reset pencarian &amp; filter</button>
 </div>
@@ -332,25 +343,25 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
   <div class="selbar-in">
     <div class="selbar-top"><span id="selCount">Belum ada yang dipilih</span><button type="button" class="btn btn-ghost" id="selAll">Pilih semua</button></div>
     <div class="selbar-btns">
-      <button type="button" class="btn btn-ok" id="selOn">⏻ ON</button>
-      <button type="button" class="btn" id="selOff">⏼ OFF</button>
-      <button type="button" class="btn btn-danger" id="selDel">🗑️ Hapus</button>
+      <button type="button" class="btn btn-ok" id="selOn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ico"><path d="M12 3v9"/><path d="M6.4 6.8a8 8 0 1 0 11.2 0"/></svg> ON</button>
+      <button type="button" class="btn" id="selOff"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ico"><path d="M12 3v9"/><path d="M6.4 6.8a8 8 0 1 0 11.2 0"/><path d="M4 4l16 16"/></svg> OFF</button>
+      <button type="button" class="btn btn-danger" id="selDel"><span data-ic="trash" data-size="18"></span> Hapus</button>
       <button type="button" class="btn btn-primary" id="selDone">Selesai</button>
     </div>
   </div>
 </div>
 
-<button class="fab" id="fabAdd" title="Tambah device" aria-label="Tambah device">＋</button>
+<button class="fab" id="fabAdd" title="Tambah device" aria-label="Tambah device"><span data-ic="plus" data-size="30"></span></button>
 
 
 <div class="list-panel" id="listPanel">
   <div class="list-inner">
     <div class="list-header">
       <h3>Daftar Device</h3>
-      <button class="icon-btn" id="listClose" aria-label="Tutup" style="width:34px;height:34px;font-size:15px">✕</button>
+      <button class="icon-btn" id="listClose" aria-label="Tutup" style="width:34px;height:34px"><span data-ic="x" data-size="16"></span></button>
     </div>
     <div class="list-body" id="listBody"></div>
-    <div class="list-footer"><button class="btn btn-danger btn-block" id="clearAllBtn">🗑️ Hapus semua device</button></div>
+    <div class="list-footer"><button class="btn btn-danger btn-block" id="clearAllBtn"><span data-ic="trash" data-size="18"></span> Hapus semua device</button></div>
   </div>
 </div>
 
@@ -358,7 +369,7 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
   <div class="list-inner">
     <div class="list-header">
       <h3>Pengaturan</h3>
-      <button class="icon-btn" id="setClose" aria-label="Tutup" style="width:34px;height:34px;font-size:15px">✕</button>
+      <button class="icon-btn" id="setClose" aria-label="Tutup" style="width:34px;height:34px"><span data-ic="x" data-size="16"></span></button>
     </div>
     <div class="list-body">
       <div class="set-row">
@@ -384,9 +395,13 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
     <h3 id="modalTitle">Tambah Device</h3>
     <div class="field" id="uidField">
       <label for="uidInput">UID Device</label>
-      <input type="text" id="uidInput" maxlength="5" placeholder="k9x2m" autocomplete="off" spellcheck="false">
-      <small>5 karakter hash MAC, lihat di Serial Monitor ESP32 (115200) saat booting.</small>
+      <div class="uid-row">
+        <input type="text" id="uidInput" maxlength="5" placeholder="k9x2m" autocomplete="off" spellcheck="false">
+        <button type="button" class="btn btn-primary" id="uidLoadBtn"><span data-ic="download" data-size="18"></span><span id="uidLoadTxt">Load data</span></button>
+      </div>
+      <small id="uidHint">5 karakter hash MAC, lihat di Serial Monitor ESP32 (115200) saat booting. Setelah mengisi UID: tekan <b>Load data</b> untuk mengambil nama &amp; ikon yang tersimpan di ESP32, atau isi manual di bawah.</small>
       <div class="field-err" id="uidErr"></div>
+      <div class="load-note" id="loadNote"></div>
     </div>
     <div class="field">
       <label for="deviceNameInput">Nama &amp; Ikon Device</label>
@@ -412,6 +427,22 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
     <div class="modal-actions">
       <button class="btn btn-ghost" id="modalCancel">Batal</button>
       <button class="btn btn-primary" id="modalSave">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg confirm-bg" id="uidModal" role="dialog" aria-modal="true" aria-labelledby="uidModalTitle">
+  <div class="modal small">
+    <h3 id="uidModalTitle">Ganti UID Device</h3>
+    <p class="msg" id="uidChangeMsg"></p>
+    <div class="field" style="margin-top:20px;margin-bottom:0">
+      <label for="newUidInput">UID baru</label>
+      <input type="text" id="newUidInput" maxlength="5" placeholder="k9x2m" autocomplete="off" spellcheck="false">
+      <div class="field-err" id="newUidErr"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="uidChangeNo">Batal</button>
+      <button class="btn btn-primary" id="uidChangeYes">Ganti UID</button>
     </div>
   </div>
 </div>
@@ -442,6 +473,31 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
 <div class="fps" id="fpsChip" aria-hidden="true">— FPS</div>
 <script>
 "use strict";
+
+/* ============ IKON UI (SVG) ============
+   Semua ikon antarmuka berupa SVG inline, bukan karakter Unicode, sehingga tampil sama di semua HP
+   (karakter seperti power/panah/centang sering menjadi kotak silang bila font perangkat tidak punya glyph-nya). */
+const IC_PATHS = {
+  plug:'<path d="M9 2v5M15 2v5"/><path d="M6 7h12v4a6 6 0 0 1-12 0z"/><path d="M12 17v5"/>',
+  settings:'<path d="M4 6h9M19 6h1M4 12h3M13 12h7M4 18h11M21 18h-1"/><circle cx="16" cy="6" r="2.2"/><circle cx="10" cy="12" r="2.2"/><circle cx="17.5" cy="18" r="2.2"/>',
+  list:'<path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
+  trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  dots:'<circle cx="5" cy="12" r="1.9" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.9" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.9" fill="currentColor" stroke="none"/>',
+  refresh:'<path d="M20 11a8 8 0 0 0-14-4.5L4 9"/><path d="M4 4v5h5"/><path d="M4 13a8 8 0 0 0 14 4.5L20 15"/><path d="M20 20v-5h-5"/>',
+  edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
+  copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',
+  box:'<path d="M3 8l9-5 9 5v9l-9 5-9-5z"/><path d="M3 8l9 5 9-5M12 13v9"/>',
+  undo:'<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
+  swap:'<path d="M5 8h14l-4-4M19 16H5l4 4"/>',
+  reset:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
+  download:'<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>'
+};
+const ic = (name, size = 20) => `<svg class="ic" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC_PATHS[name] || ""}</svg>`;
+function paintIcons(root = document){ root.querySelectorAll("[data-ic]").forEach(el=>{ el.innerHTML = ic(el.dataset.ic, parseInt(el.dataset.size, 10) || 20); }); }
 
 const CFG = {
   ACK_TIMEOUT:      3000,
@@ -587,10 +643,37 @@ const ICON_CATS = [
 ];
 const ICON_MAP = {}, ICON_KW = {}, ICON_CAT = {};
 ICON_CATS.forEach(c=>c.icons.forEach(([code,emo,kw])=>{ ICON_MAP[code]=emo; ICON_KW[code]=kw; ICON_CAT[code]=c.label; }));
-const ICON_UNKNOWN = "❓";   // kode tidak dikenal (mis. dari firmware yang lebih baru)
+/* Deteksi emoji yang tidak bisa digambar perangkat (tampil kotak/blank). Emoji seperti itu diganti huruf awal namanya,
+   dan disembunyikan dari pemilih ikon. Bila canvas tidak tersedia, semua dianggap didukung. */
+const EMOJI_FONT = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Twemoji Mozilla",sans-serif';
+const emojiCache = new Map();
+let emojiCtx = null, tofuSig = null;
+try{ const cv = document.createElement("canvas"); cv.width = cv.height = 48; emojiCtx = cv.getContext("2d", { willReadFrequently:true }); }catch(e){ emojiCtx = null; }
+function emojiSig(ch){
+  const x = emojiCtx; x.clearRect(0, 0, 48, 48); x.font = "32px " + EMOJI_FONT; x.textBaseline = "top"; x.fillText(ch, 4, 4);
+  const d = x.getImageData(0, 0, 48, 48).data; let h1 = 0, h2 = 0, ink = 0;
+  for(let i = 0; i < d.length; i += 4){ if(d[i+3]) ink++; h1 = (h1 * 31 + d[i] + d[i+1] * 3 + d[i+2] * 7 + d[i+3] * 13) | 0; h2 = (h2 * 17 + d[i+3]) | 0; }
+  return { ink, key: h1 + ":" + h2 };
+}
+function emojiOK(ch){
+  if(!emojiCtx) return true;
+  if(emojiCache.has(ch)) return emojiCache.get(ch);
+  let ok = true;
+  try{
+    if(!tofuSig) tofuSig = emojiSig("\u{10FFFF}");
+    const sg = emojiSig(ch);
+    ok = sg.ink > 12 && sg.key !== tofuSig.key;
+  }catch(e){ ok = true; }
+  emojiCache.set(ch, ok);
+  return ok;
+}
 const DEFAULT_ICON = 0;      // relay baru: steker
 const DEVICE_ICON  = 32;     // device: kotak
-const iconOf = code => ICON_MAP[code] ?? ICON_UNKNOWN;
+const iconOf = code => {
+  const e = ICON_MAP[code];
+  if(e === undefined) return emojiOK("❓") ? "❓" : "?";                       // kode tidak dikenal (mis. firmware lebih baru)
+  return emojiOK(e) ? e : ((ICON_KW[code] || "?").charAt(0).toUpperCase() || "?");
+};
 // Terima angka / string angka / emoji lama (migrasi data tersimpan versi sebelumnya)
 function normIcon(v, fallback){
   if(typeof v === "number" && Number.isInteger(v) && v >= 0) return v;
@@ -717,6 +800,7 @@ function mqttConnect(){
 function onMqttMessage(topic, payload){
   const m = topic.split("/");
   if(m[0] !== CFG.TOPIC_PREFIX) return;
+  if(LOAD.uid && m[1] === LOAD.uid && !state.devices[m[1]]){ loadOnMessage(m, payload.toString()); return; }   // "Load data" di modal tambah device
   const dev = state.devices[m[1]];
   if(!dev) return;
   const raw = payload.toString();                 // mentah (nama harus mempertahankan huruf besar/kecil)
@@ -931,8 +1015,8 @@ function relTime(ts){
 function toast(msg, type=""){
   const el = document.createElement("div");
   el.className = "toast " + type;
-  const icon = type === "ok" ? "✓" : type === "err" ? "!" : "•";
-  el.innerHTML = `<span style="font-weight:700">${icon}</span><span class="toast-msg">${escapeHtml(msg)}</span>`;
+  const icon = type === "ok" ? ic("check", 16) : type === "err" ? "!" : "•";
+  el.innerHTML = `<span style="font-weight:700;display:inline-flex">${icon}</span><span class="toast-msg">${escapeHtml(msg)}</span>`;
   const tb = $("toasts");
   while(tb.children.length >= 3) tb.firstElementChild.remove();   // batasi tumpukan toast
   tb.appendChild(el);
@@ -1055,7 +1139,7 @@ function buildChannelRow(uid, chNum){
       <div class="channel-status"><span class="status-dot"></span><span class="status-text"></span></div>
     </div>
     <div class="ch-toggle-wrap"><button type="button" class="ch-toggle" role="switch"></button></div>
-    <button class="ch-btn" type="button" title="Menu relay" aria-label="Menu relay ${chNum}">⋯</button>`;
+    <button class="ch-btn" type="button" title="Menu relay" aria-label="Menu relay ${chNum}">${ic("dots", 20)}</button>`;
   row.querySelector(".ch-toggle-wrap").onclick = e=>{ e.stopPropagation(); onChannelToggle(uid, chNum); };
   row.querySelector(".ch-btn").onclick = e=>{ e.stopPropagation(); openMenu(uid, chNum); };
   patchChannelRow(row, getCh(uid, chNum));
@@ -1105,14 +1189,14 @@ function buildDevice(uid){
   const nums = sortedNums(dev);
   el.innerHTML = `
     <div class="device-head">
-      <button class="sel-box" type="button" role="checkbox" aria-checked="false" aria-label="Pilih device">✓</button>
+      <button class="sel-box" type="button" role="checkbox" aria-checked="false" aria-label="Pilih device">${ic("check", 18)}</button>
       <div class="device-icon"></div>
       <div class="device-title">
         <div class="device-name"></div>
         <div class="device-meta"><span class="uid-chip">${escapeHtml(dev.uid)}</span><span class="chip-count"></span></div>
       </div>
       <button class="grip" type="button" data-kind="dev" aria-label="Geser device (atau tombol panah)" title="Seret untuk mengubah urutan"><svg width="14" height="18" viewBox="0 0 14 18" fill="currentColor" aria-hidden="true"><circle cx="4" cy="3.5" r="1.7"/><circle cx="10" cy="3.5" r="1.7"/><circle cx="4" cy="9" r="1.7"/><circle cx="10" cy="9" r="1.7"/><circle cx="4" cy="14.5" r="1.7"/><circle cx="10" cy="14.5" r="1.7"/></svg></button>
-      <button class="device-menu-btn" type="button" title="Menu device" aria-label="Menu device">⋯</button>
+      <button class="device-menu-btn" type="button" title="Menu device" aria-label="Menu device">${ic("dots", 22)}</button>
     </div>
     <div class="channels"></div>
     ${nums.length > 1 ? `<div class="device-foot"><button type="button" class="fbtn on" data-bulk="ON">Semua ON</button><button type="button" class="fbtn off" data-bulk="OFF">Semua OFF</button></div>` : ""}`;
@@ -1131,9 +1215,9 @@ function buildEmpty(){
   const el = document.createElement("div");
   el.className = "empty";
   el.innerHTML = `
-    <div class="empty-icon">📦</div>
+    <div class="empty-icon">${ic("box", 52)}</div>
     <h2>Belum ada device terdaftar</h2>
-    <p>Tekan tombol <b>＋</b> untuk menambahkan device. Setiap device berisi hingga <b>4 relay</b> dengan nama dan ikon sendiri. UID 5 karakter ditampilkan di Serial Monitor ESP32 saat booting (<code>UID DEVICE</code>).</p>
+    <p>Tekan tombol <b>+</b> untuk menambahkan device. Setiap device berisi hingga <b>4 relay</b> dengan nama dan ikon sendiri. UID 5 karakter ditampilkan di Serial Monitor ESP32 saat booting (<code>UID DEVICE</code>).</p>
     <button class="btn btn-primary" id="emptyAdd">Tambah Device Pertama</button>`;
   el.querySelector("#emptyAdd").onclick = openAddModal;
   return el;
@@ -1225,19 +1309,21 @@ function openMenu(uid, chNum){
   if(chNum === null){
     panel.innerHTML = `
       <div class="menu-label">${escapeHtml(dev.name)} · ${escapeHtml(uid)}</div>
-      <button data-act="refresh-all">🔄 Refresh semua relay</button>
-      <button data-act="edit-device">✏️ Edit device</button>
-      <button data-act="duplicate-device">📄 Duplikat device</button>
-      <button data-act="add-channel">➕ Tambah relay</button>
-      <button data-act="delete-device" class="danger">🗑️ Hapus device</button>
+      <button data-act="refresh-all">${ic("refresh", 18)} Refresh semua relay</button>
+      <button data-act="edit-device">${ic("edit", 18)} Edit device</button>
+      <button data-act="change-uid">${ic("swap", 18)} Ganti UID</button>
+      <button data-act="duplicate-device">${ic("copy", 18)} Duplikat device</button>
+      <button data-act="add-channel">${ic("plus", 18)} Tambah relay</button>
+      <button data-act="reset-device" class="danger">${ic("reset", 18)} Reset device</button>
+      <button data-act="delete-device" class="danger">${ic("trash", 18)} Hapus device</button>
       <button data-act="close" class="menu-close">Tutup</button>`;
   }else{
     if(!dev.channels[chNum]) return;
     panel.innerHTML = `
       <div class="menu-label">${escapeHtml(dev.name)} · Relay ${chNum}</div>
-      <button data-act="refresh-ch">🔄 Refresh relay</button>
-      <button data-act="edit-ch">✏️ Edit nama & ikon</button>
-      <button data-act="delete-ch" class="danger">🗑️ Hapus relay</button>
+      <button data-act="refresh-ch">${ic("refresh", 18)} Refresh relay</button>
+      <button data-act="edit-ch">${ic("edit", 18)} Edit nama & ikon</button>
+      <button data-act="delete-ch" class="danger">${ic("trash", 18)} Hapus relay</button>
       <button data-act="close" class="menu-close">Tutup</button>`;
   }
   panel.querySelectorAll("[data-act]").forEach(btn=>{
@@ -1279,6 +1365,23 @@ async function handleMenuAction(act){
     return;
   }
   if(act === "edit-device"){ openEditModal(uid, null); return; }
+  if(act === "change-uid"){ openUidChange(uid); return; }
+  if(act === "reset-device"){
+    if(!await askConfirm(`Reset "${dev.name}" ke pengaturan awal? Nama & ikon device serta semua relay dikembalikan ke default. UID tidak berubah.`, "Reset")) return;
+    const d = state.devices[uid]; if(!d) return;
+    const snap = { name:d.name, icon:d.icon, chs:{} };
+    Object.keys(d.channels).forEach(n=>{ snap.chs[n] = { name:d.channels[n].name, icon:d.channels[n].icon }; });
+    const apply = (name, icon, getCh2)=>{
+      const x = state.devices[uid]; if(!x) return;
+      x.name = name; x.icon = icon;
+      Object.keys(x.channels).forEach(n=>{ const v = getCh2(n); x.channels[n].name = v.name; x.channels[n].icon = v.icon; });
+      persist(); renderDeviceNow(uid); applyViewSoon();
+      mqttPublishIcons(uid); mqttPublishNames(uid);
+    };
+    apply(`Device ${uid}`, DEVICE_ICON, n=>({ name:`Relay ${n}`, icon:DEFAULT_ICON }));
+    pushUndo(`Device "${snap.name}" direset`, ()=>{ apply(snap.name, snap.icon, n=>snap.chs[n] || { name:`Relay ${n}`, icon:DEFAULT_ICON }); toast("Pengaturan dikembalikan", "ok"); });
+    return;
+  }
   if(act === "duplicate-device"){
     const cfg = {}; sortedNums(dev).forEach(n=>{ cfg[n] = { name:dev.channels[n].name, icon:dev.channels[n].icon }; });
     openAddModal({ nums:sortedNums(dev), cfg, name:uniqueDevName(dev.name), icon:dev.icon });
@@ -1331,6 +1434,76 @@ function clearErrs(){
   document.querySelectorAll("#chEditors input.bad").forEach(i=>i.classList.remove("bad"));
 }
 
+/* ============ LOAD DATA DARI ESP32 ============
+   Berlangganan sementara ke PREFIX/<uid>/names dan /icons (retained, disimpan ESP32), lalu mengisi form modal.
+   Hasilnya tetap bisa diedit sebelum disimpan. Bila ESP32 belum pernah diatur / tidak menjawab, user cukup isi manual. */
+const LOAD = { uid:null, timer:0, names:null, icons:null };
+function setLoadBusy(b){
+  $("uidLoadBtn").disabled = b;
+  $("uidLoadTxt").textContent = b ? "Memuat…" : "Load data";
+}
+function showLoadNote(msg, warn){
+  const n = $("loadNote"); n.textContent = msg; n.classList.toggle("warn", !!warn); n.classList.add("show");
+}
+function loadStop(){
+  clearTimeout(LOAD.timer); LOAD.timer = 0;
+  if(LOAD.uid && M.up && !state.devices[LOAD.uid]) M.client.unsubscribe([tp(LOAD.uid, "names"), tp(LOAD.uid, "icons")]);
+  LOAD.uid = null; LOAD.names = LOAD.icons = null;
+  setLoadBusy(false);
+}
+function loadOnMessage(m, raw){
+  if(m.length !== 3) return;
+  if(m[2] === "names") LOAD.names = raw;
+  else if(m[2] === "icons") LOAD.icons = raw;
+  else return;
+  if(LOAD.names !== null && LOAD.icons !== null) loadFinish();
+}
+function loadFinish(){
+  const rawNames = LOAD.names, rawIcons = LOAD.icons, uid = LOAD.uid;
+  loadStop();
+  if(!uid || !$("deviceModal").classList.contains("show") || $("uidInput").value.trim().toLowerCase() !== uid) return;
+  const nv = rawNames === null ? null : rawNames.split("\t");
+  const nOk = !!nv && nv.length === 6;
+  const iv = rawIcons === null ? null : rawIcons.split(",").map(x=>parseInt(x, 10));
+  const iOk = !!iv && iv.length === 6 && !iv.some(isNaN);
+  if(!nOk && !iOk){
+    showErr("uidErr", "Tidak ada data dari ESP32 untuk UID ini. Pastikan UID benar & ESP32 online, atau isi manual.");
+    return;
+  }
+  const configured = (nOk && nv[0] === "1") || (iOk && iv[0] === 1);
+  if(!configured){
+    showLoadNote("ESP32 ditemukan, tetapi belum pernah diatur. Isi nama & ikon secara manual lalu simpan.", true);
+    return;
+  }
+  const nums = [1, 2, 3, 4].filter(n=>(nOk && nv[n + 1]) || (iOk && iv[n + 1] >= 0));
+  if(!nums.length) nums.push(1);
+  state.modalNums = nums;
+  state.modalChConfig = {};
+  nums.forEach(n=>{
+    const nm = nOk ? norm(nv[n + 1] || "").slice(0, 24) : "";
+    const code = iOk && iv[n + 1] >= 0 ? iv[n + 1] : DEFAULT_ICON;
+    state.modalChConfig[n] = { name: nm || `Relay ${n}`, icon: code };
+  });
+  if(nOk && nv[1]) $("deviceNameInput").value = norm(nv[1]).slice(0, 32);
+  if(iOk && iv[1] >= 0){ state.modalDevIcon = iv[1]; updateDevIconBtn(); }
+  $("nameErr").classList.remove("show");
+  updateChCountUI(); renderChEditors();
+  showLoadNote(`Data dimuat dari ESP32 (${nums.length} relay). Silakan edit bila perlu, lalu Simpan.`);
+}
+function startLoad(){
+  clearErrs(); $("loadNote").classList.remove("show");
+  const uid = $("uidInput").value.trim().toLowerCase();
+  if(!uidValid(uid)){ showErr("uidErr", "Isi UID 5 karakter dulu, lalu tekan Load data."); return; }
+  if(state.devices[uid]){ showErr("uidErr", `UID "${uid}" sudah dipakai oleh "${state.devices[uid].name}".`); return; }
+  if(!M.up){ showErr("uidErr", "MQTT belum terhubung. Tunggu status Terhubung, atau isi manual."); return; }
+  loadStop();
+  LOAD.uid = uid;
+  M.client.subscribe([tp(uid, "names"), tp(uid, "icons")], { qos:1 });
+  M.client.publish(tp(uid, "get"), "1", { qos:0 });
+  setLoadBusy(true);
+  LOAD.timer = setTimeout(loadFinish, 6000);
+}
+
 function openAddModal(tpl){
   if(tpl && !tpl.nums) tpl = null;                 // dipanggil sebagai event handler (tanpa template)
   state.editing = null;
@@ -1340,6 +1513,8 @@ function openAddModal(tpl){
   $("modalTitle").textContent = tpl ? "Duplikat Device" : "Tambah Device";
   $("uidField").style.display = "block";
   $("uidInput").value = ""; $("uidInput").disabled = false;
+  loadStop(); $("loadNote").classList.remove("show");
+  $("uidLoadBtn").style.display = ""; $("uidHint").style.display = "";
   $("deviceNameInput").value = tpl ? tpl.name : "";
   state.modalDevIcon = tpl ? tpl.icon : DEVICE_ICON; updateDevIconBtn();
   clearErrs();
@@ -1359,6 +1534,8 @@ function openEditModal(uid, focusCh){
   $("modalTitle").textContent = focusCh === null ? "Edit Device" : `Edit Relay ${focusCh}`;
   $("uidField").style.display = focusCh === null ? "block" : "none";
   $("uidInput").value = uid; $("uidInput").disabled = true;
+  loadStop(); $("loadNote").classList.remove("show");
+  $("uidLoadBtn").style.display = "none"; $("uidHint").style.display = "none";
   $("deviceNameInput").value = dev.name;
   state.modalDevIcon = dev.icon; updateDevIconBtn();
   clearErrs();
@@ -1376,7 +1553,7 @@ function updateDevIconBtn(){
   b.title = "Ikon device · kode " + state.modalDevIcon;
   b.setAttribute("aria-label", "Ikon device, kode " + state.modalDevIcon);
 }
-function closeModal(){ $("deviceModal").classList.remove("show"); }
+function closeModal(){ loadStop(); $("deviceModal").classList.remove("show"); }
 
 function updateChCountUI(){
   document.querySelectorAll("#chCount button").forEach(btn=>{
@@ -1425,7 +1602,7 @@ function renderIconPickerGrid(){
   const frag = document.createDocumentFragment();
   let total = 0;
   ICON_CATS.forEach(cat=>{
-    const list = cat.icons.filter(([code,,kw])=>!q || String(code) === q || kw.includes(q) || cat.label.toLowerCase().includes(q))
+    const list = cat.icons.filter(([code,emo,kw])=>(emojiOK(emo) || code === current) && (!q || String(code) === q || kw.includes(q) || cat.label.toLowerCase().includes(q)))
       .sort((a,b)=>a[0]-b[0]);
     if(!list.length) return;
     const h = document.createElement("div");
@@ -1443,7 +1620,7 @@ function renderIconPickerGrid(){
       el.dataset.code = code;
       el.title = name + " · kode " + code;
       el.setAttribute("aria-label", "Ikon " + name + ", kode " + code);
-      el.innerHTML = `<span>${emo}</span><i class="icon-code">${code}</i>`;
+      el.innerHTML = `<span>${iconOf(code)}</span><i class="icon-code">${code}</i>`;
       el.onclick = ()=>{
         if(t && t.type === "dev"){ state.modalDevIcon = code; updateDevIconBtn(); }
         else{
@@ -1547,7 +1724,7 @@ function renderList(){
   const body = $("listBody");
   const uids = orderedUids();
   if(uids.length === 0){
-    body.innerHTML = `<div class="list-empty">Belum ada device terdaftar.<br>Tekan <b>＋</b> untuk menambahkan.</div>`;
+    body.innerHTML = `<div class="list-empty">Belum ada device terdaftar.<br>Tekan <b>+</b> untuk menambahkan.</div>`;
     return;
   }
   body.innerHTML = uids.map(uid=>{
@@ -1705,7 +1882,7 @@ function updateOrganizeUI(){
   const h = $("orgHint");
   h.hidden = !VIEW.organize;
   h.textContent = canDrag()
-    ? "Seret ⠿ untuk memindah urutan device atau relay (atau fokus ke ⠿ lalu tekan tombol panah). Ketuk kartu untuk memilih."
+    ? "Seret pegangan titik-titik untuk memindah urutan device atau relay (atau fokus ke pegangan lalu tekan tombol panah). Ketuk kartu untuk memilih."
     : "Seret dinonaktifkan: setel Urutan ke Manual dan hapus pencarian/filter dulu. Pemilihan tetap bisa dipakai.";
 }
 function visibleUids(){ return orderedUids().filter(u=>{ const c = cardOf(u); return c && !c.hidden; }); }
@@ -1721,6 +1898,43 @@ function updateSelBar(){
   const vis = visibleUids();
   setText($("selAll"), vis.length && vis.every(u=>VIEW.sel.has(u)) ? "Kosongkan" : "Pilih semua");
   document.querySelectorAll(".device-card .sel-box").forEach(b=>b.setAttribute("aria-checked", String(b.closest(".device-card").classList.contains("selected"))));
+}
+
+/* ============ GANTI UID DEVICE ============
+   Pengaturan (nama, ikon, relay, urutan) dipindah ke UID baru. Berlangganan ulang & sinkron ulang dari ESP32 pada UID baru:
+   bila ESP32 itu sudah pernah diatur, nama & ikon mengikuti ESP32; bila belum, dikirim dari dashboard. */
+let uidChangeFor = null;
+function openUidChange(uid){
+  const d = state.devices[uid]; if(!d) return;
+  uidChangeFor = uid;
+  $("uidChangeMsg").textContent = `Pindahkan "${d.name}" (UID ${uid}) ke ESP32 dengan UID lain. Pengaturan dashboard dipertahankan; bila ESP32 baru sudah pernah diatur, nama & ikon mengikuti ESP32 tersebut.`;
+  $("newUidInput").value = ""; $("newUidErr").classList.remove("show");
+  $("uidModal").classList.add("show");
+  setTimeout(()=>$("newUidInput").focus(), 80);
+}
+function closeUidChange(){ uidChangeFor = null; $("uidModal").classList.remove("show"); }
+function submitUidChange(){
+  const old = uidChangeFor, nu = $("newUidInput").value.trim().toLowerCase();
+  const err = m=>{ $("newUidErr").textContent = m; $("newUidErr").classList.add("show"); };
+  if(!old || !state.devices[old]){ closeUidChange(); return; }
+  if(!uidValid(nu)) return err("UID harus 5 karakter [0-9a-z].");
+  if(nu === old) return err("UID baru sama dengan UID sekarang.");
+  if(state.devices[nu]) return err(`UID "${nu}" sudah dipakai oleh "${state.devices[nu].name}".`);
+  const dev = state.devices[old];
+  bulkFinish(true, true);
+  mqttUnsubscribe(old);
+  Object.keys(dev.channels).forEach(n=>state.pendingReq.delete(`${old}:${n}`));
+  devSeen.delete(old);
+  delete state.devices[old];
+  dev.uid = nu; dev.online = undefined; dev.iconsSeeded = false; dev.namesSeeded = false;
+  Object.values(dev.channels).forEach(ch=>{ ch.cmdId = ++seq; ch.status = "SYNCING"; ch.confirmed = null; ch.lastSeen = 0; ch.pendingSince = 0; });
+  state.devices[nu] = dev;
+  state.order = state.order.map(u=>u === old ? nu : u);
+  if(VIEW.sel.has(old)){ VIEW.sel.delete(old); VIEW.sel.add(nu); }
+  persist(); closeUidChange(); renderGrid();
+  mqttSubscribe(nu);
+  Object.keys(dev.channels).forEach(n=>mqttSnapshot(nu, parseInt(n, 10)));
+  toast(`UID diganti: ${old} → ${nu}`, "ok");
 }
 
 /* ============ HAPUS + URUNGKAN ============ */
@@ -1757,7 +1971,7 @@ function pushUndo(msg, fn){
   undoRec = { fn };
   const el = document.createElement("div");
   el.className = "toast";
-  el.innerHTML = `<span style="font-weight:700">↩</span><span class="toast-msg"></span><button type="button" class="toast-act">Urungkan</button>`;
+  el.innerHTML = `<span style="font-weight:700;display:inline-flex">${ic("undo", 16)}</span><span class="toast-msg"></span><button type="button" class="toast-act">Urungkan</button>`;
   el.querySelector(".toast-msg").textContent = msg;
   el.querySelector(".toast-act").onclick = doUndo;
   const tb = $("toasts");
@@ -1943,6 +2157,11 @@ document.querySelectorAll("[data-set]").forEach(b=>{
   b.onclick = ()=>{ SETTINGS[b.dataset.set] = !SETTINGS[b.dataset.set]; saveSettings(); applySettings(); };
 });
 $("confirmYes").onclick = ()=>settleConfirm(true);
+$("uidChangeNo").onclick = closeUidChange;
+$("uidChangeYes").onclick = submitUidChange;
+backdropClose($("uidModal"), closeUidChange);
+$("newUidInput").addEventListener("input", e=>{ e.target.value = e.target.value.toLowerCase().replace(/[^0-9a-z]/g, ""); $("newUidErr").classList.remove("show"); });
+$("newUidInput").addEventListener("keydown", e=>{ if(e.key === "Enter"){ e.preventDefault(); submitUidChange(); } });
 $("confirmNo").onclick = ()=>settleConfirm(false);
 
 $("clearAllBtn").onclick = async ()=>{
@@ -1967,7 +2186,10 @@ $("chCount").addEventListener("click", e=>{
 $("uidInput").addEventListener("input", e=>{
   e.target.value = e.target.value.toLowerCase().replace(/[^0-9a-z]/g,"");
   $("uidErr").classList.remove("show");
+  $("loadNote").classList.remove("show");
+  if(LOAD.uid && LOAD.uid !== e.target.value) loadStop();
 });
+$("uidLoadBtn").onclick = startLoad;
 $("deviceNameInput").addEventListener("input", ()=>$("nameErr").classList.remove("show"));
 [$("uidInput"), $("deviceNameInput")].forEach(el=>el.addEventListener("keydown", e=>{
   if(e.key === "Enter"){ e.preventDefault(); submitModal(); }
@@ -1977,6 +2199,7 @@ $("deviceNameInput").addEventListener("input", ()=>$("nameErr").classList.remove
 document.addEventListener("keydown", e=>{
   if(e.key !== "Escape") return;
   if($("confirmBg").classList.contains("show")) return settleConfirm(false);
+  if($("uidModal").classList.contains("show")) return closeUidChange();
   if($("iconPicker").classList.contains("show")) return closeIconPicker();
   if($("menuSheet").classList.contains("show")) return closeMenu();
   if($("deviceModal").classList.contains("show")) return closeModal();
@@ -2027,6 +2250,7 @@ addEventListener("pagehide", ()=>{ if(persistT) persistNow(); });
 })();
 
 function boot(){
+  paintIcons();
   loadSettings(); applySettings(); loadView();
   hydrate();
   renderGrid();
