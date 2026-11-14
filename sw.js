@@ -1,5 +1,5 @@
 /* Service worker Relay Control — naikkan VERSION setiap kali index.html diubah agar cache diperbarui */
-const VERSION = "v1";
+const VERSION = "v2";
 const CACHE = "relay-control-" + VERSION;
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png", "./icons/apple-touch-icon.png"];
 const CDN = "https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js";
