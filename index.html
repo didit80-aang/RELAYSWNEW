@@ -213,6 +213,11 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-o
   .channel-icon{width:38px;height:38px}
   .ch-toggle{width:72px}
 }
+/* Performa: perubahan di satu kartu/baris tidak memicu layout & paint ulang di luar kartu itu */
+.device-card{contain:layout paint}
+.channel-row{contain:layout style}
+/* Saat perintah massal berjalan, titik kedip dibuat statis (puluhan animasi serentak membebani HP lemah); warna & tampilan tetap */
+body.bulking .channel-status.pending .status-dot,body.bulking .channel-status.unknown .status-dot{animation:none}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 .globalbar{display:flex;gap:10px;max-width:1440px;margin:0 auto;padding:14px 16px 0}
 .globalbar[hidden]{display:none}
@@ -286,6 +291,77 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
 .set-name{font-weight:800}
 .set-info small{display:block;margin-top:3px;font-size:12px;line-height:1.5;color:var(--mut);font-weight:600}
 .set-note{padding:2px 4px 0;font-size:12px;line-height:1.5;color:var(--mut)}
+
+/* ===== MOBILE: margin seragam + elemen lebih kecil ===== */
+:root{--gut:16px;--gl:max(var(--gut),env(safe-area-inset-left,0px));--gr:max(var(--gut),env(safe-area-inset-right,0px))}
+.topbar{padding-left:var(--gl);padding-right:var(--gr)}
+.toolbar{padding:14px var(--gr) 0 var(--gl)}
+.grid{padding:16px var(--gr) 16px var(--gl)}
+.bulkbar{padding:12px var(--gr) 0 var(--gl)}
+.nomatch{margin:16px var(--gr) 16px var(--gl)}
+@media (max-width:720px){
+  :root{--gut:12px}
+  body{padding-bottom:calc(84px + var(--safe-bottom))}
+  body.organize{padding-bottom:calc(176px + var(--safe-bottom))}
+  .topbar{gap:10px;padding-top:calc(8px + var(--safe-top));padding-bottom:8px;border-bottom-width:2px}
+  .brand{gap:8px}
+  .brand-mark{width:34px;height:34px;border-width:2px;border-radius:10px}
+  .brand-mark svg{width:19px;height:19px}
+  .brand-title{font-size:15px}
+  .brand-sub{font-size:10.5px}
+  .sim-pill{padding:0 7px;font-size:9.5px;border-width:2px}
+  .icon-btn,.device-menu-btn{width:38px;height:38px;border-width:2px;border-radius:11px;box-shadow:0 2px 0 var(--line)}
+  .icon-btn svg,.device-menu-btn svg{width:19px;height:19px}
+  .icon-btn:active,.device-menu-btn:active{transform:translateY(2px);box-shadow:none}
+
+  .toolbar{padding-top:10px;gap:8px}
+  .tb-row{gap:8px}
+  .tb-search{min-height:38px;padding:7px 11px;border-width:2px;border-radius:10px;font-size:16px}
+  .tb-org{min-height:38px;padding:0 11px;font-size:12.5px;gap:6px;border-width:2px;border-radius:11px;box-shadow:0 2px 0 var(--line)}
+  .tb-org svg{width:16px;height:16px}
+  .tb-row:has(.chips){flex-wrap:nowrap}
+  .tb-row:has(.chips) .chips{flex:1 1 auto;min-width:0}
+  .tb-row:has(.chips) .tb-sort{flex:none}
+  .chips{gap:6px;padding-bottom:0}
+  .chip{min-height:30px;padding:0 9px;gap:5px;font-size:11.5px;border-radius:9px}
+  .chip b{font-size:10px;padding:0 5px;border-radius:6px;border-width:1.5px}
+  .tb-sort{max-width:none;min-height:30px;padding:0 6px;font-size:11.5px;border-radius:9px}
+  .globalbar .btn{min-height:38px;padding:0 10px;font-size:12.5px;gap:6px;border-width:2px;border-radius:11px;box-shadow:0 2px 0 var(--line)}
+  .globalbar .btn svg{width:16px;height:16px}
+  .tb-hint{font-size:11px;line-height:1.4}
+
+  .grid{gap:12px;padding-top:12px;padding-bottom:12px}
+  .device-card{border-width:2px;border-radius:16px;box-shadow:0 4px 0 var(--line)}
+  .device-card.selected{box-shadow:0 4px 0 var(--blue)}
+  .device-head{gap:9px;padding:9px 10px;border-bottom-width:2px}
+  .device-icon{width:38px;height:38px;font-size:19px;border-width:2px;border-radius:11px}
+  .device-name{font-size:14px}
+  .device-meta{margin-top:2px;font-size:10.5px}
+  .uid-chip,.chip-count{padding:0 6px;font-size:10px;border-width:1.5px;border-radius:7px}
+  .channels{gap:8px;padding:10px}
+  .channel-row{gap:8px;padding:7px 8px;min-height:56px;border-radius:12px}
+  .channel-icon{width:34px;height:34px;font-size:17px;border-radius:10px}
+  .channel-name{font-size:13.5px}
+  .channel-status{font-size:10.5px;margin-top:1px}
+  .ch-toggle{width:62px;height:40px;font-size:12px;border-width:2px;border-radius:12px;box-shadow:0 3px 0 var(--line)}
+  .ch-toggle.pending,.ch-toggle.unknown,.ch-toggle.disabled{box-shadow:0 1px 0 var(--line)}
+  .ch-btn{width:34px;height:34px}
+  .ch-btn svg{width:18px;height:18px}
+  .channel-row .grip{width:24px;height:36px}
+  .device-foot{gap:8px;padding:0 10px 10px}
+  .fbtn{min-height:34px;font-size:11.5px;border-width:2px;border-radius:10px;box-shadow:0 2px 0 var(--line)}
+
+  .fab{width:50px;height:50px;font-size:24px;border-radius:14px;right:var(--gr);bottom:calc(14px + var(--safe-bottom));border-width:2px;box-shadow:0 4px 0 var(--line)}
+  .fab svg{width:24px;height:24px}
+  .fps{left:var(--gl);bottom:calc(18px + var(--safe-bottom));padding:2px 8px;font-size:10px}
+  body.organize .fps{bottom:calc(160px + var(--safe-bottom))}
+  .bulkbar{padding-top:8px}
+  .selbar{padding:8px var(--gr) calc(8px + var(--safe-bottom)) var(--gl)}
+  .selbar-btns .btn{min-height:40px;font-size:12px}
+  .nomatch{margin-top:12px;padding:26px 16px}
+  .toasts{top:calc(64px + var(--safe-top))}
+  .toast{padding:9px 12px;font-size:13px}
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
 </head>
@@ -314,8 +390,8 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
       <button type="button" class="chip" data-f="on" title="Jumlah relay yang menyala">Menyala <b id="cntOn">0</b></button>
       <button type="button" class="chip" data-f="off" title="Jumlah device offline">Offline <b id="cntOff">0</b></button>
     </div>
-    <select id="viewSort" class="tb-sort" aria-label="Urutan device">
-      <option value="manual">Urutan: Manual</option><option value="az">Nama A–Z</option><option value="za">Nama Z–A</option><option value="uid">UID</option>
+    <select id="viewSort" class="tb-sort" aria-label="Urutan device" title="Urutan device">
+      <option value="manual">Manual</option><option value="az">Nama A–Z</option><option value="za">Nama Z–A</option><option value="uid">UID</option>
     </select>
   </div>
   <div class="globalbar" id="globalBar" hidden>
@@ -417,7 +493,7 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
         <button type="button" data-n="3">3</button>
         <button type="button" data-n="4">4</button>
       </div>
-      <small>Maksimal 4 relay per ESP32. Setiap relay punya nama & ikon sendiri.</small>
+      <small id="countHint">Maksimal 4 relay per ESP32. Setiap relay punya nama & ikon sendiri.</small>
     </div>
     <div class="field">
       <label>Konfigurasi Relay</label>
@@ -513,7 +589,7 @@ const CFG = {
   ORDER_KEY:        "relay_order_v1",
   VIEW_KEY:         "relay_view_v1",
   MAX_CHANNELS:     4,
-  BULK_STEP_MS:     150,   // jeda antar relay saat ON/OFF massal (dikali 2 otomatis jika FPS < 40)
+  BULK_STEP_MS:     150,   // jeda antar relay saat ON/OFF massal (dikali 2 jika FPS < 40, dikali 3 jika FPS < 25)
   RENDER_BUDGET:    8,     // ms maksimum kerja render per frame; sisanya dilanjutkan di frame berikutnya
 };
 
@@ -745,6 +821,14 @@ function mqttPublishIcons(uid){
   M.client.publish(tp(uid, "icons/set"), [dev.icon, ...cs].join(","), { qos:1, retain:true });
 }
 
+// Perubahan struktur/nama/ikon dari dashboard: tandai "dashboard yang menang" lalu kirim ke ESP32.
+// Relay yang terdaftar (ikon >= 0) = relay yang DIPAKAI di ESP32; relay yang tidak ada dikirim -1 (tidak dipakai).
+function pushConfig(uid){
+  const dev = state.devices[uid]; if(!dev) return;
+  dev.iconsDirty = true; dev.namesDirty = true;
+  mqttPublishIcons(uid); mqttPublishNames(uid);
+}
+
 let urlIdx = 0, connTimer = null, lastErr = "";
 function mqttStart(){
   if(typeof mqtt === "undefined"){
@@ -797,6 +881,13 @@ function mqttConnect(){
   c.on("message", onMqttMessage);
 }
 
+function applyEspNames(dev){
+  const v = dev.espNames; if(!v) return false;
+  let changed = false;
+  if(v[1] && dev.name !== v[1]){ dev.name = v[1]; changed = true; }
+  [2,3,4,5].forEach((k,i)=>{ const ch = dev.channels[i+1]; if(ch && v[k] && ch.name !== v[k]){ ch.name = v[k]; changed = true; } });
+  return changed;
+}
 function onMqttMessage(topic, payload){
   const m = topic.split("/");
   if(m[0] !== CFG.TOPIC_PREFIX) return;
@@ -814,10 +905,8 @@ function onMqttMessage(topic, payload){
       if(!dev.namesSeeded || dev.namesDirty){ dev.namesSeeded = true; dev.namesDirty = false; mqttPublishNames(dev.uid); }
       return;
     }
-    let changed = false;                            // ESP32 = sumber kebenaran
-    if(v[1] && dev.name !== v[1]){ dev.name = v[1]; changed = true; }
-    [2,3,4,5].forEach((k,i)=>{ const ch = dev.channels[i+1]; if(ch && v[k] && ch.name !== v[k]){ ch.name = v[k]; changed = true; } });
-    if(changed){ persist(); renderDevice(dev.uid); }
+    dev.espNames = v;                               // ESP32 = sumber kebenaran (disimpan agar relay baru dari ESP32 ikut bernama)
+    if(applyEspNames(dev)){ persist(); renderDevice(dev.uid); }
     return;
   }
   if(m.length === 3 && m[2] === "icons"){          // "<terkonfigurasi 0|1>,<device>,<r1>,<r2>,<r3>,<r4>"
@@ -829,8 +918,23 @@ function onMqttMessage(topic, payload){
       return;
     }
     let changed = false;                            // ESP32 = sumber kebenaran
+    const want = [1,2,3,4].filter(n=>cs[n-1] >= 0);  // relay yang dipakai menurut ESP32 (diatur dari portal AP atau dashboard)
+    if(want.length){
+      want.forEach(n=>{
+        if(dev.channels[n]) return;
+        dev.channels[n] = newChannel(`Relay ${n}`, cs[n-1], "OFF");
+        dev.channels[n].status = "SYNCING"; changed = true;
+        mqttSnapshot(dev.uid, n);
+      });
+      Object.keys(dev.channels).map(Number).forEach(n=>{
+        if(want.includes(n)) return;
+        delete dev.channels[n]; state.pendingReq.delete(`${dev.uid}:${n}`); changed = true;
+      });
+      if(changed) sortedNums(dev);
+    }
     if(d >= 0 && dev.icon !== d){ dev.icon = d; changed = true; }
     cs.forEach((c,i)=>{ const ch = dev.channels[i+1]; if(ch && c >= 0 && ch.icon !== c){ ch.icon = c; changed = true; } });
+    if(applyEspNames(dev)) changed = true;
     if(changed){ persist(); renderDevice(dev.uid); }
     return;
   }
@@ -852,11 +956,14 @@ function onMqttMessage(topic, payload){
   if(!ch || (val !== "ON" && val !== "OFF")) return;
   state.pendingReq.delete(`${dev.uid}:${n}`);
   if(ch.status === "PENDING" && val !== ch.wanted) return;   // state lama: tunggu konfirmasi perintah
+  const same = ch.status === "IDLE" && ch.confirmed && ch.confirmed.state === val;   // balasan polling tanpa perubahan
+  const pchg = ch.physicalState !== val;
   ch.physicalState = val;
   ch.lastSeen = Date.now();
   ch.confirmed = { state: val, ts: Date.now() };
   ch.status = "IDLE";
-  persist(); queueRender(dev.uid, n);
+  if(pchg) persist();
+  if(!same) queueRender(dev.uid, n);          // jika sama, label waktu diperbarui oleh refreshLabels() tiap 2 dtk
 }
 
 function mqttSend(uid, chNum, action){
@@ -929,10 +1036,19 @@ function closeSettings(){ $("setPanel").classList.remove("show"); }
 
 /* ============ STORAGE ============ */
 // Ditulis maksimal sekali per 400 ms (JSON.stringify + localStorage sinkron itu mahal bila dipanggil tiap pesan MQTT)
-let persistT = 0;
-function persist(){ if(!persistT) persistT = setTimeout(persistNow, 400); }
+let persistT = 0, persistPending = false, lastLS = "", lastOrd = "";
+function persist(){
+  persistPending = true;
+  if(persistT || BULK.running) return;            // selama perintah massal: tunda, ditulis sekali setelah selesai
+  persistT = setTimeout(()=>{
+    persistT = 0;
+    if(window.requestIdleCallback) requestIdleCallback(persistNow, { timeout:2000 }); else persistNow();
+  }, 400);
+}
 function persistNow(){
   clearTimeout(persistT); persistT = 0;
+  if(!persistPending) return;
+  persistPending = false;
   const out = {};
   Object.values(state.devices).forEach(dev=>{
     const chs = {};
@@ -943,8 +1059,9 @@ function persistNow(){
     out[dev.uid] = { uid:dev.uid, name:dev.name, icon:dev.icon, channels:chs, order:sortedNums(dev) };
   });
   try{
-    localStorage.setItem(CFG.LS_KEY, JSON.stringify(out));
-    localStorage.setItem(CFG.ORDER_KEY, JSON.stringify(orderedUids()));
+    const a = JSON.stringify(out), b = JSON.stringify(orderedUids());
+    if(a !== lastLS){ localStorage.setItem(CFG.LS_KEY, a); lastLS = a; }      // localStorage sinkron = mahal: lewati bila sama
+    if(b !== lastOrd){ localStorage.setItem(CFG.ORDER_KEY, b); lastOrd = b; }
   }catch(e){ console.warn("persist fail", e); }
 }
 
@@ -1023,7 +1140,7 @@ function toast(msg, type=""){
   setTimeout(()=>{
     el.style.opacity = "0";
     el.style.transform = "translateY(-12px) scale(.95)";
-    el.style.transition = "all .3s";
+    el.style.transition = "opacity .3s, transform .3s";
     setTimeout(()=>el.remove(), 300);
   }, 2600);
 }
@@ -1080,10 +1197,10 @@ function flushRender(){
     if(what === "all"){ renderDeviceNow(uid); }
     else{
       const dev = state.devices[uid];
-      const card = $("grid").querySelector(`.device-card[data-uid="${uid}"]`);
+      const card = cardOf(uid);
       if(!dev || !card){ renderDeviceNow(uid); continue; }
       for(const n of what){
-        const row = card.querySelector(`.channel-row[data-ch="${n}"]`), ch = dev.channels[n];
+        const row = rowOf(card, n), ch = dev.channels[n];
         if(!row || !ch){ renderDeviceNow(uid); break; }
         patchChannelRow(row, ch);
         what.delete(n);
@@ -1097,6 +1214,23 @@ function flushRender(){
   applyViewSoon();                                    // jumlah chip & filter selalu ikut status terbaru (digabung per frame)
 }
 function setText(el, v){ if(el.textContent !== v) el.textContent = v; }
+// Cache elemen kartu & baris: tanpa querySelector berulang (biaya O(jumlah node) per panggilan di grid besar)
+const CARDS = new Map();
+function cardOf(uid){
+  let c = CARDS.get(uid);
+  if(c && c.isConnected) return c;
+  c = $("grid").querySelector(`.device-card[data-uid="${uid}"]`);
+  if(c) CARDS.set(uid, c); else CARDS.delete(uid);
+  return c;
+}
+function rowOf(card, n){
+  const m = card._rw || (card._rw = new Map());
+  let r = m.get(n);
+  if(r && r.isConnected) return r;
+  r = card.querySelector(`.channel-row[data-ch="${n}"]`);
+  if(r) m.set(n, r); else m.delete(n);
+  return r;
+}
 function channelStatusLabel(ch){
   if(ch.status === "OFFLINE") return "Offline";
   if(ch.status === "PENDING") return "Menunggu…";
@@ -1228,7 +1362,7 @@ function renderDeviceNow(uid){
   RQ.dirty.delete(uid);
   const grid = $("grid");
   const dev = state.devices[uid];
-  const existing = grid.querySelector(`.device-card[data-uid="${uid}"]`);
+  const existing = cardOf(uid);
   if(!dev){ if(existing) existing.remove(); updateCount(); return; }
   const empty = grid.querySelector(".empty");
   if(empty) empty.remove();
@@ -1270,23 +1404,27 @@ function renderGrid(){
 }
 
 function updateCount(){
-  const n = Object.keys(state.devices).length;
-  $("globalBar").hidden = n === 0;
-  $("toolbar").hidden = n === 0;
-  if(n === 0 && VIEW.organize) setOrganize(false);
-  const shown = n === 0 ? 0 : [...$("grid").querySelectorAll(".device-card")].filter(c=>!c.hidden).length;
-  $("deviceCount").textContent = n === 0 ? "kosong" : shown !== n ? `${shown} dari ${n} device` : n === 1 ? "1 device" : `${n} device`;
-  $("noMatch").hidden = !(n > 0 && shown === 0);
+  const uids = Object.keys(state.devices), n = uids.length, none = n === 0;
+  const gb = $("globalBar"), tb = $("toolbar");
+  if(gb.hidden !== none) gb.hidden = none;
+  if(tb.hidden !== none) tb.hidden = none;
+  if(none && VIEW.organize) setOrganize(false);
+  let shown = 0;
+  if(!none) for(const u of uids){ const c = cardOf(u); if(c && !c.hidden) shown++; }
+  setText($("deviceCount"), none ? "kosong" : shown !== n ? `${shown} dari ${n} device` : n === 1 ? "1 device" : `${n} device`);
+  const nm = $("noMatch"), hide = !(n > 0 && shown === 0);
+  if(nm.hidden !== hide) nm.hidden = hide;
 }
 
-// Label "Diperbarui x dtk lalu" ikut berjalan tanpa re-render penuh
 function refreshLabels(){
-  document.querySelectorAll(".device-card").forEach(card=>{
+  if(document.hidden) return;                       // tab di latar: tak perlu menyentuh DOM
+  for(const uid of Object.keys(state.devices)){
+    const card = cardOf(uid); if(!card) continue;
     card.querySelectorAll(".channel-row").forEach(row=>{
-      const ch = getCh(card.dataset.uid, parseInt(row.dataset.ch,10));
-      if(ch && ch.status === "IDLE") setText(row.querySelector(".status-text"), channelStatusLabel(ch));
+      const ch = getCh(uid, parseInt(row.dataset.ch,10));
+      if(ch && ch.status === "IDLE") setText(row._r ? row._r.stText : row.querySelector(".status-text"), channelStatusLabel(ch));
     });
-  });
+  }
 }
 
 function onChannelToggle(uid, chNum){
@@ -1313,7 +1451,6 @@ function openMenu(uid, chNum){
       <button data-act="edit-device">${ic("edit", 18)} Edit device</button>
       <button data-act="change-uid">${ic("swap", 18)} Ganti UID</button>
       <button data-act="duplicate-device">${ic("copy", 18)} Duplikat device</button>
-      <button data-act="add-channel">${ic("plus", 18)} Tambah relay</button>
       <button data-act="reset-device" class="danger">${ic("reset", 18)} Reset device</button>
       <button data-act="delete-device" class="danger">${ic("trash", 18)} Hapus device</button>
       <button data-act="close" class="menu-close">Tutup</button>`;
@@ -1376,7 +1513,7 @@ async function handleMenuAction(act){
       x.name = name; x.icon = icon;
       Object.keys(x.channels).forEach(n=>{ const v = getCh2(n); x.channels[n].name = v.name; x.channels[n].icon = v.icon; });
       persist(); renderDeviceNow(uid); applyViewSoon();
-      mqttPublishIcons(uid); mqttPublishNames(uid);
+      pushConfig(uid);
     };
     apply(`Device ${uid}`, DEVICE_ICON, n=>({ name:`Relay ${n}`, icon:DEFAULT_ICON }));
     pushUndo(`Device "${snap.name}" direset`, ()=>{ apply(snap.name, snap.icon, n=>snap.chs[n] || { name:`Relay ${n}`, icon:DEFAULT_ICON }); toast("Pengaturan dikembalikan", "ok"); });
@@ -1389,18 +1526,6 @@ async function handleMenuAction(act){
     return;
   }
   if(act === "edit-ch"){ openEditModal(uid, chNum); return; }
-  if(act === "add-channel"){
-    if(Object.keys(dev.channels).length >= CFG.MAX_CHANNELS){
-      toast(`Maksimal ${CFG.MAX_CHANNELS} relay per device`, "err"); return;
-    }
-    let n = 1;
-    while(dev.channels[n]) n++;
-    dev.channels[n] = newChannel(`Relay ${n}`, DEFAULT_ICON, "OFF");
-    persist(); renderDevice(uid);
-    mqttSnapshot(uid, n);
-    toast(`Relay ${n} ditambahkan`, "ok");
-    return;
-  }
   if(act === "delete-device"){
     const snap = snapDevice(uid);
     removeDevice(uid);
@@ -1416,12 +1541,13 @@ async function handleMenuAction(act){
     state.pendingReq.delete(`${uid}:${chNum}`);
     delete dev.channels[chNum];
     persist(); renderDevice(uid);
+    pushConfig(uid);
     pushUndo(`Relay ${chNum} "${snap.name}" dihapus`, ()=>{
       const d = state.devices[uid];
       if(!d || d.channels[chNum]){ toast("Tidak bisa dikembalikan", "err"); return; }
       d.channels[chNum] = newChannel(snap.name, snap.icon, snap.physicalState);
       const o = sortedNums(d).filter(n=>n !== chNum); o.splice(Math.min(idx, o.length), 0, chNum); d.order = o;
-      persist(); renderDeviceNow(uid); mqttSnapshot(uid, chNum);
+      persist(); renderDeviceNow(uid); pushConfig(uid); mqttSnapshot(uid, chNum);
       toast("Relay dikembalikan", "ok");
     });
   }
@@ -1559,7 +1685,11 @@ function updateChCountUI(){
   document.querySelectorAll("#chCount button").forEach(btn=>{
     btn.classList.toggle("sel", parseInt(btn.dataset.n,10) === state.modalNums.length);
   });
-  $("countField").style.display = state.editing ? "none" : "block";
+  const editingRelay = !!state.editing && state.editing.focus !== null;   // edit satu relay: jumlah tidak diubah
+  $("countField").style.display = editingRelay ? "none" : "block";
+  $("countHint").textContent = state.editing
+    ? "Menambah relay memakai nomor kosong terkecil; mengurangi menghapus relay bernomor terbesar (bisa diurungkan)."
+    : "Maksimal 4 relay per ESP32. Setiap relay punya nama & ikon sendiri.";
 }
 
 function renderChEditors(focusNum){
@@ -1688,18 +1818,36 @@ function submitModal(){
     if(!dev){ closeModal(); return; }
     dev.name = deviceName;
     dev.icon = state.modalDevIcon;
-    state.modalNums.forEach(n=>{
-      const c = dev.channels[n];
-      if(!c) return;
+    const keep = state.modalNums.slice();
+    const removed = Object.keys(dev.channels).map(Number).filter(n=>!keep.includes(n)).sort((a,b)=>a-b);
+    const added = [];
+    const oldIdx = {}; sortedNums(dev).forEach((n,i)=>{ oldIdx[n] = i; });
+    const snaps = removed.map(n=>({ n, idx:oldIdx[n], name:dev.channels[n].name, icon:dev.channels[n].icon, physicalState:dev.channels[n].physicalState }));
+    removed.forEach(n=>{ state.pendingReq.delete(`${uid}:${n}`); delete dev.channels[n]; });
+    keep.forEach(n=>{
       const cfg = state.modalChConfig[n] || {};
+      let c = dev.channels[n];
+      if(!c){ c = dev.channels[n] = newChannel(names[n], cfg.icon ?? DEFAULT_ICON, "OFF"); added.push(n); }
       c.name = names[n];
       c.icon = cfg.icon ?? c.icon;
     });
+    sortedNums(dev);
     persist(); renderDevice(uid); closeModal();
     applyViewSoon();
-    mqttPublishIcons(uid);
-    mqttPublishNames(uid);
-    toast(state.editing.focus === null ? "Device diperbarui" : "Relay diperbarui", "ok");
+    pushConfig(uid);
+    added.forEach(n=>mqttSnapshot(uid, n));
+    if(removed.length){
+      pushUndo(`${removed.length} relay dihapus dari "${dev.name}"`, ()=>{
+        const d = state.devices[uid];
+        if(!d){ toast("Tidak bisa dikembalikan", "err"); return; }
+        snaps.forEach(sn=>{ if(!d.channels[sn.n]) d.channels[sn.n] = newChannel(sn.name, sn.icon, sn.physicalState); });
+        sortedNums(d);
+        persist(); renderDeviceNow(uid); pushConfig(uid);
+        snaps.forEach(sn=>mqttSnapshot(uid, sn.n));
+        toast("Relay dikembalikan", "ok");
+      });
+    }else if(added.length) toast(`${added.length} relay ditambahkan`, "ok");
+    else toast(state.editing.focus === null ? "Device diperbarui" : "Relay diperbarui", "ok");
     return;
   }
 
@@ -1712,6 +1860,7 @@ function submitModal(){
   state.order.push(uid);
   persist(); renderGrid();
   mqttSubscribe(uid);
+  pushConfig(uid);
   state.modalNums.forEach(n=>mqttSnapshot(uid, n));
   closeModal();
   toast("Device ditambahkan", "ok");
@@ -1753,7 +1902,7 @@ function renderList(){
    Mengirim perintah per relay yang TERDAFTAR & siap (IDLE). Offline/sibuk dilewati, yang sudah di status tujuan tidak dikirim ulang. */
 const BULK = { q:[], total:0, done:0, sent:0, skipped:0, action:"", timer:0, running:false };
 const FPS = { cur:0, min:0 };
-const bulkDelay = () => FPS.cur && FPS.cur < 40 ? CFG.BULK_STEP_MS * 2 : CFG.BULK_STEP_MS;
+const bulkDelay = () => !FPS.cur ? CFG.BULK_STEP_MS : FPS.cur < 25 ? CFG.BULK_STEP_MS * 3 : FPS.cur < 40 ? CFG.BULK_STEP_MS * 2 : CFG.BULK_STEP_MS;   // makin berat -> makin renggang
 
 // Perintah dikirim BERURUTAN satu relay per langkah (bukan sekaligus); status tiap relay tetap berubah hanya setelah konfirmasi dari device.
 function bulkSend(uids, action){
@@ -1776,6 +1925,7 @@ function bulkSend(uids, action){
     return;
   }
   Object.assign(BULK, { q:jobs, total:jobs.length, done:0, sent:0, skipped, action, running:true });
+  document.body.classList.add("bulking");
   if(SETTINGS.bulkProgress){ $("bulkBar").hidden = false; updateBulk(); }
   bulkStep();
 }
@@ -1806,6 +1956,9 @@ function bulkFinish(cancelled, silent){
   if(!BULK.running) return;
   clearTimeout(BULK.timer); BULK.timer = 0;
   BULK.running = false; BULK.q = [];
+  document.body.classList.remove("bulking");
+  if(persistPending) persist();                 // simpan sekali setelah bulk selesai
+  applyViewSoon();
   if(silent || cancelled) $("bulkBar").hidden = true;
   else setTimeout(()=>{ if(!BULK.running) $("bulkBar").hidden = true; }, 700);
   if(silent) return;
@@ -1825,7 +1978,6 @@ function loadView(){
   $("viewSort").value = VIEW.sort;
 }
 function saveView(){ try{ localStorage.setItem(CFG.VIEW_KEY, JSON.stringify({ filter:VIEW.filter, sort:VIEW.sort })); }catch(e){} }
-const cardOf = uid => $("grid").querySelector(`.device-card[data-uid="${uid}"]`);
 // "Menyala" dihitung PER RELAY (terkonfirmasi ON & terjangkau); "Offline" dihitung PER DEVICE
 const relayOn  = c => !!(c.confirmed && c.confirmed.state === "ON") && c.status !== "OFFLINE" && c.status !== "UNKNOWN";
 const relayOff = c => c.status === "OFFLINE" || c.status === "UNKNOWN";
@@ -1846,6 +1998,7 @@ function viewOrder(){
   else if(VIEW.sort === "uid") u.sort();
   return u;
 }
+let chipEls = null;
 function applyView(){
   if(DND) return;
   const uids = viewOrder();
@@ -1857,16 +2010,20 @@ function applyView(){
     if(mq){ cOn += on; cOff += off; }
     const show = mq && (VIEW.filter === "all" || (VIEW.filter === "on" && on > 0) || (VIEW.filter === "off" && off > 0));
     if(card.hidden === show) card.hidden = !show;
-    card.style.order = i;
+    const os = String(i); if(card.style.order !== os) card.style.order = os;
     if(!show) VIEW.sel.delete(uid);
     card.classList.toggle("selected", VIEW.sel.has(uid));
   });
   setText($("cntOn"), String(cOn)); setText($("cntOff"), String(cOff));
-  document.querySelectorAll("#filterChips .chip").forEach(c=>c.classList.toggle("act", c.dataset.f === VIEW.filter));
+  (chipEls || (chipEls = [...document.querySelectorAll("#filterChips .chip")])).forEach(c=>c.classList.toggle("act", c.dataset.f === VIEW.filter));
   updateCount(); updateOrganizeUI(); updateSelBar();
 }
-let viewRaf = 0;
-function applyViewSoon(){ if(viewRaf) return; viewRaf = requestAnimationFrame(()=>{ viewRaf = 0; applyView(); }); }
+let viewRaf = 0, viewT = 0;
+function applyViewSoon(){
+  if(viewRaf || viewT) return;
+  if(BULK.running){ viewT = setTimeout(()=>{ viewT = 0; applyView(); }, 250); return; }   // selama bulk: maks 4x/dtk
+  viewRaf = requestAnimationFrame(()=>{ viewRaf = 0; applyView(); });
+}
 
 /* ============ MODE ATUR: pilih banyak, urutan, hapus massal ============ */
 function setOrganize(on){
@@ -1878,12 +2035,13 @@ function setOrganize(on){
   updateOrganizeUI(); updateSelBar();
 }
 function updateOrganizeUI(){
-  document.body.classList.toggle("nodrag", VIEW.organize && !canDrag());
+  const nd = VIEW.organize && !canDrag(), bc = document.body.classList;
+  if(bc.contains("nodrag") !== nd) bc.toggle("nodrag", nd);
   const h = $("orgHint");
-  h.hidden = !VIEW.organize;
-  h.textContent = canDrag()
+  if(h.hidden === VIEW.organize) h.hidden = !VIEW.organize;
+  if(VIEW.organize) setText(h, canDrag()
     ? "Seret pegangan titik-titik untuk memindah urutan device atau relay (atau fokus ke pegangan lalu tekan tombol panah). Ketuk kartu untuk memilih."
-    : "Seret dinonaktifkan: setel Urutan ke Manual dan hapus pencarian/filter dulu. Pemilihan tetap bisa dipakai.";
+    : "Seret dinonaktifkan: setel Urutan ke Manual dan hapus pencarian/filter dulu. Pemilihan tetap bisa dipakai.");
 }
 function visibleUids(){ return orderedUids().filter(u=>{ const c = cardOf(u); return c && !c.hidden; }); }
 function toggleSel(uid){
@@ -1894,10 +2052,15 @@ function toggleSel(uid){
 function updateSelBar(){
   const n = VIEW.sel.size;
   setText($("selCount"), n ? `${n} dipilih` : "Belum ada yang dipilih");
-  ["selOn","selOff","selDel"].forEach(id=>{ $(id).disabled = !n; });
-  const vis = visibleUids();
-  setText($("selAll"), vis.length && vis.every(u=>VIEW.sel.has(u)) ? "Kosongkan" : "Pilih semua");
-  document.querySelectorAll(".device-card .sel-box").forEach(b=>b.setAttribute("aria-checked", String(b.closest(".device-card").classList.contains("selected"))));
+  ["selOn","selOff","selDel"].forEach(id=>{ const b = $(id); if(b.disabled !== !n) b.disabled = !n; });
+  let any = false, all = true;
+  for(const u of Object.keys(state.devices)){
+    const c = cardOf(u); if(!c) continue;
+    const sel = String(c.classList.contains("selected")), sb = c._sb || (c._sb = c.querySelector(".sel-box"));
+    if(sb && sb.getAttribute("aria-checked") !== sel) sb.setAttribute("aria-checked", sel);
+    if(!c.hidden){ any = true; if(!VIEW.sel.has(u)) all = false; }
+  }
+  setText($("selAll"), any && all ? "Kosongkan" : "Pilih semua");
 }
 
 /* ============ GANTI UID DEVICE ============
@@ -2176,9 +2339,12 @@ $("clearAllBtn").onclick = async ()=>{
 
 $("chCount").addEventListener("click", e=>{
   const btn = e.target.closest("button[data-n]");
-  if(!btn || state.editing) return;
+  if(!btn || (state.editing && state.editing.focus !== null)) return;
   const n = parseInt(btn.dataset.n,10);
-  state.modalNums = Array.from({length:n}, (_,i)=>i+1);
+  const nums = state.modalNums.slice().sort((a,b)=>a-b);
+  while(nums.length > n) nums.pop();                                  // kurangi: buang nomor terbesar
+  for(let k = 1; nums.length < n && k <= CFG.MAX_CHANNELS; k++) if(!nums.includes(k)) nums.push(k);   // tambah: nomor kosong terkecil
+  state.modalNums = nums.sort((a,b)=>a-b);
   state.modalNums.forEach(i=>{ if(!state.modalChConfig[i]) state.modalChConfig[i] = { name:`Relay ${i}`, icon:DEFAULT_ICON }; });
   updateChCountUI(); renderChEditors();
 });
@@ -2223,8 +2389,8 @@ setInterval(()=>{
 setInterval(()=>{ if(M.up) Object.keys(state.devices).forEach(queueGet); }, CFG.POLL_MS);
 
 // Simpan perubahan yang tertunda sebelum halaman ditutup / pindah tab
-document.addEventListener("visibilitychange", ()=>{ if(document.hidden && persistT) persistNow(); });
-addEventListener("pagehide", ()=>{ if(persistT) persistNow(); });
+document.addEventListener("visibilitychange", ()=>{ if(document.hidden && persistPending) persistNow(); });
+addEventListener("pagehide", ()=>{ if(persistPending) persistNow(); });
 
 /* ============ FPS METER ============
    Dihitung dari requestAnimationFrame; tampil "FPS rata-rata · min = frame terburuk dalam 0,5 dtk". Hijau >= 50, kuning >= 30, merah < 30. */
