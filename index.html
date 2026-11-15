@@ -1291,12 +1291,12 @@ function mqttUnsubscribe(uid){ if(M.up) M.client.unsubscribe(subTopics(uid)); }
 const cleanName = x => String(x).replace(/[\t\r\n]/g, " ").trim();
 /* ============ PASSWORD DEVICE ============
    ATURAN (satu, jelas, tidak berubah-ubah):
-   - TIDAK perlu password : nama, ikon, struktur relay, ON/OFF relay, Tambah/Edit/Reset/Hapus device di dashboard, Load data.
-   - WAJIB password       : Simpan Jadwal (sched/set) dan kirim WiFi (wifi/set).
-   - Popup SELALU muncul tiap aksi wajib itu diklik, dan HANYA dari klik pengguna (tidak pernah dari sinkronisasi latar belakang).
+   - TIDAK perlu password : jadwal, nama, ikon, struktur relay, ON/OFF relay, Tambah/Edit/Reset/Hapus device di dashboard, Load data.
+   - WAJIB password       : HANYA kirim WiFi (wifi/set). Jadwal (sched/set) TIDAK PERNAH memakai password.
+   - Popup SELALU muncul tiap aksi wajib itu (Kirim WiFi) diklik, dan HANYA dari klik pengguna (tidak pernah dari sinkronisasi latar belakang).
    - Password diperiksa ke ESP32 (auth/req) lalu dipakai SEKALI & dibuang: tidak disimpan di halaman. Batal = aksi tidak dikirim sama sekali.
    Password TIDAK dikirim lewat MQTT. Setiap pesan dibuktikan dengan HMAC-SHA256 (kunci = password):
-     payload = <isi>|<nonce>|<hmac hex>,  hmac = HMAC(password, "<aksi>|<nonce>|<isi>")  ; aksi = auth/req | sched/set | wifi/set
+     payload = <isi>|<nonce>|<hmac hex>,  hmac = HMAC(password, "<aksi>|<nonce>|<isi>")  ; aksi = auth/req | wifi/set
    Verifikasi: kirim "ping" ke <uid>/auth/req, ESP32 membalas "<nonce>|1" (benar) / "0" (salah) / "L" (terkunci) di <uid>/auth/res. */
 const AUTHQ = new Map();              // nonce -> { res, t }  (menunggu balasan ESP32)
 const AUTHSUB = new Set();            // uid belum terdaftar yang auth/res-nya dilangganan sementara
@@ -1412,7 +1412,7 @@ function cancelPw(){
   PWREQ = null; $("pwModal").classList.remove("show");
   rq.resolve(null);
 }
-// Kirim pesan bertanda tangan (sched/set). Password sudah diverifikasi lewat requirePw() oleh pemanggil.
+// Kirim pesan bertanda tangan. Password sudah diverifikasi lewat requirePw() oleh pemanggil.
 async function sendSigned(uid, act, body, pw){
   if(!pw || !M.up) return false;
   const nonce = rndNonce(), sig = await hmacHex(pw, `${act}|${nonce}|${body}`);
@@ -1956,7 +1956,7 @@ function toast(msg, type=""){
    ESP -> web  PREFIX/<uid>/sched  (retained)  daftar event dipisah koma: "<id>.<t>.<sec>.<d>.<a>.<m>.<g>.<nama>,..."
       id nomor urut | t 1=ON 0=OFF | sec detik sejak 00:00 (0-86399) | d bitmask hari (bit0=Senin..bit6=Minggu) | a 1=aktif
       m bitmask relay (bit0=R1..bit3=R4) | g 0=jadwal relay/device, >0=ID jadwal global (salinan sama di semua device) | nama URL-encode ("." jadi %2E)
-   web -> ESP  PREFIX/<uid>/sched/set  "<body>|<nonce>|<hmac>" (WAJIB bertanda tangan, lihat PASSWORD DEVICE)  body = seluruh daftar baru (mengganti yang lama)
+   web -> ESP  PREFIX/<uid>/sched/set  body polos (TANPA password/tanda tangan, selalu)  body = seluruh daftar baru (mengganti yang lama)
                ESP menyimpan lalu publish ulang PREFIX/<uid>/sched = konfirmasi.   web -> ESP  PREFIX/<uid>/sched/get  "1" */
 const SCHED = new Map(), SCH_MAX = 20, DAYS = ["Sen","Sel","Rab","Kam","Jum","Sab","Min"];
 let SCH = null;
@@ -1967,6 +1967,8 @@ function schParse(raw){
   return raw.split(",").filter(Boolean).slice(0, SCH_MAX).map(x=>{ const f = x.split(".");
     return { id:n(f[0]), t:n(f[1]) ? 1 : 0, sec:Math.min(86399, Math.max(0, n(f[2]))), d:n(f[3]) & 127, a:n(f[4]) ? 1 : 0, m:n(f[5]) & 15, g:n(f[6]), name:decN(f[7] || "") }; });
 }
+// Jadwal TIDAK PERNAH memakai password: dikirim polos
+function sendPlain(uid, act, body){ if(!M.up) return false; M.client.publish(tp(uid, act), body, { qos:1, retain:false }); return true; }
 const schBody = l => l.map((e, i)=>[i+1, e.t, e.sec, e.d, e.a, e.m, e.g, encN(e.name)].join(".")).join(",");
 const allMask = dev => Object.keys(dev.channels).reduce((a, n)=>a | 1 << (+n - 1), 0);
 const isDevEv = (e, dev) => { const am = allMask(dev); return !e.g && am && (e.m & am) === am; };
@@ -2132,7 +2134,7 @@ $("schList").onclick = async e=>{
   if(a === "act") ev.a = ev.a ? 0 : 1;
   SCH.dirty = true; renderSched();
 };
-$("schSave").onclick = async ()=>{
+$("schSave").onclick = ()=>{
   const cur = SCH; if(!cur || cur.wait) return;
   if(!M.up) return toast("MQTT belum terhubung", "err");
   const all = cur.scope === "global" ? Object.keys(state.devices) : [cur.uid];
@@ -2142,22 +2144,10 @@ $("schSave").onclick = async ()=>{
   const plan = uids.map(u=>[u, schCompose(cur, u)]);
   if(plan.some(x=>x[1].length > SCH_MAX)) return toast("Batas 20 event per device terlampaui", "err");
   cur.skipped = skipped.map(u=>state.devices[u].name);
-  cur.wait = new Set(uids); cur.exp = new Map(plan.map(([u, l])=>[u, schSig(l)]));   // terisi sejak awal: tombol tidak bisa ditekan dua kali
+  cur.wait = new Set(uids); cur.exp = new Map(plan.map(([u, l])=>[u, schSig(l)]));
   const btn = $("schSave"); btn.disabled = true; btn.textContent = "Menyimpan…";
-  const abort = m=>{ if(SCH === cur){ cur.wait = null; resetSaveBtn(); } toast(m, "err"); };
-  // 1) Kumpulkan password semua device dulu (satu popup per device). Batal di mana pun = tidak ada yang terkirim.
-  const pws = new Map();
-  for(const [u] of plan){
-    const pw = await requirePw(u, "menyimpan jadwal");
-    if(SCH !== cur) return;
-    if(!pw) return abort("Jadwal belum dikirim (password dibatalkan)");
-    pws.set(u, pw);
-  }
-  if(!M.up) return abort("MQTT belum terhubung");
-  // 2) Kirim bertanda tangan
-  await Promise.all(plan.map(async ([u, l])=>{ if(!await sendSigned(u, "sched/set", schBody(l), pws.get(u)) && cur.wait) cur.wait.delete(u); }));
-  if(SCH !== cur || !cur.wait) return;
-  if(!cur.wait.size) return abort("MQTT belum terhubung");
+  plan.forEach(([u, l])=>{ if(!sendPlain(u, "sched/set", schBody(l))) cur.wait.delete(u); });
+  if(!cur.wait.size){ cur.wait = null; resetSaveBtn(); return toast("MQTT belum terhubung", "err"); }
   cur.tm = setTimeout(()=>{
     if(SCH !== cur) return;
     const miss = [...cur.wait].map(u=>state.devices[u] ? state.devices[u].name : u); cur.wait = null; resetSaveBtn();
@@ -2720,10 +2710,9 @@ ENX.push(
 );
 Object.assign(EN, {
   "untuk mengambil nama & ikon yang tersimpan di ESP32, atau isi manual di bawah.":"to fetch the name & icons stored on the ESP32, or fill them in manually below.",
-  "Dikirim terenkripsi dengan password device (popup password muncul saat Kirim) & tidak disimpan di dashboard. Bila gagal tersambung, ESP32 sebaiknya kembali ke jaringan lama / mode AP.":"Sent encrypted with the device password (a password popup appears on Send) & not stored in the dashboard. If it fails to connect, the ESP32 should return to the old network / AP mode.",
-  "Jadwal belum dikirim (password dibatalkan)":"Schedule not sent (password cancelled)"
+  "Dikirim terenkripsi dengan password device (popup password muncul saat Kirim) & tidak disimpan di dashboard. Bila gagal tersambung, ESP32 sebaiknya kembali ke jaringan lama / mode AP.":"Sent encrypted with the device password (a password popup appears on Send) & not stored in the dashboard. If it fails to connect, the ESP32 should return to the old network / AP mode."
 });
-ENX.push([/^Masukkan password device "(.*)" \(UID (.+)\) untuk (menyimpan jadwal|mengubah WiFi)\.$/, (_, n, u, w)=>`Enter the password for device "${n}" (UID ${u}) to ${w === "menyimpan jadwal" ? "save the schedule" : "change the WiFi"}.`]);
+ENX.push([/^Masukkan password device "(.*)" \(UID (.+)\) untuk mengubah WiFi\.$/, 'Enter the password for device "$1" (UID $2) to change the WiFi.']);
 let LANG = "id"; try{ LANG = localStorage.getItem("relay_lang_v1") === "en" ? "en" : "id"; }catch(e){}
 function trTxt(s){ const k = s.trim(); if(!k) return s; let v = EN[k]; if(v === undefined) for(const [r, x] of ENX) if(r.test(k)){ v = k.replace(r, x); break; } return v === undefined ? s : s.replace(k, ()=>v); }
 function trNode(n){
