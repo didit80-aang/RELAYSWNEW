@@ -301,7 +301,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-o
 .channel-row{contain:layout style}
 /* Saat perintah massal berjalan, titik kedip dibuat statis (puluhan animasi serentak membebani HP lemah); warna & tampilan tetap */
 body.bulking .channel-status.pending .status-dot,body.bulking .channel-status.unknown .status-dot{animation:none}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media (prefers-reduced-motion:reduce){*:not(.tab-ind):not(#grid):not(#gpane),*::before,*::after{animation:none!important;transition:none!important}}
 .globalbar{display:flex;gap:10px;max-width:1440px;margin:0 auto;padding:14px 16px 0}
 .globalbar[hidden]{display:none}
 .globalbar .btn{flex:1;min-height:46px}
@@ -474,6 +474,29 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
 @media (max-width:480px){.theme-grid{grid-template-columns:repeat(2,1fr)}}
 .tp-a{height:7px;width:62%;border-radius:99px;background:var(--ink);opacity:.65}
 .tp-b{margin-top:7px;height:16px;width:46px;border-radius:calc(7px*var(--rk));background:var(--ok);border:var(--b2) solid var(--bc);box-shadow:var(--s2)}
+[hidden]{display:none!important}
+body{touch-action:pan-y pinch-zoom}
+.g-members .list-ch{padding:6px 8px;min-height:42px}
+.g-nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.g-tg{flex:none;width:56px;height:32px;font-size:11.5px;border-radius:calc(10px*var(--rk));box-shadow:var(--s2)}
+.g-tg.g-off{background:var(--er);color:var(--dk)}
+.tabs{position:relative;display:flex;gap:4px;padding:4px;background:var(--off);border:var(--b2) solid var(--bc);border-radius:calc(14px*var(--rk))}
+.tab{position:relative;z-index:1;flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:5px;min-height:38px;padding:0 4px;font-size:12.5px;font-weight:800;white-space:nowrap;color:var(--ink);background:transparent;border:var(--b2) solid transparent;border-radius:calc(10px*var(--rk));cursor:pointer}
+.tab b{font-family:var(--mono);font-size:10.5px;padding:0 5px;border:var(--b15) solid var(--bc);border-radius:calc(6px*var(--rk));background:var(--card)}
+.tab.act{color:var(--dk)}
+.tab-ind{position:absolute;z-index:0;top:4px;bottom:4px;left:0;width:0;background:var(--blue);border:var(--b2) solid var(--bc);border-radius:calc(10px*var(--rk));box-shadow:var(--s2);pointer-events:none;will-change:transform,width;transition:transform .3s cubic-bezier(.2,.8,.2,1),width .3s cubic-bezier(.2,.8,.2,1)}
+.tab-ind.noanim{transition:none}
+.sl-r{animation:slr .2s ease-out}.sl-l{animation:sll .2s ease-out}
+@keyframes slr{from{transform:translateX(28px);opacity:0}}@keyframes sll{from{transform:translateX(-28px);opacity:0}}
+.gpane .globalbar{padding:14px var(--gr) 0 var(--gl)}
+.g-members{display:flex;flex-direction:column;gap:5px;padding:12px}
+.g-dev{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mut)}
+.g-opt{display:flex;align-items:center;gap:10px;padding:8px 10px;margin-bottom:6px;background:var(--off);border:var(--b2) solid var(--bc);border-radius:calc(12px*var(--rk));cursor:pointer}
+.g-opt input{width:20px;height:20px;flex:none;accent-color:var(--blue)}
+.g-opt .g-on{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gm-dev{padding:8px 2px 6px;font-size:12px;font-weight:800;color:var(--mut)}
+[data-style="neu"] .tabs{box-shadow:var(--sp1)}
+@media (max-width:720px){.tab{min-height:34px;font-size:11.5px}.gpane .globalbar{padding-top:10px}}
 </style>
 <script>(function(){var d=document.documentElement;try{var t=JSON.parse(localStorage.getItem("relay_theme_v1")||"{}")||{};var st=["cartoon","flat","neu","wood","nature","ocean","sunset","lavender","mono","terminal"].indexOf(t.style)>=0?t.style:"cartoon";var dk=t.mode==="dark"||(t.mode!=="light"&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);d.setAttribute("data-style",st);d.setAttribute("data-mode",dk?"dark":"light")}catch(e){}})();</script>
 <script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
@@ -497,15 +520,12 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
     <input type="search" id="viewSearch" class="icon-search tb-search" placeholder="Cari device, UID, atau relay…" autocomplete="off" spellcheck="false" aria-label="Cari device">
     <button type="button" class="btn tb-org" id="orgBtn" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ico"><path d="M12 3v18M3 12h18"/><path d="M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"/></svg> Atur</button>
   </div>
-  <div class="tb-row">
-    <div class="chips" id="filterChips">
-      <button type="button" class="chip act" data-f="all">Semua</button>
-      <button type="button" class="chip" data-f="on" title="Jumlah relay yang menyala">Menyala <b id="cntOn">0</b></button>
-      <button type="button" class="chip" data-f="off" title="Jumlah device offline">Offline <b id="cntOff">0</b></button>
-    </div>
-    <select id="viewSort" class="tb-sort" aria-label="Urutan device" title="Urutan device">
-      <option value="manual">Manual</option><option value="az">Nama A–Z</option><option value="za">Nama Z–A</option><option value="uid">UID</option>
-    </select>
+  <div class="tabs" id="tabs" role="tablist" aria-label="Tampilan">
+    <span class="tab-ind" id="tabInd" aria-hidden="true"></span>
+    <button type="button" class="tab act" role="tab" data-t="all">Semua</button>
+    <button type="button" class="tab" role="tab" data-t="on" title="Relay yang menyala">Menyala <b id="cntOn">0</b></button>
+    <button type="button" class="tab" role="tab" data-t="off" title="Device offline">Offline <b id="cntOff">0</b></button>
+    <button type="button" class="tab" role="tab" data-t="grp" title="Grup relay">Grup <b id="cntGrp">0</b></button>
   </div>
   <div class="globalbar" id="globalBar" hidden>
     <button type="button" class="btn btn-ok" id="allOn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ico"><path d="M12 3v9"/><path d="M6.4 6.8a8 8 0 1 0 11.2 0"/></svg> Nyalakan semua</button>
@@ -522,9 +542,23 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
 </div>
 
 <main class="grid" id="grid"></main>
+<section class="gpane" id="gpane" hidden>
+  <div class="globalbar" id="gGlobal">
+    <button type="button" class="btn btn-ok" id="gAllOn"><span data-ic="power" data-size="18"></span> Semua grup ON</button>
+    <button type="button" class="btn btn-danger" id="gAllOff"><span data-ic="power" data-size="18"></span> Semua grup OFF</button>
+  </div>
+  <div class="grid" id="gGrid">
+    <div class="empty" id="gEmpty" hidden>
+      <div class="empty-icon" data-ic="box" data-size="52"></div>
+      <h2>Belum ada grup</h2>
+      <p>Kumpulkan relay dari device mana saja ke dalam satu grup, lalu nyalakan atau matikan sekaligus. Maksimal 10 grup.</p>
+      <button class="btn btn-primary" type="button" data-gadd>Buat Grup Pertama</button>
+    </div>
+  </div>
+</section>
 <div class="nomatch" id="noMatch" hidden>
   <div data-ic="search" data-size="34"></div>
-  <p style="margin:8px 0 14px;font-weight:700">Tidak ada device yang cocok dengan pencarian atau filter.</p>
+  <p style="margin:8px 0 14px;font-weight:700">Tidak ada device yang cocok dengan pencarian atau tab ini.</p>
   <button type="button" class="btn btn-primary" id="noMatchReset">Reset pencarian &amp; filter</button>
 </div>
 
@@ -688,6 +722,24 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
   </div>
 </div>
 
+<div class="modal-bg" id="grpModal">
+  <div class="modal">
+    <div class="modal-grabber"></div>
+    <h3 id="gmTitle">Tambah Grup</h3>
+    <div class="field">
+      <label for="gmName">Nama &amp; Ikon Grup</label>
+      <div class="ch-editor-row" style="align-items:center"><input type="text" id="gmName" maxlength="24" placeholder="AREA1" autocomplete="off" style="flex:1;min-width:0"><button type="button" class="icon-trigger" id="gmIcon" title="Ikon grup"></button></div>
+    </div>
+    <div class="field" style="margin-bottom:8px"><label>Pilih Relay <span id="gmCount"></span></label></div>
+    <div id="gmList"></div>
+    <div class="field-err" id="gmErr"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="gmCancel">Batal</button>
+      <button class="btn btn-primary" id="gmSave">Simpan</button>
+    </div>
+  </div>
+</div>
+
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <script>
 "use strict";
@@ -712,7 +764,8 @@ const IC_PATHS = {
   undo:'<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
   swap:'<path d="M5 8h14l-4-4M19 16H5l4 4"/>',
   reset:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
-  download:'<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>'
+  download:'<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>',
+  power:'<path d="M12 3v9"/><path d="M6.4 6.8a8 8 0 1 0 11.2 0"/>'
 };
 const ic = (name, size = 20) => `<svg class="ic" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC_PATHS[name] || ""}</svg>`;
 function paintIcons(root = document){ root.querySelectorAll("[data-ic]").forEach(el=>{ el.innerHTML = ic(el.dataset.ic, parseInt(el.dataset.size, 10) || 20); }); }
@@ -732,6 +785,8 @@ const CFG = {
   VIEW_KEY:         "relay_view_v1",
   THEME_KEY:        "relay_theme_v1",
   MAX_CHANNELS:     4,
+  GRP_KEY:          "relay_groups_v1",
+  MAX_GROUPS:       10,
   BULK_STEP_MS:     150,   // jeda antar relay saat ON/OFF massal (dikali 2 jika FPS < 40, dikali 3 jika FPS < 25)
   RENDER_BUDGET:    8,     // ms maksimum kerja render per frame; sisanya dilanjutkan di frame berikutnya
 };
@@ -1715,13 +1770,13 @@ function renderGrid(){
 function updateCount(){
   const uids = Object.keys(state.devices), n = uids.length, none = n === 0;
   const gb = $("globalBar"), tb = $("toolbar");
-  if(gb.hidden !== none) gb.hidden = none;
+  const gh = none || VIEW.tab === "grp"; if(gb.hidden !== gh) gb.hidden = gh;
   if(tb.hidden !== none) tb.hidden = none;
   if(none && VIEW.organize) setOrganize(false);
   let shown = 0;
   if(!none) for(const u of uids){ const c = cardOf(u); if(c && !c.hidden) shown++; }
   setText($("deviceCount"), none ? "kosong" : shown !== n ? `${shown} dari ${n} device` : n === 1 ? "1 device" : `${n} device`);
-  const nm = $("noMatch"), hide = !(n > 0 && shown === 0);
+  const nm = $("noMatch"), hide = VIEW.tab === "grp" || !(n > 0 && shown === 0);
   if(nm.hidden !== hide) nm.hidden = hide;
 }
 
@@ -2041,7 +2096,7 @@ function renderIconPickerGrid(){
   const g = $("iconPickerGrid");
   g.innerHTML = "";
   const t = state.iconPickTarget;
-  const current = !t ? null : t.type === "dev" ? state.modalDevIcon : (state.modalChConfig[t.ch] ? state.modalChConfig[t.ch].icon : null);
+  const current = !t ? null : t.type === "grp" ? (GM ? GM.icon : null) : t.type === "dev" ? state.modalDevIcon : (state.modalChConfig[t.ch] ? state.modalChConfig[t.ch].icon : null);
   const q = ($("iconSearch").value || "").trim().toLowerCase();
   const frag = document.createDocumentFragment();
   let total = 0;
@@ -2066,7 +2121,8 @@ function renderIconPickerGrid(){
       el.setAttribute("aria-label", "Ikon " + name + ", kode " + code);
       el.innerHTML = `<span>${iconOf(code)}</span><i class="icon-code">${code}</i>`;
       el.onclick = ()=>{
-        if(t && t.type === "dev"){ state.modalDevIcon = code; updateDevIconBtn(); }
+        if(t && t.type === "grp"){ if(GM){ GM.icon = code; gmIconBtn(); } }
+        else if(t && t.type === "dev"){ state.modalDevIcon = code; updateDevIconBtn(); }
         else{
           if(t && state.modalChConfig[t.ch]) state.modalChConfig[t.ch].icon = code;
           renderChEditors(state.editing ? state.editing.focus : undefined);
@@ -2226,18 +2282,20 @@ const bulkDelay = () => !FPS.cur ? CFG.BULK_STEP_MS : FPS.cur < 25 ? CFG.BULK_ST
 
 // Perintah dikirim BERURUTAN satu relay per langkah (bukan sekaligus); status tiap relay tetap berubah hanya setelah konfirmasi dari device.
 function bulkSend(uids, action){
+  const p = [];
+  uids.forEach(u=>{ const d = state.devices[u]; if(d) sortedNums(d).forEach(n=>p.push([u, n])); });
+  bulkRelays(p, action);
+}
+function bulkRelays(pairs, action){
   if(!M.up){ toast("MQTT belum terhubung", "err"); return; }
   if(BULK.running){ toast("Perintah massal masih berjalan — tunggu atau tekan Batal"); return; }
-  const jobs = []; let skipped = 0;
-  uids.forEach(uid=>{
-    const dev = state.devices[uid];
-    if(!dev) return;
-    sortedNums(dev).forEach(n=>{
-      const ch = dev.channels[n];
-      if(ch.status !== "IDLE" || !ch.confirmed){ skipped++; return; }
-      if(ch.confirmed.state === action) return;
-      jobs.push([uid, n]);
-    });
+  const jobs = [], seen = new Set(); let skipped = 0;
+  pairs.forEach(([uid, n])=>{
+    const k = uid + ":" + n; if(seen.has(k)) return; seen.add(k);   // relay yang ada di beberapa grup dikirim sekali
+    const ch = getCh(uid, n); if(!ch) return;
+    if(ch.status !== "IDLE" || !ch.confirmed){ skipped++; return; }
+    if(ch.confirmed.state === action) return;
+    jobs.push([uid, n]);
   });
   if(!jobs.length){
     const skip = skipped ? `, ${skipped} dilewati (offline/sibuk)` : "";
@@ -2288,16 +2346,15 @@ function bulkFinish(cancelled, silent){
 }
 
 /* ============ TAMPILAN: cari / filter / urut ============ */
-const VIEW = { q:"", filter:"all", sort:"manual", organize:false, sel:new Set() };
+const VIEW = { q:"", filter:"all", tab:"all", organize:false, sel:new Set() };
 function loadView(){
   try{
     const o = JSON.parse(localStorage.getItem(CFG.VIEW_KEY) || "{}") || {};
-    if(["all","on","off"].includes(o.filter)) VIEW.filter = o.filter;
-    if(["manual","az","za","uid"].includes(o.sort)) VIEW.sort = o.sort;
+    const t = o.tab || o.filter;
+    if(["all","on","off","grp"].includes(t)){ VIEW.tab = t; if(t !== "grp") VIEW.filter = t; }
   }catch(e){}
-  $("viewSort").value = VIEW.sort;
 }
-function saveView(){ try{ localStorage.setItem(CFG.VIEW_KEY, JSON.stringify({ filter:VIEW.filter, sort:VIEW.sort })); }catch(e){} }
+function saveView(){ try{ localStorage.setItem(CFG.VIEW_KEY, JSON.stringify({ tab:VIEW.tab })); }catch(e){} }
 // "Menyala" dihitung PER RELAY (terkonfirmasi ON & terjangkau); "Offline" dihitung PER DEVICE
 const relayOn  = c => !!(c.confirmed && c.confirmed.state === "ON") && c.status !== "OFFLINE" && c.status !== "UNKNOWN";
 const relayOff = c => c.status === "OFFLINE" || c.status === "UNKNOWN";
@@ -2310,32 +2367,50 @@ function matchQ(d){
   const hay = (d.name + " " + d.uid + " " + Object.values(d.channels).map(c=>c.name).join(" ")).toLowerCase();
   return q.split(/\s+/).every(t=>hay.includes(t));
 }
-const canDrag = () => VIEW.sort === "manual" && !VIEW.q.trim() && VIEW.filter === "all";
-function viewOrder(){
-  const u = orderedUids(), nm = x=>state.devices[x].name;
-  if(VIEW.sort === "az") u.sort((a,b)=>nm(a).localeCompare(nm(b), "id", { sensitivity:"base", numeric:true }));
-  else if(VIEW.sort === "za") u.sort((a,b)=>nm(b).localeCompare(nm(a), "id", { sensitivity:"base", numeric:true }));
-  else if(VIEW.sort === "uid") u.sort();
-  return u;
+const canDrag = () => true;   // urutan bisa diatur di semua tab & saat mencari: item yang tersembunyi tetap di slotnya
+let tabEls = null;
+/* Indikator tab: pil biru yang bergeser mengikuti tab aktif; saat halaman digeser jari, ikut bergerak secara langsung */
+const tabInd = { el:null, raf:0 };
+function tabList(){ return tabEls || (tabEls = [...document.querySelectorAll("#tabs .tab")]); }
+function placeInd(pos, animate){
+  const ind = tabInd.el || (tabInd.el = $("tabInd")), ts = tabList();
+  if(!ind || !ts.length || !ts[0].offsetWidth) return;
+  pos = Math.max(0, Math.min(ts.length - 1, pos));
+  const i = Math.floor(pos), j = Math.min(ts.length - 1, i + 1), f = pos - i;
+  const left = ts[i].offsetLeft + (ts[j].offsetLeft - ts[i].offsetLeft) * f;
+  const w = ts[i].offsetWidth + (ts[j].offsetWidth - ts[i].offsetWidth) * f;
+  ind.classList.toggle("noanim", !animate);
+  ind.style.width = w + "px";
+  ind.style.transform = `translate3d(${left}px,0,0)`;
 }
-let chipEls = null;
+function syncInd(animate){ placeInd(TABS.indexOf(VIEW.tab), animate !== false && tabInd.ready === true); tabInd.ready = true; }
+function syncIndSoon(){ if(tabInd.raf) return; tabInd.raf = requestAnimationFrame(()=>{ tabInd.raf = 0; if(!tabInd.dragging) placeInd(TABS.indexOf(VIEW.tab), false); }); }
+addEventListener("resize", syncIndSoon);
+if(window.ResizeObserver) new ResizeObserver(syncIndSoon).observe($("tabs"));
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(syncIndSoon);
 function applyView(){
   if(DND) return;
-  const uids = viewOrder();
+  const uids = orderedUids(), f = VIEW.filter, rowF = VIEW.tab === "on";
   let cOn = 0, cOff = 0;
   uids.forEach((uid, i)=>{
     const d = state.devices[uid], card = cardOf(uid);
     if(!card) return;
     const mq = matchQ(d), on = countRelays(d, relayOn), off = devOffline(d) ? 1 : 0;
     if(mq){ cOn += on; cOff += off; }
-    const show = mq && (VIEW.filter === "all" || (VIEW.filter === "on" && on > 0) || (VIEW.filter === "off" && off > 0));
+    const show = mq && (f === "all" || (f === "on" && on > 0) || (f === "off" && off > 0));
     if(card.hidden === show) card.hidden = !show;
     const os = String(i); if(card.style.order !== os) card.style.order = os;
     if(!show) VIEW.sel.delete(uid);
     card.classList.toggle("selected", VIEW.sel.has(uid));
+    if(show && (rowF || card._rf)){      // tab Menyala: hanya relay yang menyala
+      card.querySelectorAll(".channel-row").forEach(r=>{ const c = getCh(uid, +r.dataset.ch), h = rowF && !(c && relayOn(c)); if(r.hidden !== h) r.hidden = h; });
+      card._rf = rowF;
+    }
   });
-  setText($("cntOn"), String(cOn)); setText($("cntOff"), String(cOff));
-  (chipEls || (chipEls = [...document.querySelectorAll("#filterChips .chip")])).forEach(c=>c.classList.toggle("act", c.dataset.f === VIEW.filter));
+  setText($("cntOn"), String(cOn)); setText($("cntOff"), String(cOff)); setText($("cntGrp"), String(GROUPS.length));
+  (tabEls || (tabEls = [...document.querySelectorAll("#tabs .tab")])).forEach(b=>{ const a = b.dataset.t === VIEW.tab; b.classList.toggle("act", a); b.setAttribute("aria-selected", String(a)); });
+  if(!tabInd.dragging) syncInd();
+  if(VIEW.tab === "grp") renderGroups();
   updateCount(); updateOrganizeUI(); updateSelBar();
 }
 let viewRaf = 0, viewT = 0;
@@ -2351,17 +2426,17 @@ function setOrganize(on){
   document.body.classList.toggle("organize", on);
   $("orgBtn").setAttribute("aria-pressed", String(on));
   $("selBar").hidden = !on;
-  if(!on){ VIEW.sel.clear(); document.querySelectorAll(".device-card.selected").forEach(c=>c.classList.remove("selected")); }
+  if(!on){ GSEL.clear(); VIEW.sel.clear(); document.querySelectorAll(".device-card.selected").forEach(c=>c.classList.remove("selected")); }
   updateOrganizeUI(); updateSelBar();
 }
 function updateOrganizeUI(){
-  const nd = VIEW.organize && !canDrag(), bc = document.body.classList;
+  const g = VIEW.tab === "grp", nd = VIEW.organize && !g && !canDrag(), bc = document.body.classList;
   if(bc.contains("nodrag") !== nd) bc.toggle("nodrag", nd);
   const h = $("orgHint");
   if(h.hidden === VIEW.organize) h.hidden = !VIEW.organize;
-  if(VIEW.organize) setText(h, canDrag()
-    ? "Seret pegangan titik-titik untuk memindah urutan device atau relay (atau fokus ke pegangan lalu tekan tombol panah). Ketuk kartu untuk memilih."
-    : "Seret dinonaktifkan: setel Urutan ke Manual dan hapus pencarian/filter dulu. Pemilihan tetap bisa dipakai.");
+  if(VIEW.organize) setText(h, g
+    ? "Seret pegangan titik-titik untuk memindah urutan grup (atau fokus ke pegangan lalu tekan tombol panah). Ketuk kartu untuk memilih."
+    : "Seret pegangan titik-titik untuk memindah urutan device atau relay (atau fokus ke pegangan lalu tekan tombol panah). Ketuk kartu untuk memilih.");
 }
 function visibleUids(){ return orderedUids().filter(u=>{ const c = cardOf(u); return c && !c.hidden; }); }
 function toggleSel(uid){
@@ -2370,6 +2445,7 @@ function toggleSel(uid){
   updateSelBar();
 }
 function updateSelBar(){
+  if(VIEW.tab === "grp") return gUpdateSel();
   const n = VIEW.sel.size;
   setText($("selCount"), n ? `${n} dipilih` : "Belum ada yang dipilih");
   ["selOn","selOff","selDel"].forEach(id=>{ const b = $(id); if(b.disabled !== !n) b.disabled = !n; });
@@ -2411,7 +2487,7 @@ function submitUidChange(){
   delete state.devices[old];
   dev.uid = nu; dev.online = undefined; dev.iconsSeeded = false; dev.namesSeeded = false;
   Object.values(dev.channels).forEach(ch=>{ ch.cmdId = ++seq; ch.status = "SYNCING"; ch.confirmed = null; ch.lastSeen = 0; ch.pendingSince = 0; });
-  state.devices[nu] = dev;
+  state.devices[nu] = dev; gRemap(old, nu);
   state.order = state.order.map(u=>u === old ? nu : u);
   if(VIEW.sel.has(old)){ VIEW.sel.delete(old); VIEW.sel.add(nu); }
   persist(); closeUidChange(); renderGrid();
@@ -2474,16 +2550,20 @@ function doUndo(){
    berpindah lewat CSS order + animasi FLIP. Auto-scroll di tepi layar, Esc membatalkan, tombol panah untuk keyboard. */
 let DND = null;
 const REDUCED = matchMedia("(prefers-reduced-motion:reduce)").matches;
-const idOf = n => n.dataset.uid || n.dataset.ch;
+const idOf = n => n.dataset.uid || n.dataset.gid || n.dataset.ch;
+// Urutan baru hanya untuk item yang tampil (vis -> cur); item tersembunyi (terfilter/tak cocok pencarian) tetap di slot aslinya
+const mergeOrder = (full, vis, cur) => { const vs = new Set(vis); let k = 0; return full.map(id=>vs.has(id) ? cur[k++] : id); };
 const inRect = (r, x, y) => x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
 
-$("grid").addEventListener("pointerdown", e=>{
+function gripDown(e){
   const g = e.target.closest(".grip");
   if(!g || !VIEW.organize || DND || (e.pointerType === "mouse" && e.button !== 0)) return;
-  if(!canDrag()){ toast("Setel Urutan ke Manual & hapus filter untuk menyeret", "err"); return; }
-  const kind = g.dataset.kind, sel = kind === "dev" ? ".device-card" : ".channel-row";
-  const item = g.closest(sel), box = kind === "dev" ? $("grid") : item.parentElement;
-  const items = [...box.children].filter(n=>n.matches(sel) && !n.hidden);
+  const kind = g.dataset.kind;
+  const sel = kind === "ch" ? ".channel-row" : ".device-card";
+  const item = g.closest(sel), box = kind === "dev" ? $("grid") : kind === "grp" ? $("gGrid") : item.parentElement;
+  // Urutan TAMPIL ditentukan CSS order (DOM tidak dipindah setelah drop), jadi urutkan dulu menurut order, bukan urutan DOM
+  const ordOf = n => { const v = parseInt(n.style.order, 10); return Number.isNaN(v) ? 0 : v; };
+  const items = [...box.children].filter(n=>n.matches(sel) && !n.hidden).map((n,i)=>[n,i]).sort((a,b)=>ordOf(a[0]) - ordOf(b[0]) || a[1] - b[1]).map(x=>x[0]);
   if(items.length < 2) return;
   e.preventDefault();
   const r = item.getBoundingClientRect();
@@ -2491,7 +2571,9 @@ $("grid").addEventListener("pointerdown", e=>{
           sx:e.clientX, sy:e.clientY, px:e.clientX, py:e.clientY, gx:e.clientX - r.left, gy:e.clientY - r.top,
           active:false, raf:0, lastSwap:0 };
   try{ g.setPointerCapture(e.pointerId); }catch(_){}
-});
+}
+$("grid").addEventListener("pointerdown", gripDown);
+$("gGrid").addEventListener("pointerdown", gripDown);
 addEventListener("pointermove", e=>{
   if(!DND || e.pointerId !== DND.pid) return;
   DND.px = e.clientX; DND.py = e.clientY;
@@ -2551,12 +2633,15 @@ function dndEnd(commit){
   const it = D.item, from = it.getBoundingClientRect();
   it.classList.remove("dnd-item"); it.style.transform = "";
   const changed = commit && D.cur.some((id,i)=>id !== D.ids[i]);
-  if(D.kind === "dev"){
-    if(changed){ state.order = D.cur.slice(); persist(); }
+  if(D.kind === "grp"){
+    if(changed){ const m = new Map(GROUPS.map(x=>[x.id, x])); GROUPS = mergeOrder(GROUPS.map(x=>x.id), D.ids, D.cur).map(i=>m.get(i)).filter(Boolean); gSave(); }
+    renderGroups();
+  }else if(D.kind === "dev"){
+    if(changed){ state.order = mergeOrder(orderedUids(), D.ids, D.cur); persist(); }
     applyView();
   }else{
     const card = it.closest(".device-card"), uid = card && card.dataset.uid, dev = uid && state.devices[uid];
-    if(changed && dev){ dev.order = D.cur.map(Number); persist(); renderDeviceNow(uid); }
+    if(changed && dev){ dev.order = mergeOrder(sortedNums(dev).map(String), D.ids, D.cur).map(Number); persist(); renderDeviceNow(uid); }
     else D.items.forEach(n=>{ n.style.order = ""; });
   }
   if(!REDUCED && it.isConnected){                                // animasi "mendarat" ke slot akhir
@@ -2565,42 +2650,287 @@ function dndEnd(commit){
   }
 }
 // Keyboard: fokus ke ⠿ lalu panah untuk memindah satu langkah
-$("grid").addEventListener("keydown", e=>{
+function gripKey(e){
   const g = e.target.closest && e.target.closest(".grip");
   const d = ({ ArrowUp:-1, ArrowLeft:-1, ArrowDown:1, ArrowRight:1 })[e.key];
   if(!g || !VIEW.organize || !d) return;
   e.preventDefault();
-  if(!canDrag()){ toast("Setel Urutan ke Manual & hapus filter dulu", "err"); return; }
-  const move = (arr, id)=>{ const i = arr.indexOf(id), j = i + d; if(i < 0 || j < 0 || j >= arr.length) return false; arr.splice(i,1); arr.splice(j,0,id); return true; };
-  if(g.dataset.kind === "dev"){
+  const isG = g.dataset.kind === "grp";
+  // arr = urutan lengkap, shown(id) = apakah item tampil; bergeser satu langkah di antara item yang tampil saja
+  const move = (arr, id, shown)=>{
+    const vis = arr.filter(shown), i = vis.indexOf(id), j = i + d;
+    if(i < 0 || j < 0 || j >= vis.length) return false;
+    const nv = vis.slice(); nv.splice(i,1); nv.splice(j,0,id);
+    mergeOrder(arr, vis, nv).forEach((v,k)=>{ arr[k] = v; });
+    return true;
+  };
+  if(isG){
+    const id = g.closest(".device-card").dataset.gid, o = GROUPS.map(x=>x.id), gb = $("gGrid");
+    if(!move(o, id, k=>{ const e = gb.querySelector(`[data-gid="${k}"]`); return e && !e.hidden; })) return;
+    const m = new Map(GROUPS.map(x=>[x.id, x])); GROUPS = o.map(i=>m.get(i)); gSave(); renderGroups(); g.focus();
+  }else if(g.dataset.kind === "dev"){
     const uid = g.closest(".device-card").dataset.uid, o = orderedUids();
-    if(!move(o, uid)) return;
+    if(!move(o, uid, k=>{ const c = cardOf(k); return c && !c.hidden; })) return;
     state.order = o; persist(); applyView();
     g.focus();
   }else{
     const card = g.closest(".device-card"), uid = card.dataset.uid, dev = state.devices[uid], n = parseInt(g.closest(".channel-row").dataset.ch, 10), o = sortedNums(dev);
-    if(!move(o, n)) return;
+    if(!move(o, n, k=>{ const r = rowOf(card, k); return r && !r.hidden; })) return;
     dev.order = o; persist(); renderDeviceNow(uid);
     const ng = card.querySelector(`.channel-row[data-ch="${n}"] .grip`); if(ng) ng.focus();
   }
+}
+$("grid").addEventListener("keydown", gripKey);
+$("gGrid").addEventListener("keydown", gripKey);
+
+/* ============ TAB, SWIPE & GRUP RELAY ============
+   Grup = daftar relay lintas device ("uid:no"), maks CFG.MAX_GROUPS, tersimpan lokal di browser ini (tidak disinkronkan antar HP). */
+const TABS = ["all","on","off","grp"];
+let GROUPS = [], GM = null;
+const GSEL = new Set();
+const gSave = () => { try{ localStorage.setItem(CFG.GRP_KEY, JSON.stringify(GROUPS)); }catch(e){ console.warn("grp save fail", e); } };
+function gLoad(){
+  try{
+    const a = JSON.parse(localStorage.getItem(CFG.GRP_KEY) || "[]");
+    if(Array.isArray(a)) GROUPS = a.filter(g=>g && typeof g.id === "string" && typeof g.name === "string" && Array.isArray(g.members)).slice(0, CFG.MAX_GROUPS)
+      .map(g=>({ id:g.id, name:String(g.name).slice(0, 24), icon:normIcon(g.icon, 20), members:g.members.filter(k=>/^[0-9a-z]{5}:[1-4]$/.test(k)) }));
+  }catch(e){}
+}
+// Anggota yang relay/device-nya sudah dihapus diabaikan saat tampil & kirim (tetap tersimpan agar Urungkan hapus device tidak merusak grup)
+const gMembers = g => g.members.map(k=>{ const [u, n] = k.split(":"), dev = state.devices[u], ch = dev && dev.channels[+n]; return ch ? { uid:u, n:+n, dev, ch, k } : null; }).filter(Boolean);
+const gPairs = gs => gs.flatMap(g=>gMembers(g).map(m=>[m.uid, m.n]));
+function gRemap(o, n){ GROUPS.forEach(g=>{ g.members = g.members.map(k=>k.startsWith(o + ":") ? n + k.slice(o.length) : k); }); gSave(); }
+
+function showPane(){
+  const g = VIEW.tab === "grp";
+  $("grid").hidden = g; $("gpane").hidden = !g;
+  $("viewSearch").placeholder = g ? "Cari grup atau relay…" : "Cari device, UID, atau relay…";
+  const f = $("fabAdd"), t = g ? "Tambah grup" : "Tambah device"; f.title = t; f.setAttribute("aria-label", t);
+}
+function setTab(t, quiet){
+  if(t === VIEW.tab) return;
+  const a = TABS.indexOf(VIEW.tab), b = TABS.indexOf(t);
+  VIEW.tab = t; if(t !== "grp") VIEW.filter = t;
+  VIEW.sel.clear(); GSEL.clear(); saveView(); showPane(); applyView();
+  if(quiet) return;
+  const el = $(t === "grp" ? "gpane" : "grid");
+  el.classList.remove("sl-l", "sl-r"); void el.offsetWidth; el.classList.add(b > a ? "sl-r" : "sl-l");
+}
+// Geser kiri/kanan: konten mengikuti jari secara langsung (transform di compositor), lepas melewati ambang/kecepatan -> pindah tab.
+(function(){
+  let x0 = 0, y0 = 0, mode = 0, el = null, w = 360, lx = 0, px = 0, pt = 0, vx = 0;
+  const paneOf = () => $(VIEW.tab === "grp" ? "gpane" : "grid");
+  const canGo = d => { const i = TABS.indexOf(VIEW.tab) + d; return i >= 0 && i < TABS.length; };
+  const reset = n => { n.style.transition = ""; n.style.transform = ""; n.style.opacity = ""; n.style.willChange = ""; };
+  const EASE = "transform .2s cubic-bezier(.2,.8,.2,1),opacity .2s";
+  addEventListener("touchstart", e=>{
+    mode = 0;
+    if(e.touches.length !== 1 || DND || $("toolbar").hidden || document.querySelector(".modal-bg.show,.list-panel.show,.menu-sheet.show,.icon-picker.show")) return;
+    if(e.target.closest(".grip,input,select,textarea,.selbar,.toasts")) return;
+    const t = e.touches[0]; x0 = lx = px = t.clientX; y0 = t.clientY; pt = performance.now(); vx = 0; el = paneOf(); w = innerWidth; mode = 1;
+  }, { passive:true });
+  addEventListener("touchmove", e=>{
+    if(mode < 1 || mode > 2) return;
+    if(e.touches.length !== 1 || DND){ if(mode === 2){ reset(el); tabInd.dragging = false; placeInd(TABS.indexOf(VIEW.tab), true); } mode = 0; return; }
+    const t = e.touches[0], dx = t.clientX - x0, dy = t.clientY - y0;
+    if(mode === 1){
+      if(Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      if(Math.abs(dx) > Math.abs(dy) * 1.2){ mode = 2; el.style.transition = "none"; el.style.willChange = "transform,opacity"; }
+      else{ mode = 3; return; }
+    }
+    const now = performance.now(); if(now > pt){ vx = (t.clientX - px) / (now - pt); px = t.clientX; pt = now; }
+    lx = t.clientX;
+    const r = canGo(dx < 0 ? 1 : -1) ? dx : dx * 0.25;               // di tepi: tahanan karet
+    el.style.transform = `translate3d(${r}px,0,0)`;
+    el.style.opacity = String(1 - Math.min(Math.abs(r) / w, 1) * 0.6);
+    tabInd.dragging = true; placeInd(TABS.indexOf(VIEW.tab) - r / w, false);   // pil tab ikut bergeser bersama jari
+  }, { passive:true });
+  function end(){
+    if(mode !== 2){ mode = 0; return; }
+    mode = 0; tabInd.dragging = false;
+    const dx = lx - x0, dir = dx < 0 ? 1 : -1, n = el;
+    const go = canGo(dir) && (Math.abs(dx) > w * 0.25 || Math.abs(vx) > 0.45);
+    if(!go){ placeInd(TABS.indexOf(VIEW.tab), true); n.style.transition = EASE; n.style.transform = "translate3d(0,0,0)"; n.style.opacity = "1"; setTimeout(()=>reset(n), 230); return; }
+    placeInd(TABS.indexOf(VIEW.tab) + dir, true);     // pil tab meluncur ke tab tujuan selagi konten keluar
+    n.style.transition = "transform .12s ease-in,opacity .12s"; n.style.transform = `translate3d(${-dir * w * 0.5}px,0,0)`; n.style.opacity = "0";
+    setTimeout(()=>{
+      reset(n); setTab(TABS[TABS.indexOf(VIEW.tab) + dir], true);
+      const m = paneOf();
+      m.style.transition = "none"; m.style.transform = `translate3d(${dir * w * 0.3}px,0,0)`; m.style.opacity = "0";
+      void m.offsetWidth;
+      m.style.transition = EASE; m.style.transform = "translate3d(0,0,0)"; m.style.opacity = "1";
+      setTimeout(()=>reset(m), 230);
+    }, 120);
+  }
+  addEventListener("touchend", end, { passive:true });
+  addEventListener("touchcancel", end, { passive:true });
+})();
+
+const gSig = g => g.name + "|" + g.icon + "|" + gMembers(g).map(m=>m.k + m.ch.status + (m.ch.confirmed ? m.ch.confirmed.state : "") + m.ch.name + m.ch.icon + m.dev.name).join(",");
+function gFill(el, g){
+  const ms = gMembers(g), on = ms.filter(m=>relayOn(m.ch)).length, off = ms.filter(m=>relayOff(m.ch)).length;
+  const sub = `${on}/${ms.length} menyala` + (off ? ` · ${off} offline` : "");
+  const rows = ms.map(m=>`<div class="list-ch"><span class="state-dot ${relayOn(m.ch) ? "on" : ""}"></span><span class="g-nm">${iconOf(m.ch.icon)} ${escapeHtml(m.ch.name)} <span class="g-dev">· ${escapeHtml(m.dev.name)}</span></span><button type="button" class="ch-toggle g-tg ${chToggleClass(m.ch)}${m.ch.status === "OFFLINE" ? " g-off" : ""}" role="switch" aria-checked="${relayOn(m.ch)}" aria-label="Saklar ${escapeHtml(m.ch.name)}" data-gt="${m.k}">${toggleLabel(m.ch)}</button></div>`).join("")
+    || `<div class="list-ch">Semua relay anggota sudah dihapus. Edit grup untuk memilih ulang.</div>`;
+  el.innerHTML = `<div class="device-head">
+      <button class="sel-box" type="button" role="checkbox" data-g="sel" aria-checked="false" aria-label="Pilih grup">${ic("check", 18)}</button>
+      <div class="device-icon">${iconOf(g.icon)}</div>
+      <div class="device-title"><div class="device-name">${escapeHtml(g.name)}</div><div class="device-meta"><span class="chip-count">${escapeHtml(sub)}</span></div></div>
+      <button class="grip" type="button" data-kind="grp" aria-label="Geser grup (atau tombol panah)" title="Seret untuk mengubah urutan"><svg width="14" height="18" viewBox="0 0 14 18" fill="currentColor" aria-hidden="true"><circle cx="4" cy="3.5" r="1.7"/><circle cx="10" cy="3.5" r="1.7"/><circle cx="4" cy="9" r="1.7"/><circle cx="10" cy="9" r="1.7"/><circle cx="4" cy="14.5" r="1.7"/><circle cx="10" cy="14.5" r="1.7"/></svg></button>
+      <button class="device-menu-btn" type="button" data-g="menu" aria-label="Menu grup">${ic("dots", 22)}</button>
+    </div>
+    <div class="g-members">${rows}</div>
+    <div class="device-foot"><button type="button" class="fbtn on" data-g="on">Semua ON</button><button type="button" class="fbtn off" data-g="off">Semua OFF</button></div>`;
+}
+function renderGroups(){
+  const box = $("gGrid"), ids = new Set(GROUPS.map(g=>g.id)), q = VIEW.q.trim().toLowerCase();
+  [...box.children].forEach(c=>{ if(c.dataset.gid && !ids.has(c.dataset.gid)) c.remove(); });
+  GROUPS.forEach((g, i)=>{
+    let el = box.querySelector(`[data-gid="${g.id}"]`);
+    if(!el){ el = document.createElement("div"); el.dataset.gid = g.id; box.appendChild(el); }
+    const sig = gSig(g);
+    if(el._sig !== sig){ el._sig = sig; el.className = "device-card"; gFill(el, g); }
+    const hay = (g.name + " " + gMembers(g).map(m=>m.ch.name + " " + m.dev.name).join(" ")).toLowerCase();
+    const show = !q || q.split(/\s+/).every(t=>hay.includes(t));
+    if(el.hidden === show) el.hidden = !show;
+    const os = String(i); if(el.style.order !== os) el.style.order = os;
+  });
+  const none = GROUPS.length === 0;
+  if($("gEmpty").hidden !== !none) $("gEmpty").hidden = !none;
+  $("gGlobal").hidden = none;
+}
+function gUpdateSel(){
+  const n = GSEL.size;
+  setText($("selCount"), n ? `${n} dipilih` : "Belum ada yang dipilih");
+  ["selOn","selOff","selDel"].forEach(id=>{ const b = $(id); if(b.disabled !== !n) b.disabled = !n; });
+  let any = false, all = true;
+  for(const c of $("gGrid").children){
+    if(!c.dataset.gid) continue;
+    const s = GSEL.has(c.dataset.gid); c.classList.toggle("selected", s);
+    const sb = c.querySelector(".sel-box"); if(sb && sb.getAttribute("aria-checked") !== String(s)) sb.setAttribute("aria-checked", String(s));
+    if(!c.hidden){ any = true; if(!s) all = false; }
+  }
+  setText($("selAll"), any && all ? "Kosongkan" : "Pilih semua");
+}
+function gToggleSel(id){ if(GSEL.has(id)) GSEL.delete(id); else GSEL.add(id); gUpdateSel(); }
+function gSelAll(){
+  const vis = [...$("gGrid").children].filter(c=>c.dataset.gid && !c.hidden).map(c=>c.dataset.gid), all = vis.length && vis.every(i=>GSEL.has(i));
+  vis.forEach(i=>{ if(all) GSEL.delete(i); else GSEL.add(i); });
+  gUpdateSel();
+}
+const gSelBulk = a => bulkRelays(gPairs(GROUPS.filter(g=>GSEL.has(g.id))), a);
+async function gSelDel(){
+  const ids = [...GSEL]; if(!ids.length) return;
+  if(ids.length > 1 && !await askConfirm(`Hapus ${ids.length} grup terpilih?`, "Hapus")) return;
+  gDelete(ids);
+}
+function gDelete(ids){
+  const snaps = ids.map(id=>({ g:GROUPS.find(x=>x.id === id), i:GROUPS.findIndex(x=>x.id === id) })).filter(s=>s.g);
+  if(!snaps.length) return;
+  GROUPS = GROUPS.filter(g=>!ids.includes(g.id)); ids.forEach(id=>GSEL.delete(id)); gSave(); applyView();
+  pushUndo(snaps.length === 1 ? `Grup "${snaps[0].g.name}" dihapus` : `${snaps.length} grup dihapus`, ()=>{
+    snaps.sort((a, b)=>a.i - b.i).forEach(s=>{ if(GROUPS.length < CFG.MAX_GROUPS && !GROUPS.some(x=>x.id === s.g.id)) GROUPS.splice(Math.min(s.i, GROUPS.length), 0, s.g); });
+    gSave(); applyView(); toast("Grup dikembalikan", "ok");
+  });
+}
+function openGMenu(id){
+  const g = GROUPS.find(x=>x.id === id); if(!g) return;
+  const p = $("menuPanel");
+  p.innerHTML = `<div class="menu-label">Grup · ${escapeHtml(g.name)}</div>
+    <button data-ga="edit">${ic("edit", 18)} Edit grup</button>
+    <button data-ga="dup">${ic("copy", 18)} Duplikat grup</button>
+    <button data-ga="del" class="danger">${ic("trash", 18)} Hapus grup</button>
+    <button data-ga="close" class="menu-close">Tutup</button>`;
+  p.querySelectorAll("[data-ga]").forEach(b=>{ b.onclick = ()=>{ closeMenu(); const a = b.dataset.ga; if(a === "edit") openGroupModal(g, "edit"); else if(a === "dup") openGroupModal(g, "dup"); else if(a === "del") gDelete([g.id]); }; });
+  $("menuSheet").classList.add("show");
+}
+function uniqueGrpName(base){
+  let name = `${base} (salinan)`.slice(0, 24), i = 2;
+  while(GROUPS.some(g=>sameName(g.name, name))) name = `${base} (salinan ${i++})`.slice(0, 24);
+  return name;
+}
+function gmIconBtn(){ const b = $("gmIcon"); b.textContent = iconOf(GM ? GM.icon : 20); b.setAttribute("aria-label", "Ikon grup, kode " + (GM ? GM.icon : 20)); }
+function gmCount(){ setText($("gmCount"), `(${[...GM.sel].filter(k=>{ const [u, n] = k.split(":"); return getCh(u, +n); }).length} dipilih)`); }
+function gmRender(){
+  const other = GROUPS.filter(g=>g.id !== GM.id); let h = "";
+  orderedUids().forEach(uid=>{
+    const d = state.devices[uid];
+    h += `<div class="gm-dev">${iconOf(d.icon)} ${escapeHtml(d.name)}</div>`;
+    sortedNums(d).forEach(n=>{
+      const k = uid + ":" + n, c = d.channels[n], gs = other.filter(g=>g.members.includes(k)).map(g=>g.name);
+      h += `<label class="g-opt"><input type="checkbox" data-k="${k}"${GM.sel.has(k) ? " checked" : ""}><span>${iconOf(c.icon)}</span><span class="g-on">${escapeHtml(c.name)}</span>${gs.length ? `<small class="g-dev">${escapeHtml(gs.join(", "))}</small>` : ""}</label>`;
+    });
+  });
+  $("gmList").innerHTML = h; gmCount();
+}
+function openGroupModal(g, mode){
+  if(mode !== "edit" && GROUPS.length >= CFG.MAX_GROUPS){ toast(`Maksimal ${CFG.MAX_GROUPS} grup`, "err"); return; }
+  if(!Object.keys(state.devices).length){ toast("Tambah device dulu", "err"); return; }
+  GM = { id:mode === "edit" ? g.id : null, icon:g ? g.icon : 20, sel:new Set(g ? g.members : []) };
+  $("gmTitle").textContent = mode === "edit" ? "Edit Grup" : mode === "dup" ? "Duplikat Grup" : "Tambah Grup";
+  $("gmName").value = g ? (mode === "edit" ? g.name : uniqueGrpName(g.name)) : "";
+  $("gmErr").classList.remove("show"); gmIconBtn(); gmRender();
+  $("grpModal").classList.add("show"); setTimeout(()=>$("gmName").focus(), 100);
+}
+function closeGrp(){ GM = null; $("grpModal").classList.remove("show"); }
+async function submitGroup(){
+  if(!GM) return;
+  const err = m=>showErr("gmErr", m), name = norm($("gmName").value);
+  $("gmErr").classList.remove("show");
+  if(!name) return err("Nama grup tidak boleh kosong.");
+  if(name.length > 24) return err("Nama grup maksimal 24 karakter.");
+  if(GROUPS.some(g=>g.id !== GM.id && sameName(g.name, name))) return err(`Nama "${name}" sudah dipakai grup lain.`);
+  const mem = []; orderedUids().forEach(u=>sortedNums(state.devices[u]).forEach(n=>{ if(GM.sel.has(u + ":" + n)) mem.push(u + ":" + n); }));
+  if(!mem.length) return err("Pilih minimal 1 relay.");
+  const others = GROUPS.filter(g=>g.id !== GM.id), shared = mem.filter(k=>others.some(g=>g.members.includes(k)));
+  if(shared.length){
+    const nm = [...new Set(others.filter(g=>g.members.some(k=>shared.includes(k))).map(g=>g.name))].join(", ");
+    if(!await askConfirm(`${shared.length} relay sudah ada di grup lain (${nm}). Tetap masukkan ke grup ini?`, "Ya, masukkan")) return;
+    if(!GM) return;
+  }
+  const id = GM.id, rec = { id:id || "g" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), name, icon:GM.icon, members:mem };
+  if(id){ const i = GROUPS.findIndex(g=>g.id === id); if(i < 0){ closeGrp(); return; } GROUPS[i] = rec; }
+  else{
+    if(GROUPS.length >= CFG.MAX_GROUPS) return err(`Maksimal ${CFG.MAX_GROUPS} grup.`);
+    GROUPS.push(rec);
+  }
+  gSave(); closeGrp(); applyView(); toast(id ? "Grup diperbarui" : "Grup ditambahkan", "ok");
+}
+$("gGrid").addEventListener("click", e=>{
+  if(e.target.closest("[data-gadd]")){ openGroupModal(); return; }
+  const c = e.target.closest("[data-gid]"); if(!c) return;
+  const tg = e.target.closest("[data-gt]");
+  if(tg){ const [u, n] = tg.dataset.gt.split(":"); onChannelToggle(u, +n); return; }
+  const g = GROUPS.find(x=>x.id === c.dataset.gid); if(!g) return;
+  const b = e.target.closest("[data-g]");
+  if(b){ const a = b.dataset.g; if(a === "menu") openGMenu(g.id); else if(a === "sel") gToggleSel(g.id); else bulkRelays(gMembers(g).map(m=>[m.uid, m.n]), a === "on" ? "ON" : "OFF"); return; }
+  if(VIEW.organize && e.target.closest(".device-head") && !e.target.closest(".grip")) gToggleSel(g.id);
 });
+$("gAllOn").onclick = async ()=>{ if(await askConfirm("Nyalakan SEMUA relay di semua grup?", "Nyalakan")) bulkRelays(gPairs(GROUPS), "ON"); };
+$("gAllOff").onclick = ()=>bulkRelays(gPairs(GROUPS), "OFF");
+$("gmList").addEventListener("change", e=>{ const k = e.target.dataset.k; if(!k || !GM) return; if(e.target.checked) GM.sel.add(k); else GM.sel.delete(k); gmCount(); $("gmErr").classList.remove("show"); });
+$("gmIcon").onclick = ()=>openIconPicker({ type:"grp" });
+$("gmSave").onclick = submitGroup;
+$("gmCancel").onclick = closeGrp;
+backdropClose($("grpModal"), closeGrp);
+$("gmName").addEventListener("input", ()=>$("gmErr").classList.remove("show"));
+$("gmName").addEventListener("keydown", e=>{ if(e.key === "Enter"){ e.preventDefault(); submitGroup(); } });
 
 /* ============ WIRING TAMPILAN ============ */
 $("viewSearch").addEventListener("input", e=>{ VIEW.q = e.target.value; applyView(); });
-$("filterChips").addEventListener("click", e=>{ const b = e.target.closest("[data-f]"); if(!b) return; VIEW.filter = b.dataset.f; saveView(); applyView(); });
-$("viewSort").addEventListener("change", e=>{ VIEW.sort = e.target.value; saveView(); applyView(); });
+$("tabs").addEventListener("click", e=>{ const b = e.target.closest("[data-t]"); if(b) setTab(b.dataset.t); });
 $("orgBtn").onclick = ()=>setOrganize(!VIEW.organize);
 $("selDone").onclick = ()=>setOrganize(false);
-$("noMatchReset").onclick = ()=>{ VIEW.q = ""; VIEW.filter = "all"; $("viewSearch").value = ""; saveView(); applyView(); };
-$("selAll").onclick = ()=>{
+$("noMatchReset").onclick = ()=>{ VIEW.q = ""; $("viewSearch").value = ""; if(VIEW.tab !== "all") setTab("all"); else applyView(); };
+$("selAll").onclick = ()=>{ if(VIEW.tab === "grp") return gSelAll();
   const vis = visibleUids(), all = vis.length && vis.every(u=>VIEW.sel.has(u));
   vis.forEach(u=>{ if(all) VIEW.sel.delete(u); else VIEW.sel.add(u); const c = cardOf(u); if(c) c.classList.toggle("selected", VIEW.sel.has(u)); });
   updateSelBar();
 };
 const selUids = () => orderedUids().filter(u=>VIEW.sel.has(u));
-$("selOn").onclick  = ()=>{ const u = selUids(); if(u.length) bulkSend(u, "ON"); };
-$("selOff").onclick = ()=>{ const u = selUids(); if(u.length) bulkSend(u, "OFF"); };
-$("selDel").onclick = async ()=>{
+$("selOn").onclick  = ()=>{ if(VIEW.tab === "grp") return gSelBulk("ON"); const u = selUids(); if(u.length) bulkSend(u, "ON"); };
+$("selOff").onclick = ()=>{ if(VIEW.tab === "grp") return gSelBulk("OFF"); const u = selUids(); if(u.length) bulkSend(u, "OFF"); };
+$("selDel").onclick = async ()=>{ if(VIEW.tab === "grp") return gSelDel();
   const uids = selUids(); if(!uids.length) return;
   if(uids.length > 1 && !await askConfirm(`Hapus ${uids.length} device terpilih?`, "Hapus")) return;
   const snaps = uids.map(snapDevice);
@@ -2617,7 +2947,7 @@ document.addEventListener("keydown", e=>{
 });
 
 /* ============ WIRING ============ */
-$("fabAdd").onclick = e=>{ addRipple(e.currentTarget, e); openAddModal(); };
+$("fabAdd").onclick = e=>{ addRipple(e.currentTarget, e); if(VIEW.tab === "grp") openGroupModal(); else openAddModal(); };
 $("modalCancel").onclick = closeModal;
 $("modalSave").onclick = e=>{ addRipple(e.currentTarget, e); submitModal(); };
 backdropClose($("menuSheet"), closeMenu);
@@ -2695,6 +3025,7 @@ document.addEventListener("keydown", e=>{
   if($("uidModal").classList.contains("show")) return closeUidChange();
   if($("iconPicker").classList.contains("show")) return closeIconPicker();
   if($("menuSheet").classList.contains("show")) return closeMenu();
+  if($("grpModal").classList.contains("show")) return closeGrp();
   if($("deviceModal").classList.contains("show")) return closeModal();
   if($("setPanel").classList.contains("show")) return closeSettings();
   if($("listPanel").classList.contains("show")) return closeList();
@@ -2747,7 +3078,9 @@ function boot(){
   loadSettings(); applySettings(); loadView();
   initTheme(); loadTheme(); applyTheme();
   hydrate();
+  gLoad();
   renderGrid();
+  showPane();
   mqttStart();
 }
 document.addEventListener("DOMContentLoaded", boot);
