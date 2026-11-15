@@ -554,10 +554,14 @@ body{touch-action:pan-y pinch-zoom}
   .topbar{gap:var(--u-topgap,6px);padding-top:calc(var(--u-toppy,6px) + var(--safe-top));padding-bottom:var(--u-toppy,6px)}
   .brand{gap:7px}
   .brand-mark{width:var(--u-mark,32px);height:var(--u-mark,32px)}
-  .brand-mark svg{width:18px;height:18px}
+  .brand-mark svg{width:calc(var(--u-mark,32px)*.56);height:calc(var(--u-mark,32px)*.56)}
   .brand-title{font-size:var(--u-ttlfs,14px);line-height:1.2}
   .icon-btn,.device-menu-btn{width:var(--u-ib,34px);height:var(--u-ib,34px)}
-  .icon-btn svg,.device-menu-btn svg{width:18px;height:18px}
+  .topbar .icon-btn svg,.device-menu-btn svg{width:calc(var(--u-ib,34px)*.54);height:calc(var(--u-ib,34px)*.54)}
+  /* ikon selalu tepat di tengah tombolnya (berapa pun ukuran tombol): padding 0, flex-center, svg block */
+  .icon-btn,.device-menu-btn,.ch-btn,.fab,.brand-mark{padding:0;display:flex;align-items:center;justify-content:center;line-height:0;text-align:center}
+  .icon-btn>[data-ic],.brand-mark>[data-ic],.ch-btn>[data-ic],.fab>[data-ic],.device-menu-btn>[data-ic]{display:flex;align-items:center;justify-content:center;width:auto;height:auto;line-height:0}
+  .icon-btn svg,.brand-mark svg,.device-menu-btn svg,.ch-btn svg,.fab svg{display:block;flex:none;margin:0;vertical-align:baseline}
   .toolbar{padding-top:var(--u-tbpt,8px);gap:var(--u-tbgap,6px)}
   .tb-row{gap:6px}
   .tb-search,.tb-search.icon-search{min-height:var(--u-sh,34px);padding-block:5px;padding-inline:10px}
