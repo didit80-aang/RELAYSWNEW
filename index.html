@@ -1166,8 +1166,8 @@ async function pushConfig(uid){
 let urlIdx = 0, connTimer = null, lastErr = "";
 function mqttStart(){
   if(typeof mqtt === "undefined"){
-    setPill("Library gagal", "err"); markAllOffline();
-    toast("Library MQTT gagal dimuat — cek internet", "err"); return;
+    setPill("Gagal", "err"); markAllOffline();
+    toast("Gagal", "err"); return;
   }
   mqttConnect();
 }
@@ -1187,15 +1187,15 @@ function mqttConnect(){
   connTimer = setTimeout(()=>{
     if(M.up || M.client !== c) return;
     M.client = null; c.end(true);
-    setPill("Gagal · " + label, "err"); markAllOffline();
-    toast(`Gagal ke ${label}${lastErr ? " (" + lastErr + ")" : ""}. Mencoba jalur lain…`, "err");
+    setPill("Gagal", "err"); markAllOffline();
+    toast("Gagal", "err");
     urlIdx++; setTimeout(mqttConnect, 1500);
   }, CFG.CONNECT_TIMEOUT);
 
   c.on("connect", ()=>{
     if(M.client !== c) return;
     clearTimeout(connTimer);
-    M.up = true; setPill("Terhubung", "ok"); toast("MQTT terhubung (" + label + ")", "ok");
+    M.up = true; setPill("Terhubung", "ok"); toast("Terhubung", "ok");
     Object.keys(state.devices).forEach(uid=>{
       const dev = state.devices[uid];
       dev.online = undefined; dev.iconsSeeded = false; dev.namesSeeded = false;
@@ -1208,7 +1208,7 @@ function mqttConnect(){
   c.on("reconnect", ()=>{ if(M.client === c) setPill("Menyambung…", "wait"); });
   c.on("close", ()=>{
     if(M.client !== c) return;
-    if(M.up){ setPill("Terputus", "err"); toast("MQTT terputus", "err"); }
+    if(M.up){ setPill("Terputus", "err"); toast("Terputus", "err"); }
     M.up = false; markAllOffline();
   });
   c.on("error", e=>{ lastErr = (e && e.message) || "error"; console.warn("mqtt:", lastErr); });
