@@ -136,6 +136,16 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-o
 .device-title{flex:1;min-width:0}
 .device-name{font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .device-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;font-size:11px}
+.chip-rssi{display:inline-flex;align-items:center;gap:5px;padding:1px 8px;border:var(--b2) solid var(--bc);border-radius:calc(8px*var(--rk));background:var(--off);font-family:var(--mono);font-weight:700;font-size:11px;color:var(--ink)}
+.chip-rssi[hidden]{display:none}
+.chip-rssi.stale{color:var(--mut)}
+.chip-rssi .bars{display:inline-flex;align-items:flex-end;gap:1.5px;height:11px;color:var(--mut)}
+.chip-rssi .bars i{display:block;width:3px;border-radius:1px;background:currentColor;opacity:.22}
+.chip-rssi .bars i:nth-child(1){height:3px}.chip-rssi .bars i:nth-child(2){height:5px}.chip-rssi .bars i:nth-child(3){height:8px}.chip-rssi .bars i:nth-child(4){height:11px}
+.chip-rssi .bars i.on{opacity:1}
+.chip-rssi.q4 .bars,.chip-rssi.q3 .bars{color:var(--ok)}
+.chip-rssi.q2 .bars{color:var(--wn)}
+.chip-rssi.q1 .bars,.chip-rssi.q0 .bars{color:var(--er)}
 .uid-chip,.chip-count{padding:1px 8px;border:var(--b2) solid var(--bc);border-radius:calc(8px*var(--rk));background:var(--off);font-family:var(--mono);font-weight:700;font-size:11px}
 .channels{display:flex;flex-direction:column;gap:10px;padding:12px}
 
@@ -426,6 +436,8 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
   .device-name{font-size:14px}
   .device-meta{margin-top:2px;font-size:10.5px}
   .uid-chip,.chip-count{padding:0 6px;font-size:10px;border-width:var(--b15);border-radius:calc(7px*var(--rk))}
+  .chip-rssi{padding:0 6px;font-size:10px;gap:4px;border-width:var(--b15);border-radius:calc(7px*var(--rk))}
+  .chip-rssi .bars{height:9px}.chip-rssi .bars i{width:2.5px}
   .channels{gap:8px;padding:10px}
   .channel-row{gap:8px;padding:7px 8px;min-height:56px;border-radius:calc(12px*var(--rk))}
   .channel-icon{width:34px;height:34px;font-size:17px;border-radius:calc(10px*var(--rk))}
@@ -461,6 +473,7 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
 [data-style="neu"] :is(.channel-icon,.device-icon,.lr-icon,.brand-mark,.sim-pill,.ch-editor-num,.chip,.tb-sort,.fps,.toast-act){box-shadow:var(--s2)}
 [data-style="neu"] .chip.act{box-shadow:var(--sp1)}
 [data-style="neu"] :is(.set-row,.set-block,.list-row,.selbar){box-shadow:var(--s3)}
+[data-style="neu"] .chip-rssi{box-shadow:var(--sp1)}
 [data-style="neu"] :is(.empty,.nomatch){box-shadow:var(--s5)}
 [data-style="terminal"] :is(select,.tb-sort){font-family:var(--font)}
 [data-style="terminal"] .brand-title{letter-spacing:-.2px}
@@ -596,7 +609,10 @@ body{touch-action:pan-y pinch-zoom}
 .uz output{font:800 12px var(--mono);color:var(--mut)}
 .uz input{grid-column:1/3;width:100%;margin:4px 0 0;accent-color:var(--blue)}
 .uz-h{margin:12px 0 2px;font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--mut)}
-#uiDet>summary{cursor:pointer;font-weight:800;padding:6px 0}
+#uiDet>summary,#connDet>summary{cursor:pointer;font-weight:800;padding:6px 0}
+.conn-url{width:100%;margin-top:4px;padding:10px 12px;font:600 12px var(--mono);background:var(--card);color:var(--ink);border:var(--b2) solid var(--bc);border-radius:calc(10px*var(--rk));resize:vertical}
+.conn-sw{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;font-weight:700}.conn-sw span{flex:1}
+.conn-note{margin-top:8px;font-size:12px;line-height:1.5;color:var(--mut)}.conn-note.warn{color:var(--er-ink);font-weight:700}
 .list-panel.peek{background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 .list-panel.peek .list-inner{opacity:.14}
 
@@ -780,6 +796,29 @@ html,*{scrollbar-width:none;-ms-overflow-style:none}
           </div>
         </details>
       </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-name">Sinyal WiFi per device</div><small>Tampilkan kekuatan sinyal (dBm) realtime di kartu device.</small></div>
+        <button type="button" class="sw" role="switch" data-set="rssi"></button>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-name">Konfirmasi ON/OFF massal</div><small>Tampilkan dialog konfirmasi sebelum menyalakan/mematikan banyak relay sekaligus.</small></div>
+        <button type="button" class="sw" role="switch" data-set="bulkConfirm"></button>
+      </div>
+      <div class="set-block">
+        <div class="set-name">Koneksi broker &amp; device</div>
+        <small style="display:block;margin-bottom:6px;font-size:12px;line-height:1.5;color:var(--mut)">Timeout, reconnect, dan deteksi device offline. Nilai langsung dipakai; yang bertanda (sambung ulang) baru berlaku setelah menekan Terapkan.</small>
+        <details id="connDet"><summary>Atur koneksi</summary>
+          <div id="connBox"></div>
+          <div class="uz-h">Alamat broker (satu per baris)</div>
+          <textarea id="connUrls" class="conn-url" rows="3" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+          <div class="field-err" id="connErr"></div>
+          <div class="conn-note" id="connNote">Timeout device offline otomatis membatasi interval polling agar tidak lebih dari separuhnya.</div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button type="button" class="btn btn-primary" id="connApply" style="flex:1;min-height:38px">Terapkan &amp; sambung ulang</button>
+            <button type="button" class="btn" id="connReset" style="flex:1;min-height:38px">Awal</button>
+          </div>
+        </details>
+      </div>
       <div class="set-note">Pengaturan tersimpan otomatis di browser ini.</div>
     </div>
   </div>
@@ -854,7 +893,7 @@ html,*{scrollbar-width:none;-ms-overflow-style:none}
     <div class="field" style="margin-bottom:0"><label for="wfPass">Password WiFi</label>
       <input type="password" id="wfPass" maxlength="63" placeholder="Kosongkan bila jaringan terbuka" autocomplete="new-password" autocapitalize="off" spellcheck="false">
       <small><label style="display:inline-flex;gap:6px;align-items:center;margin:0;text-transform:none;letter-spacing:0;font-weight:600"><input type="checkbox" id="wfShow" style="width:auto"> Tampilkan password</label></small>
-      <small>Dikirim terenkripsi dengan password device &amp; tidak disimpan di dashboard. Bila gagal tersambung, ESP32 sebaiknya kembali ke jaringan lama / mode AP.</small>
+      <small>Dikirim tanpa verifikasi password device (sama seperti Jadwal) &amp; tidak disimpan di dashboard. Bila gagal tersambung, ESP32 sebaiknya kembali ke jaringan lama / mode AP.</small>
       <div class="field-err" id="wfErr"></div></div>
     <div class="modal-actions"><button class="btn btn-ghost" id="wfClose">Tutup</button><button class="btn btn-primary" id="wfSend">Kirim ke ESP32</button></div>
   </div>
@@ -996,7 +1035,46 @@ const CFG = {
   MAX_GROUPS:       10,
   BULK_STEP_MS:     150,   // jeda antar relay saat ON/OFF massal (dikali 2 jika FPS < 40, dikali 3 jika FPS < 25)
   RENDER_BUDGET:    8,     // ms maksimum kerja render per frame; sisanya dilanjutkan di frame berikutnya
+  KEEPALIVE_S:      30,    // keepalive MQTT (detik)
+  RECONNECT_MS:     3000,  // jeda reconnect broker
+  AUTO_RECONNECT:   true,
+  RSSI_MS:          5000,  // interval minta sinyal WiFi tiap device
+  CONN_KEY:         "relay_conn_v1",
 };
+
+/* ============ KUSTOMISASI KONEKSI (tersimpan di localStorage) ============
+   [kunci, properti CFG, label, min, max, step, bawaan, satuan, pengali ke CFG, butuh sambung ulang] */
+const CONN_DEF = [
+  {k:"connect",   p:"CONNECT_TIMEOUT",  l:"Timeout koneksi broker",           min:3,  max:30,   step:1,  def:7,   unit:"dtk", mul:1000, rc:true},
+  {k:"reconnect", p:"RECONNECT_MS",     l:"Jeda reconnect broker",            min:1,  max:60,   step:1,  def:3,   unit:"dtk", mul:1000, rc:true},
+  {k:"keepalive", p:"KEEPALIVE_S",      l:"Keep-alive broker",                min:10, max:120,  step:5,  def:30,  unit:"dtk", mul:1,    rc:true},
+  {k:"ack",       p:"ACK_TIMEOUT",      l:"Timeout konfirmasi perintah relay",min:1,  max:15,   step:.5, def:3,   unit:"dtk", mul:1000},
+  {k:"snap",      p:"SNAPSHOT_TIMEOUT", l:"Timeout balasan status (snapshot)",min:2,  max:20,   step:.5, def:5,   unit:"dtk", mul:1000},
+  {k:"offline",   p:"WATCHDOG_OFF",     l:"Timeout device offline",           min:5,  max:120,  step:1,  def:10,  unit:"dtk", mul:1000},
+  {k:"poll",      p:"POLL_MS",          l:"Interval polling status",          min:2,  max:30,   step:1,  def:4,   unit:"dtk", mul:1000},
+  {k:"rssi",      p:"RSSI_MS",          l:"Interval sinyal WiFi",             min:2,  max:60,   step:1,  def:5,   unit:"dtk", mul:1000},
+  {k:"bulk",      p:"BULK_STEP_MS",     l:"Jeda antar relay (ON/OFF massal)", min:50, max:1000, step:50, def:150, unit:"ms",  mul:1},
+];
+const CONN_URLS_DEF = CFG.MQTT_URLS.slice();
+const CONN = {};
+function connDefaults(){ CONN_DEF.forEach(d=>{ CONN[d.k] = d.def; }); CONN.auto = true; CONN.urls = CONN_URLS_DEF.slice(); }
+function connToCfg(){
+  CONN_DEF.forEach(d=>{ CFG[d.p] = CONN[d.k] * d.mul; });
+  CFG.AUTO_RECONNECT = !!CONN.auto; CFG.MQTT_URLS = CONN.urls.length ? CONN.urls.slice() : CONN_URLS_DEF.slice();
+}
+function saveConn(){ try{ localStorage.setItem(CFG.CONN_KEY, JSON.stringify(CONN)); }catch(e){ console.warn("conn save fail", e); } }
+(function loadConn(){
+  connDefaults();
+  try{
+    const o = JSON.parse(localStorage.getItem(CFG.CONN_KEY) || "{}") || {};
+    CONN_DEF.forEach(d=>{ const n = Number(o[d.k]); if(o[d.k] != null && o[d.k] !== "" && isFinite(n)) CONN[d.k] = Math.min(d.max, Math.max(d.min, n)); });
+    if(typeof o.auto === "boolean") CONN.auto = o.auto;
+    if(Array.isArray(o.urls)){ const u = o.urls.filter(x=>typeof x === "string" && /^wss?:\/\/\S+$/.test(x)).slice(0, 5); if(u.length) CONN.urls = u; }
+  }catch(e){}
+  connToCfg();
+})();
+// Interval polling efektif: tak lebih dari separuh timeout offline, agar device hidup tidak salah dianggap offline
+const pollMs = () => Math.max(1000, Math.min(CFG.POLL_MS, CFG.WATCHDOG_OFF / 2));
 
 /* ============ KODE IKON ============
    ESP32 / backend cukup menyimpan & mengirim ANGKA. Web yang menerjemahkan ke gambar.
@@ -1370,7 +1448,7 @@ async function pushConfig(uid){
   mqttPublishIcons(uid, false); mqttPublishNames(uid, false);
 }
 
-let urlIdx = 0, connTimer = null, lastErr = "";
+let urlIdx = 0, connTimer = null, retryT = 0, lastErr = "";
 function mqttStart(){
   if(typeof mqtt === "undefined"){
     setPill("Gagal", "err"); markAllOffline();
@@ -1381,13 +1459,14 @@ function mqttStart(){
 function mqttConnect(){
   // Halaman https:// memblokir ws:// (mixed content) -> lewati jalur ws, pakai wss saja
   const urls = CFG.MQTT_URLS.filter(u=>!(location.protocol === "https:" && u.startsWith("ws:")));
+  if(!urls.length){ setPill("Gagal", "err"); toast("Alamat broker tidak valid (halaman https hanya mendukung wss://)", "err"); return; }
   const url = urls[urlIdx % urls.length];
   const tls = url.startsWith("wss"), label = url.replace(/^wss?:\/\//, "").replace(/\/mqtt$/, "");
   setPill("Menyambung…", "wait");
   lastErr = "";
   const c = M.client = mqtt.connect(url, {
     clientId: "web-" + Math.random().toString(16).slice(2, 10),
-    clean: true, keepalive: 30, reconnectPeriod: 3000, connectTimeout: 6000,
+    clean: true, keepalive: CFG.KEEPALIVE_S, reconnectPeriod: CFG.AUTO_RECONNECT ? CFG.RECONNECT_MS : 0, connectTimeout: Math.max(1000, CFG.CONNECT_TIMEOUT - 1000),
   });
   // Gagal tersambung dalam batas waktu -> tampilkan alasan & coba jalur berikutnya
   clearTimeout(connTimer);
@@ -1396,7 +1475,8 @@ function mqttConnect(){
     M.client = null; c.end(true);
     setPill("Gagal", "err"); markAllOffline();
     toast("Gagal", "err");
-    urlIdx++; setTimeout(mqttConnect, 1500);
+    urlIdx++;
+    if(CFG.AUTO_RECONNECT){ clearTimeout(retryT); retryT = setTimeout(mqttConnect, CFG.RECONNECT_MS); }
   }, CFG.CONNECT_TIMEOUT);
 
   c.on("connect", ()=>{
@@ -1411,6 +1491,7 @@ function mqttConnect(){
       renderDevice(uid);
       Object.keys(dev.channels).forEach(n=>mqttSnapshot(uid, parseInt(n,10)));
     });
+    setTimeout(rssiPoll, 1500);
   });
   c.on("reconnect", ()=>{ if(M.client === c) setPill("Menyambung…", "wait"); });
   c.on("close", ()=>{
@@ -1421,6 +1502,49 @@ function mqttConnect(){
   c.on("error", e=>{ lastErr = (e && e.message) || "error"; console.warn("mqtt:", lastErr); });
   c.on("message", onMqttMessage);
 }
+
+// Putus koneksi lama lalu sambung ulang dengan pengaturan terbaru (dipakai tombol "Terapkan & sambung ulang")
+function mqttRestart(){
+  clearTimeout(connTimer); clearTimeout(retryT);
+  const c = M.client; M.client = null; M.up = false;
+  if(c){ try{ c.end(true); }catch(e){} }
+  markAllOffline(); urlIdx = 0; mqttStart();
+}
+
+/* ============ SINYAL WIFI PER DEVICE (realtime) ============
+   Dashboard mengirim "wifi/get" berkala (tanpa tanda tangan); ESP32 membalas di PREFIX/<uid>/wifi:
+   "<ssid>\t<state>\t<ip>\t<rssi>\t<kanal>". Balasan juga dibaca bila ESP32 mengirimnya sendiri secara berkala. */
+const RSSI = new Map();   // uid -> { v: dBm, ts }
+const RSSI_LBL = ["Sangat lemah", "Lemah", "Cukup", "Baik", "Sangat kuat"];
+const rssiLevel = v => v >= -55 ? 4 : v >= -67 ? 3 : v >= -75 ? 2 : v >= -85 ? 1 : 0;
+function rssiOnMsg(uid, raw){
+  const v = raw.split("\t"), t = (v[3] || "").trim(), r = /^-?\d+$/.test(t) ? parseInt(t, 10) : NaN;
+  if(v[1] === "1" && r < 0 && r > -127) RSSI.set(uid, { v:r, ts:Date.now() }); else RSSI.delete(uid);
+  paintRssi(uid);
+}
+function paintRssi(uid, card){
+  card = card || cardOf(uid); if(!card) return;
+  const el = card.querySelector(".chip-rssi"); if(!el) return;
+  const dev = state.devices[uid];
+  if(!SETTINGS.rssi || !dev){ if(!el.hidden) el.hidden = true; return; }
+  if(el.hidden) el.hidden = false;
+  const rec = RSSI.get(uid), fresh = !!rec && !devOffline(dev) && Date.now() - rec.ts < Math.max(CFG.RSSI_MS * 3, 15000);
+  const lv = fresh ? rssiLevel(rec.v) : -1;
+  const cls = "chip-rssi " + (fresh ? "q" + lv : "stale");
+  if(el._c !== cls){ el.className = cls; el._c = cls; }
+  const bars = el._b || (el._b = el.querySelectorAll(".bars i"));
+  bars.forEach((b, i)=>{ const on = i < lv; if(b._on !== on){ b.classList.toggle("on", on); b._on = on; } });
+  setText(el.querySelector(".rv"), fresh ? rec.v + " dBm" : "— dBm");
+  const tt = fresh ? "Sinyal WiFi: " + rec.v + " dBm (" + RSSI_LBL[lv] + ")" : "Sinyal WiFi: belum ada data";
+  if(el.title !== tt) el.title = tt;
+}
+const paintAllRssi = () => Object.keys(state.devices).forEach(u=>paintRssi(u));
+function rssiPoll(){
+  if(!M.up || !SETTINGS.rssi || document.hidden) return;
+  Object.values(state.devices).forEach(d=>{ if(!devOffline(d)) M.client.publish(tp(d.uid, "wifi/get"), "1", { qos:0, retain:false }); });
+}
+(function rssiLoop(){ setTimeout(()=>{ try{ rssiPoll(); }catch(e){} rssiLoop(); }, CFG.RSSI_MS); })();
+document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) rssiPoll(); });
 
 function applyEspNames(dev){
   const v = dev.espNames; if(!v) return false;
@@ -1438,7 +1562,12 @@ function onMqttMessage(topic, payload){
   if(!dev) return;
   const raw = payload.toString();                 // mentah (nama harus mempertahankan huruf besar/kecil)
   const val = raw.trim().toUpperCase();
-  if(m[2] === "wifi" && m.length <= 4){ wfOnMsg(dev.uid, m[3] || "", raw); devSeen.set(dev.uid, Date.now()); return; }   // WiFi: status / scan / hasil set
+  if(m[2] === "wifi" && m.length <= 4){   // WiFi: status / scan / hasil set. Gema pesan permintaan kita sendiri (get/scan/set) BUKAN tanda device hidup
+    if(m.length === 3) rssiOnMsg(dev.uid, raw);
+    wfOnMsg(dev.uid, m[3] || "", raw);
+    if(!/^(get|scan|set)$/.test(m[3] || "")) devSeen.set(dev.uid, Date.now());
+    return;
+  }
   if(m.length === 3 && m[2] === "sched"){ schOnMsg(dev.uid, raw.trim()); devSeen.set(dev.uid, Date.now()); return; }
   if((m.length === 4 && m[3] === "state") || (m.length === 3 && m[2] === "status" && val === "ONLINE")) devSeen.set(dev.uid, Date.now());
 
@@ -1555,7 +1684,7 @@ function queueGet(uid){
 }
 
 /* ============ PENGATURAN (tersimpan di localStorage browser) ============ */
-const SETTINGS = { bulkProgress:false, bulkToast:true, fps:true, sound:true };
+const SETTINGS = { bulkProgress:false, bulkToast:true, fps:true, sound:true, bulkConfirm:true, rssi:true };
 function loadSettings(){
   try{
     const o = JSON.parse(localStorage.getItem(CFG.SET_KEY) || "{}") || {};
@@ -1574,6 +1703,7 @@ function applySettings(){
     b.className = "sw" + (on ? " on" : "");
     b.setAttribute("aria-checked", String(on));
   });
+  try{ paintAllRssi(); }catch(e){}
 }
 
 /* ============ UKURAN TAMPILAN (slider di Pengaturan) ============
@@ -1621,6 +1751,57 @@ function applySettings(){
   apply(false);
 })();
 
+/* ============ UI KUSTOMISASI KONEKSI ============ */
+(function(){
+  const box = document.getElementById("connBox"); if(!box) return;
+  const ins = {}, outs = {}, $c = id=>document.getElementById(id);
+  let dirty = false;
+  const fmt = (d, v) => v + " " + d.unit;
+  const note = (txt, warn)=>{ const n = $c("connNote"); n.textContent = txt; n.classList.toggle("warn", !!warn); };
+  const NOTE0 = "Timeout device offline otomatis membatasi interval polling agar tidak lebih dari separuhnya.";
+  function mark(){ dirty = true; note("Ada perubahan yang butuh sambung ulang — tekan Terapkan & sambung ulang.", true); }
+  CONN_DEF.forEach(d=>{
+    const l = document.createElement("label"); l.className = "uz";
+    l.innerHTML = "<span>" + d.l + (d.rc ? " (sambung ulang)" : "") + "</span><output></output><input type=\"range\" min=\"" + d.min + "\" max=\"" + d.max + "\" step=\"" + d.step + "\">";
+    const i = l.querySelector("input"); ins[d.k] = i; outs[d.k] = l.querySelector("output");
+    i.addEventListener("input", ()=>{ CONN[d.k] = Number(i.value); outs[d.k].textContent = fmt(d, CONN[d.k]); connToCfg(); saveConn(); if(d.rc) mark(); });
+    box.appendChild(l);
+  });
+  const sw = document.createElement("div"); sw.className = "conn-sw";
+  sw.innerHTML = "<span>Reconnect otomatis (sambung ulang)</span><button type=\"button\" class=\"sw\" role=\"switch\"></button>";
+  box.appendChild(sw);
+  const swb = sw.querySelector(".sw");
+  const paintSw = ()=>{ swb.className = "sw" + (CONN.auto ? " on" : ""); swb.setAttribute("aria-checked", String(!!CONN.auto)); };
+  swb.onclick = ()=>{ CONN.auto = !CONN.auto; paintSw(); connToCfg(); saveConn(); mark(); };
+  function sync(){
+    CONN_DEF.forEach(d=>{ ins[d.k].value = CONN[d.k]; outs[d.k].textContent = fmt(d, CONN[d.k]); });
+    paintSw(); $c("connUrls").value = CONN.urls.join("\n");
+  }
+  function parseUrls(){
+    const u = $c("connUrls").value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+    if(!u.length) return { e:"Isi minimal satu alamat broker." };
+    if(u.length > 5) return { e:"Maksimal 5 alamat broker." };
+    const bad = u.find(x=>!/^wss?:\/\/[^\s]+$/.test(x));
+    if(bad) return { e:"Alamat harus berawalan ws:// atau wss:// — \"" + bad.slice(0, 40) + "\" tidak valid." };
+    if(location.protocol === "https:" && !u.some(x=>x.startsWith("wss:"))) return { e:"Halaman https hanya bisa memakai wss:// (minimal satu alamat wss)." };
+    return { u };
+  }
+  $c("connApply").onclick = ()=>{
+    const err = $c("connErr"), r = parseUrls();
+    if(r.e){ err.textContent = r.e; err.classList.add("show"); return; }
+    err.classList.remove("show");
+    CONN.urls = r.u; connToCfg(); saveConn(); dirty = false; note(NOTE0);
+    toast("Pengaturan koneksi diterapkan, menyambung ulang…", "ok");
+    mqttRestart();
+  };
+  $c("connReset").onclick = ()=>{
+    connDefaults(); connToCfg(); saveConn(); sync(); dirty = false; note(NOTE0); $c("connErr").classList.remove("show");
+    toast("Pengaturan koneksi dikembalikan ke awal", "ok");
+    mqttRestart();
+  };
+  sync();
+})();
+
 /* ============ TEMA (gaya x mode) ============
    Atribut data-style & data-mode di <html> mengganti seluruh set variabel CSS; tidak ada pembangunan ulang DOM. */
 const THEME_STYLES = ["cartoon","flat","neu","wood","nature","ocean","sunset","lavender","mono","terminal"], THEME = { style:"cartoon", mode:"auto" };
@@ -1649,8 +1830,16 @@ $("styleGrid").addEventListener("click", e=>{ const b = e.target.closest(".theme
 if(darkMQ){ const f = ()=>{ if(THEME.mode === "auto") applyTheme(); }; if(darkMQ.addEventListener) darkMQ.addEventListener("change", f); else if(darkMQ.addListener) darkMQ.addListener(f); }
 }
 
-function openSettings(){ applySettings(); applyTheme(); $("setPanel").classList.add("show"); }
-function closeSettings(){ $("setPanel").classList.remove("show"); }
+// Semua bagian lipat (Atur bunyi tik, Atur ukuran, Atur koneksi, dst.) kembali TERTUTUP & gulir ke atas setiap kali Pengaturan dibuka/ditutup
+let collapseT = 0;
+function collapseSettings(){
+  clearTimeout(collapseT);
+  document.querySelectorAll("#setPanel details").forEach(d=>{ d.open = false; });
+  const b = document.querySelector("#setPanel .list-body"); if(b) b.scrollTop = 0;
+  $("setPanel").classList.remove("peek");
+}
+function openSettings(){ collapseSettings(); applySettings(); applyTheme(); $("setPanel").classList.add("show"); }
+function closeSettings(){ $("setPanel").classList.remove("show"); clearTimeout(collapseT); collapseT = setTimeout(collapseSettings, 350); }
 
 /* ============ STORAGE ============ */
 // Ditulis maksimal sekali per 400 ms (JSON.stringify + localStorage sinkron itu mahal bila dipanggil tiap pesan MQTT)
@@ -2030,10 +2219,10 @@ $("tpOk").onclick = ()=>{
 $("tpModal").addEventListener("click", e=>{ if(e.target === $("tpModal")) closeTp(); });
 
 /* ============ WIFI PER DEVICE (scan / muat / kirim) ============
-   web -> ESP (bertanda tangan HMAC seperti icons/set), semua di PREFIX/<uid>/ :
+   web -> ESP, TANPA password/tanda tangan (konsisten dengan Jadwal), semua di PREFIX/<uid>/ :
      wifi/get   body "1"  -> ESP membalas  wifi       "<ssid>\t<state>\t<ip>\t<rssi>\t<kanal>"   state: 1 tersambung | 0 tidak | A mode AP
      wifi/scan  body "1"  -> ESP membalas  wifi/list  baris "<ssid>\t<rssi>\t<enc 0|1>" dipisah \n (maks 20, sinyal terkuat dulu)
-     wifi/set   body = hex 128 byte terenkripsi -> ESP membalas  wifi/res  "<nonce>|ok" atau "<nonce>|err|<alasan>"
+     wifi/set   body "<ssid>\t<password>\t<nonce>" (polos) -> ESP membalas  wifi/res  "<nonce>|ok" atau "<nonce>|err|<alasan>"
    Enkripsi (password WiFi tidak pernah polos di broker): plaintext = "<ssid>\t<password>" diisi 0x00 sampai 128 byte;
      keystream blok i (i=0..3, tiap 32 byte) = HMAC-SHA256(passwordDevice, "wifi/enc|<nonce>|<i>"); cipher = plaintext XOR keystream; body = hex(cipher).
      Tanda tangan = HMAC(passwordDevice, "wifi/set|<nonce>|<body>"), kirim "<body>|<nonce>|<sig>" (encrypt-then-MAC). Balasan ESP tidak retained. */
@@ -2064,11 +2253,10 @@ function openWifi(uid){
   wfLoad();
 }
 function closeWifi(){ WF.uid = null; WF.nonce = ""; clearTimeout(WF.tGet); clearTimeout(WF.tScan); clearTimeout(WF.tSet); $("wfPass").value = ""; $("wfModal").classList.remove("show"); }
-async function wfReq(act){
+async function wfReq(act){   // tanpa verifikasi password device (konsisten dengan Jadwal)
   if(!M.up){ wfSt("MQTT belum terhubung.", true); return false; }
-  const ok = await sendSigned(WF.uid, act, "1", true);
-  if(!ok) wfSt("Password device dibatalkan / belum terverifikasi.", true);
-  return ok;
+  M.client.publish(tp(WF.uid, act), "1", { qos:0, retain:false });
+  return true;
 }
 async function wfLoad(){
   const uid = WF.uid; WF.touched = false; clearTimeout(WF.tGet); $("wfLoad").disabled = true;
@@ -2109,15 +2297,11 @@ async function wfSend(){
   if(/[\t\r\n\0]/.test(ssid + pass)) return err("SSID/password tidak boleh memuat tab atau baris baru.");
   if(!M.up) return err("MQTT belum terhubung.");
   $("wfSend").disabled = true; $("wfSend").textContent = "Mengirim…";
-  const pw = await requirePw(uid);
-  if(!pw || WF.uid !== uid) return reset();
+  if(WF.uid !== uid) return reset();
   const nonce = rndNonce(); WF.nonce = nonce;
-  try{
-    const body = await wfEncrypt(pw, nonce, ssid + "\t" + pass), sig = await hmacHex(pw, `wifi/set|${nonce}|${body}`);
-    if(!M.up){ WF.nonce = ""; reset(); return err("MQTT terputus."); }
-    M.client.publish(tp(uid, "wifi/set"), `${body}|${nonce}|${sig}`, { qos:1, retain:false });
-  }catch(e){ WF.nonce = ""; reset(); return err("Gagal mengenkripsi data."); }
-  wfSt("Terkirim (terenkripsi). Menunggu jawaban ESP32…");
+  if(!M.up){ WF.nonce = ""; reset(); return err("MQTT terputus."); }
+  M.client.publish(tp(uid, "wifi/set"), `${ssid}\t${pass}\t${nonce}`, { qos:1, retain:false });
+  wfSt("Terkirim. Menunggu jawaban ESP32…");
   WF.tSet = setTimeout(()=>{ if(WF.nonce === nonce){ WF.nonce = ""; reset(); wfSt("Tidak ada jawaban. ESP32 mungkin sudah pindah jaringan — tekan Muat untuk memeriksa.", true); } }, 20000);
 }
 (function(){
@@ -2494,6 +2678,33 @@ const ENX = [
   [/^(\d+) dtk lalu$/, "$1 s ago"], [/^(\d+) mnt lalu$/, "$1 min ago"], [/^(\d+) jam lalu$/, "$1 h ago"],
   [/^FPS terburuk: (.*)$/, "Worst FPS: $1"],
 ];
+Object.assign(EN, {
+"Sinyal WiFi per device":"Per-device WiFi signal","Tampilkan kekuatan sinyal (dBm) realtime di kartu device.":"Show real-time signal strength (dBm) on the device card.",
+"Konfirmasi ON/OFF massal":"Confirm bulk ON/OFF","Tampilkan dialog konfirmasi sebelum menyalakan/mematikan banyak relay sekaligus.":"Show a confirmation dialog before turning many relays on/off at once.",
+"Koneksi broker & device":"Broker & device connection","Timeout, reconnect, dan deteksi device offline. Nilai langsung dipakai; yang bertanda (sambung ulang) baru berlaku setelah menekan Terapkan.":"Timeouts, reconnect, and offline-device detection. Values apply immediately; those marked (reconnect) take effect after pressing Apply.",
+"Atur koneksi":"Adjust connection","Alamat broker (satu per baris)":"Broker addresses (one per line)","Terapkan & sambung ulang":"Apply & reconnect",
+"Timeout device offline otomatis membatasi interval polling agar tidak lebih dari separuhnya.":"The offline-device timeout automatically caps the polling interval at half of it.",
+"Ada perubahan yang butuh sambung ulang — tekan Terapkan & sambung ulang.":"Some changes need a reconnect — press Apply & reconnect.",
+"Timeout koneksi broker (sambung ulang)":"Broker connect timeout (reconnect)","Jeda reconnect broker (sambung ulang)":"Broker reconnect delay (reconnect)","Keep-alive broker (sambung ulang)":"Broker keep-alive (reconnect)",
+"Timeout konfirmasi perintah relay":"Relay command confirmation timeout","Timeout balasan status (snapshot)":"Status (snapshot) reply timeout","Timeout device offline":"Offline-device timeout",
+"Interval polling status":"Status polling interval","Interval sinyal WiFi":"WiFi signal interval","Jeda antar relay (ON/OFF massal)":"Delay between relays (bulk ON/OFF)",
+"Reconnect otomatis (sambung ulang)":"Auto reconnect (reconnect)",
+"Isi minimal satu alamat broker.":"Enter at least one broker address.","Maksimal 5 alamat broker.":"At most 5 broker addresses.",
+"Halaman https hanya bisa memakai wss:// (minimal satu alamat wss).":"An https page can only use wss:// (at least one wss address).",
+"Pengaturan koneksi diterapkan, menyambung ulang…":"Connection settings applied, reconnecting…","Pengaturan koneksi dikembalikan ke awal":"Connection settings restored to default",
+"Alamat broker tidak valid (halaman https hanya mendukung wss://)":"Invalid broker address (an https page only supports wss://)",
+"Dikirim tanpa verifikasi password device (sama seperti Jadwal) & tidak disimpan di dashboard. Bila gagal tersambung, ESP32 sebaiknya kembali ke jaringan lama / mode AP.":"Sent without device-password verification (same as Schedule) & not stored in the dashboard. If it fails to connect, the ESP32 should fall back to the old network / AP mode.",
+"Terkirim. Menunggu jawaban ESP32…":"Sent. Waiting for the ESP32 to answer…","Matikan":"Turn off","Nyalakan":"Turn on"
+});
+ENX.push(
+  [/^(\d+(?:\.\d+)?) dtk$/, "$1 s"],
+  [/^Alamat harus berawalan ws:\/\/ atau wss:\/\/ — "(.*)" tidak valid\.$/, 'Address must start with ws:// or wss:// — "$1" is invalid.'],
+  [/^(Nyalakan|Matikan) (\d+) relay (.+?)\?(?: (\d+) relay dilewati \(offline\/sibuk\)\.)?$/, (_, a, n, l, k)=>
+    (a === "Nyalakan" ? "Turn on " : "Turn off ") + n + (n === "1" ? " relay " : " relays ") +
+    l.replace(/^di semua device$/, "on all devices").replace(/^di semua grup$/, "in all groups").replace(/^di grup terpilih$/, "in the selected groups")
+     .replace(/^di device "(.*)"$/, 'on device "$1"').replace(/^di grup "(.*)"$/, 'in group "$1"').replace(/^di (\d+) device terpilih$/, "on $1 selected devices") +
+    "?" + (k ? " " + k + " skipped (offline/busy)." : "")]
+);
 let LANG = "id"; try{ LANG = localStorage.getItem("relay_lang_v1") === "en" ? "en" : "id"; }catch(e){}
 function trTxt(s){ const k = s.trim(); if(!k) return s; let v = EN[k]; if(v === undefined) for(const [r, x] of ENX) if(r.test(k)){ v = k.replace(r, x); break; } return v === undefined ? s : s.replace(k, ()=>v); }
 function trNode(n){
@@ -2537,12 +2748,13 @@ function backdropClose(el, fn){
 }
 // Dialog konfirmasi kustom (confirm() native diblokir di iframe/sandbox)
 let confirmResolve = null;
-function askConfirm(msg, yes="Hapus"){
+function askConfirm(msg, yes="Hapus", kind="danger"){
   return new Promise(res=>{
     if(confirmResolve) confirmResolve(false);
     confirmResolve = res;
     $("confirmMsg").textContent = msg;
     $("confirmYes").textContent = yes;
+    $("confirmYes").className = "btn " + (kind === "ok" ? "btn-ok" : "btn-danger");
     $("confirmBg").classList.add("show");
     setTimeout(()=>$("confirmNo").focus(), 50);
   });
@@ -2689,6 +2901,7 @@ function patchDeviceHead(card, dev, n){
   card.querySelector(".device-icon").textContent = iconOf(dev.icon);
   card.querySelector(".chip-count").textContent = n + " relay";
   schMarkDev(card, dev);
+  paintRssi(dev.uid, card);
 }
 
 function buildDevice(uid){
@@ -2703,7 +2916,7 @@ function buildDevice(uid){
       <div class="device-icon"></div>
       <div class="device-title">
         <div class="device-name"></div>
-        <div class="device-meta"><span class="uid-chip">${escapeHtml(dev.uid)}</span><span class="chip-count"></span></div>
+        <div class="device-meta"><span class="uid-chip">${escapeHtml(dev.uid)}</span><span class="chip-count"></span><span class="chip-rssi stale" hidden title="Sinyal WiFi: belum ada data"><span class="bars"><i></i><i></i><i></i><i></i></span><span class="rv">— dBm</span></span></div>
       </div>
       <button class="grip" type="button" data-kind="dev" aria-label="Geser device (atau tombol panah)" title="Seret untuk mengubah urutan"><svg width="14" height="18" viewBox="0 0 14 18" fill="currentColor" aria-hidden="true"><circle cx="4" cy="3.5" r="1.7"/><circle cx="10" cy="3.5" r="1.7"/><circle cx="4" cy="9" r="1.7"/><circle cx="10" cy="9" r="1.7"/><circle cx="4" cy="14.5" r="1.7"/><circle cx="10" cy="14.5" r="1.7"/></svg></button>
       <button class="device-menu-btn" type="button" title="Menu device" aria-label="Menu device">${ic("dots", 22)}</button>
@@ -2714,7 +2927,7 @@ function buildDevice(uid){
   el.classList.toggle("selected", VIEW.sel.has(uid));
   el.querySelector(".sel-box").onclick = e=>{ e.stopPropagation(); toggleSel(uid); };
   el.querySelector(".device-head").onclick = e=>{ if(VIEW.organize && !e.target.closest(".grip,.device-menu-btn")) toggleSel(uid); };
-  el.querySelectorAll("[data-bulk]").forEach(b=>{ b.onclick = e=>{ e.stopPropagation(); bulkSend([uid], b.dataset.bulk); }; });
+  el.querySelectorAll("[data-bulk]").forEach(b=>{ b.onclick = e=>{ e.stopPropagation(); const d = state.devices[uid]; bulkGoUids([uid], b.dataset.bulk, `di device "${d ? d.name : uid}"`); }; });
   const box = el.querySelector(".channels");
   nums.forEach(n=>box.appendChild(buildChannelRow(uid, n)));
   patchDeviceHead(el, dev, nums.length);
@@ -3326,6 +3539,27 @@ function bulkRelays(pairs, action){
   if(SETTINGS.bulkProgress){ $("bulkBar").hidden = false; updateBulk(); }
   bulkStep();
 }
+// Konfirmasi sebelum ON/OFF massal (bisa dimatikan di Pengaturan). Relay yang sudah di status tujuan tidak dihitung.
+function uidPairs(uids){ const p = []; uids.forEach(u=>{ const d = state.devices[u]; if(d) sortedNums(d).forEach(n=>p.push([u, n])); }); return p; }
+function bulkPreview(pairs, action){
+  const seen = new Set(); let n = 0, skip = 0;
+  pairs.forEach(([uid, k])=>{
+    const key = uid + ":" + k; if(seen.has(key)) return; seen.add(key);
+    const ch = getCh(uid, k); if(!ch) return;
+    if(ch.status !== "IDLE" || !ch.confirmed){ skip++; return; }
+    if(ch.confirmed.state !== action) n++;
+  });
+  return { n, skip };
+}
+async function bulkGo(pairs, action, label){
+  if(!SETTINGS.bulkConfirm || !M.up || BULK.running) return bulkRelays(pairs, action);   // kasus ini ditangani toast di bulkRelays
+  const { n, skip } = bulkPreview(pairs, action);
+  if(!n) return bulkRelays(pairs, action);
+  const on = action === "ON";
+  const msg = `${on ? "Nyalakan" : "Matikan"} ${n} relay ${label}?` + (skip ? ` ${skip} relay dilewati (offline/sibuk).` : "");
+  if(await askConfirm(msg, on ? "Nyalakan" : "Matikan", on ? "ok" : "danger")) bulkRelays(pairs, action);
+}
+const bulkGoUids = (uids, action, label) => bulkGo(uidPairs(uids), action, label);
 function bulkStep(){
   BULK.timer = 0;
   if(!BULK.running) return;
@@ -3925,7 +4159,7 @@ function gSelAll(){
   vis.forEach(i=>{ if(all) GSEL.delete(i); else GSEL.add(i); });
   gUpdateSel();
 }
-const gSelBulk = a => bulkRelays(gPairs(GROUPS.filter(g=>GSEL.has(g.id))), a);
+const gSelBulk = a => bulkGo(gPairs(GROUPS.filter(g=>GSEL.has(g.id))), a, "di grup terpilih");
 async function gSelDel(){
   const ids = [...GSEL]; if(!ids.length) return;
   if(ids.length > 1 && !await askConfirm(`Hapus ${ids.length} grup terpilih?`, "Hapus")) return;
@@ -4010,7 +4244,7 @@ $("gGrid").addEventListener("click", e=>{
   if(tg){ const [u, n] = tg.dataset.gt.split(":"); onChannelToggle(u, +n); return; }
   const g = GROUPS.find(x=>x.id === c.dataset.gid); if(!g) return;
   const b = e.target.closest("[data-g]");
-  if(b){ const a = b.dataset.g; if(a === "menu") openGMenu(g.id); else if(a === "sel") gToggleSel(g.id); else bulkRelays(gMembers(g).map(m=>[m.uid, m.n]), a === "on" ? "ON" : "OFF"); return; }
+  if(b){ const a = b.dataset.g; if(a === "menu") openGMenu(g.id); else if(a === "sel") gToggleSel(g.id); else bulkGo(gMembers(g).map(m=>[m.uid, m.n]), a === "on" ? "ON" : "OFF", `di grup "${g.name}"`); return; }
   if(VIEW.organize && e.target.closest(".device-head") && !e.target.closest(".grip")) gToggleSel(g.id);
 });
 $("gmList").addEventListener("change", e=>{ const k = e.target.dataset.k; if(!k || !GM) return; if(e.target.checked) GM.sel.add(k); else GM.sel.delete(k); gmCount(); $("gmErr").classList.remove("show"); });
@@ -4033,8 +4267,8 @@ $("selAll").onclick = ()=>{ if(VIEW.tab === "grp") return gSelAll();
   updateSelBar();
 };
 const selUids = () => orderedUids().filter(u=>VIEW.sel.has(u));
-$("selOn").onclick  = ()=>{ if(VIEW.tab === "grp") return gSelBulk("ON"); const u = selUids(); if(u.length) bulkSend(u, "ON"); };
-$("selOff").onclick = ()=>{ if(VIEW.tab === "grp") return gSelBulk("OFF"); const u = selUids(); if(u.length) bulkSend(u, "OFF"); };
+$("selOn").onclick  = ()=>{ if(VIEW.tab === "grp") return gSelBulk("ON"); const u = selUids(); if(u.length) bulkGoUids(u, "ON", `di ${u.length} device terpilih`); };
+$("selOff").onclick = ()=>{ if(VIEW.tab === "grp") return gSelBulk("OFF"); const u = selUids(); if(u.length) bulkGoUids(u, "OFF", `di ${u.length} device terpilih`); };
 $("selDel").onclick = async ()=>{ if(VIEW.tab === "grp") return gSelDel();
   const uids = selUids(); if(!uids.length) return;
   if(uids.length > 1 && !await askConfirm(`Hapus ${uids.length} device terpilih?`, "Hapus")) return;
@@ -4064,11 +4298,8 @@ $("iconPickerClose").onclick = closeIconPicker;
 $("iconSearch").addEventListener("input", renderIconPickerGrid);
 $("listBtn").onclick = openList;
 $("devIconBtn").onclick = ()=>openIconPicker({ type:"dev" });
-$("allOn").onclick  = async ()=>{
-  if(VIEW.tab === "grp"){ if(await askConfirm("Nyalakan SEMUA relay di semua grup?", "Nyalakan")) bulkRelays(gPairs(GROUPS), "ON"); return; }
-  if(await askConfirm("Nyalakan SEMUA relay di semua device?", "Nyalakan")) bulkSend(orderedUids(), "ON");
-};
-$("allOff").onclick = ()=>{ if(VIEW.tab === "grp") bulkRelays(gPairs(GROUPS), "OFF"); else bulkSend(orderedUids(), "OFF"); };
+$("allOn").onclick  = ()=>{ if(VIEW.tab === "grp") bulkGo(gPairs(GROUPS), "ON", "di semua grup"); else bulkGoUids(orderedUids(), "ON", "di semua device"); };
+$("allOff").onclick = ()=>{ if(VIEW.tab === "grp") bulkGo(gPairs(GROUPS), "OFF", "di semua grup"); else bulkGoUids(orderedUids(), "OFF", "di semua device"); };
 $("listClose").onclick = closeList;
 $("bulkCancel").onclick = ()=>bulkFinish(true);
 $("setBtn").onclick = openSettings;
@@ -4150,10 +4381,11 @@ setInterval(()=>{
     renderDevice(dev.uid);
   });
   refreshLabels();
+  paintAllRssi();
 }, 2000);
 
 // Polling: minta state tiap POLL_MS supaya device yang hidup selalu memperbarui "terakhir terdengar"
-setInterval(()=>{ if(M.up) Object.keys(state.devices).forEach(queueGet); }, CFG.POLL_MS);
+(function pollLoop(){ setTimeout(()=>{ if(M.up) Object.keys(state.devices).forEach(queueGet); pollLoop(); }, pollMs()); })();
 
 // Simpan perubahan yang tertunda sebelum halaman ditutup / pindah tab
 document.addEventListener("visibilitychange", ()=>{ if(document.hidden && persistPending) persistNow(); });
