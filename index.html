@@ -14,7 +14,7 @@
 <title>Relay Control — Multi-Channel</title>
 <style>
 :root{
-  --font:ui-rounded,"SF Pro Rounded","Nunito","Segoe UI",system-ui,-apple-system,Roboto,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Twemoji Mozilla";
+  --font-base:ui-rounded,"SF Pro Rounded","Nunito","Segoe UI",system-ui,-apple-system,Roboto,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Twemoji Mozilla";
   --mono:ui-monospace,Menlo,Consolas,monospace;
   --safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
 }
@@ -22,6 +22,7 @@
    Setiap blok gaya mendefinisikan SEMUA variabel (agar kartu pratinjau di Pengaturan bisa memakai gaya sendiri). */
 /* Kartun (bawaan) */
 :root,[data-style="cartoon"]{
+  --font:var(--font-base);
   --bg:#e6efff;--card:#fff;--ink:#1d2340;--mut:#5b6486;--line:#1d2340;--off:#e4e9f7;
   --blue:#4c8dff;--ok:#2fcf8a;--wn:#ffc233;--er:#ff6b6b;--er-ink:#c62828;--vi:#a58bff;--dk:#1d2340;--scrim:rgba(29,35,64,.55);
   --bc:var(--line);--b15:1.5px;--b2:2px;--b3:3px;--rk:1;--press:1;
@@ -32,6 +33,7 @@
 [data-style="cartoon"][data-mode="dark"]{--bg:#141a2e;--card:#1f2745;--ink:#f1f4ff;--mut:#9aa4c7;--line:#0a0e1c;--off:#2d3659;--er-ink:#ff8a8a;--scrim:rgba(5,8,18,.7)}
 /* Flat */
 [data-style="flat"]{
+  --font:var(--font-base);
   --bg:#f1f4f9;--card:#fff;--ink:#1c2433;--mut:#667085;--line:#1c2433;--off:#e8ecf3;
   --blue:#3b82f6;--ok:#22c55e;--wn:#fbbf24;--er:#f87171;--er-ink:#b42318;--vi:#a78bfa;--dk:#0f172a;--scrim:rgba(15,23,42,.45);
   --bc:rgba(28,36,51,.14);--b15:1px;--b2:1px;--b3:1px;--rk:.7;--press:0;
@@ -41,6 +43,7 @@
 [data-style="flat"][data-mode="dark"]{--bg:#0e1117;--card:#171b24;--ink:#e6e9ef;--mut:#9aa3b5;--line:#000;--off:#222836;--er-ink:#ff9a9a;--scrim:rgba(0,0,0,.65);--bc:rgba(255,255,255,.1)}
 /* Neumorphism */
 [data-style="neu"]{
+  --font:var(--font-base);
   --bg:#e3e8ef;--card:#e3e8ef;--ink:#38465a;--mut:#6b7a92;--line:#38465a;--off:#e3e8ef;
   --blue:#7d9bff;--ok:#4cc9a0;--wn:#f6c25b;--er:#f47c7c;--er-ink:#b8382b;--vi:#a995f2;--dk:#24304a;--scrim:rgba(56,70,90,.45);
   --shd:rgba(163,177,198,.85);--shl:rgba(255,255,255,.95);
@@ -54,6 +57,7 @@
 [data-style="neu"][data-mode="dark"]{--bg:#2a2f3a;--card:#2a2f3a;--ink:#dde3ee;--mut:#8f9ab0;--line:#dde3ee;--off:#2a2f3a;--er-ink:#ff9a9a;--scrim:rgba(8,10,16,.7);--shd:rgba(10,12,18,.8);--shl:rgba(255,255,255,.06)}
 /* Kayu */
 [data-style="wood"]{
+  --font:var(--font-base);
   --bg:#b98a55;--card:#f3e2bf;--ink:#3b2412;--mut:#7b5a3c;--line:#3b2412;--off:#e3cb9c;
   --blue:#4f9a8e;--ok:#86b84a;--wn:#f2b53d;--er:#d9593f;--er-ink:#a63a24;--vi:#a07ab8;--dk:#2a1708;--scrim:rgba(40,22,8,.6);
   --bc:var(--line);--b15:1.5px;--b2:2px;--b3:3px;--rk:.6;--press:1;
@@ -69,6 +73,7 @@
 }
 /* Alam */
 [data-style="nature"]{
+  --font:var(--font-base);
   --bg:#e5f1da;--card:#fbfef6;--ink:#1f3b29;--mut:#58735f;--line:#2f5d3a;--off:#e6f0dd;
   --blue:#3a9d8e;--ok:#5cbf63;--wn:#f3c244;--er:#e2705a;--er-ink:#b3402d;--vi:#9a86d6;--dk:#14301f;--scrim:rgba(20,48,31,.5);
   --shd:rgba(47,93,58,.22);
@@ -84,6 +89,21 @@
   --shd:rgba(0,0,0,.45);--bc:rgba(130,190,140,.32);--sp0:inset 0 2px 5px rgba(0,0,0,.5);--sp1:inset 0 1px 3px rgba(0,0,0,.5);
   --bgimg:radial-gradient(60% 40% at 15% 0%,rgba(120,200,150,.12),rgba(0,0,0,0) 70%),radial-gradient(70% 35% at 100% 100%,rgba(70,140,80,.22),rgba(0,0,0,0) 70%),linear-gradient(180deg,#0b2a2c 0,#0f1c15 260px);
 }
+/* Samudra */
+[data-style="ocean"]{--font:var(--font-base);--bg:#e4f0f7;--card:#fbfeff;--ink:#12344d;--mut:#4f7188;--line:#12344d;--off:#dfecf4;--blue:#4aa3e0;--ok:#2dbba0;--wn:#f0c35e;--er:#e5786b;--er-ink:#b84a3d;--vi:#8794dc;--dk:#0b2638;--scrim:rgba(11,38,56,.5);--shd:rgba(18,70,110,.2);--shi:rgba(18,70,110,.28);--bc:rgba(18,52,77,.22);--b15:1.5px;--b2:2px;--b3:2px;--rk:1.15;--press:.5;--s2:0 2px 5px var(--shd);--s3:0 3px 8px var(--shd);--s4:0 4px 10px var(--shd);--s5:0 5px 12px var(--shd);--s6:0 6px 16px var(--shd);--sp0:inset 0 2px 5px var(--shi);--sp1:inset 0 1px 3px var(--shi);--s4sel:0 0 0 3px var(--blue),var(--s4);--s6sel:0 0 0 3px var(--blue),var(--s6);--bgimg:linear-gradient(180deg,#cfe7f4 0,#e4f0f7 260px);--cardimg:none;}
+[data-style="ocean"][data-mode="dark"]{--bg:#0a1a26;--card:#112636;--ink:#e3f1fa;--mut:#8fb0c6;--line:#04101a;--off:#1a3548;--er-ink:#ff9d90;--scrim:rgba(2,10,18,.7);--shd:rgba(0,0,0,.45);--shi:rgba(0,0,0,.5);--bc:rgba(140,200,235,.22);--bgimg:linear-gradient(180deg,#0d3447 0,#0a1a26 260px);}
+/* Senja */
+[data-style="sunset"]{--font:var(--font-base);--bg:#fbeee3;--card:#fffaf5;--ink:#4a2a22;--mut:#85655a;--line:#4a2a22;--off:#f5e5d6;--blue:#ee8f5a;--ok:#7bb36a;--wn:#f2c14e;--er:#e4604f;--er-ink:#b03a2b;--vi:#b08fc4;--dk:#3b1d14;--scrim:rgba(59,29,20,.5);--shd:rgba(150,70,40,.2);--shi:rgba(150,70,40,.28);--bc:rgba(74,42,34,.2);--b15:1.5px;--b2:2px;--b3:2px;--rk:1.2;--press:.5;--s2:0 2px 5px var(--shd);--s3:0 3px 8px var(--shd);--s4:0 4px 10px var(--shd);--s5:0 5px 12px var(--shd);--s6:0 6px 16px var(--shd);--sp0:inset 0 2px 5px var(--shi);--sp1:inset 0 1px 3px var(--shi);--s4sel:0 0 0 3px var(--blue),var(--s4);--s6sel:0 0 0 3px var(--blue),var(--s6);--bgimg:linear-gradient(180deg,#fcd9c0 0,#fbeee3 280px);--cardimg:none;}
+[data-style="sunset"][data-mode="dark"]{--bg:#1d1417;--card:#2a1d21;--ink:#fbe9de;--mut:#c9a89b;--line:#0e0809;--off:#3a282d;--er-ink:#ff9b8a;--scrim:rgba(10,4,6,.72);--shd:rgba(0,0,0,.45);--shi:rgba(0,0,0,.5);--bc:rgba(255,200,170,.2);--bgimg:linear-gradient(180deg,#3a1f26 0,#1d1417 280px);}
+/* Lavender */
+[data-style="lavender"]{--font:var(--font-base);--bg:#eeeafa;--card:#fff;--ink:#2d2650;--mut:#675f8a;--line:#3a3166;--off:#e9e4f7;--blue:#8a7cf2;--ok:#4fc3a1;--wn:#f2c46a;--er:#ee7b8b;--er-ink:#c0475a;--vi:#b59cf5;--dk:#1f1a3f;--scrim:rgba(45,38,80,.5);--shd:rgba(90,70,170,.18);--shi:rgba(90,70,170,.26);--bc:rgba(58,49,102,.18);--b15:1.5px;--b2:2px;--b3:2px;--rk:1.2;--press:.5;--s2:0 2px 5px var(--shd);--s3:0 3px 8px var(--shd);--s4:0 4px 10px var(--shd);--s5:0 5px 12px var(--shd);--s6:0 6px 16px var(--shd);--sp0:inset 0 2px 5px var(--shi);--sp1:inset 0 1px 3px var(--shi);--s4sel:0 0 0 3px var(--blue),var(--s4);--s6sel:0 0 0 3px var(--blue),var(--s6);--bgimg:radial-gradient(60% 35% at 85% 0%,rgba(255,255,255,.8),rgba(255,255,255,0) 70%),linear-gradient(180deg,#e4defa 0,#eeeafa 260px);--cardimg:none;}
+[data-style="lavender"][data-mode="dark"]{--bg:#17142b;--card:#221e3d;--ink:#ece9ff;--mut:#a49ccf;--line:#0b0918;--off:#2e2952;--er-ink:#ff9aa8;--scrim:rgba(8,5,20,.72);--shd:rgba(0,0,0,.45);--shi:rgba(0,0,0,.5);--bc:rgba(190,175,255,.22);--bgimg:linear-gradient(180deg,#261f4a 0,#17142b 260px);}
+/* Mono */
+[data-style="mono"]{--font:var(--font-base);--bg:#f4f4f2;--card:#fff;--ink:#111;--mut:#666;--line:#111;--off:#ececea;--blue:#111;--ok:#111;--wn:#6b6b6b;--er:#b3261e;--er-ink:#b3261e;--vi:#767676;--dk:#fff;--scrim:rgba(0,0,0,.5);--bc:#111;--b15:1.5px;--b2:1.5px;--b3:1.5px;--rk:.4;--press:0;--s2:none;--s3:none;--s4:none;--s5:none;--s6:none;--sp0:none;--sp1:none;--s4sel:0 0 0 2px var(--blue);--s6sel:0 0 0 2px var(--blue);--bgimg:none;--cardimg:none;}
+[data-style="mono"][data-mode="dark"]{--bg:#0c0c0c;--card:#161616;--ink:#f1f1f1;--mut:#9a9a9a;--line:#f1f1f1;--off:#222;--blue:#f1f1f1;--ok:#f1f1f1;--wn:#a8a8a8;--er:#ff8d82;--er-ink:#ff8d82;--vi:#8f8f8f;--dk:#0c0c0c;--scrim:rgba(0,0,0,.75);--bc:#3d3d3d;}
+/* Terminal */
+[data-style="terminal"]{--font:var(--mono);--bg:#ebe6d3;--card:#f5f1e2;--ink:#1b3a26;--mut:#567159;--line:#1b3a26;--off:#e3decb;--blue:#1f6b3a;--ok:#267a44;--wn:#94640f;--er:#b3382c;--er-ink:#a02f24;--vi:#2c6f86;--dk:#f5f1e2;--scrim:rgba(20,40,28,.55);--bc:#1b3a26;--b15:1px;--b2:1px;--b3:1px;--rk:.3;--press:0;--s2:none;--s3:none;--s4:none;--s5:none;--s6:none;--sp0:none;--sp1:none;--s4sel:0 0 0 2px var(--blue);--s6sel:0 0 0 2px var(--blue);--bgimg:none;--cardimg:none;}
+[data-style="terminal"][data-mode="dark"]{--bg:#060b08;--card:#0b140e;--ink:#8ef0a8;--mut:#4f9a68;--line:#1b5c33;--off:#10211a;--blue:#2fbf6a;--ok:#4be58a;--wn:#e3b341;--er:#f0655a;--er-ink:#ff8277;--vi:#5fb8cc;--dk:#04110a;--scrim:rgba(0,8,3,.78);--bc:#1f6b3a;--bgimg:repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,rgba(0,0,0,0) 1px 3px);}
 :root{--sel:var(--blue)}
 *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0;min-height:100vh}
@@ -191,7 +211,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-o
 
 .field{margin-bottom:18px}
 .field label{display:block;margin-bottom:8px;font-size:12px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
-.field input[type=text],.icon-search{width:100%;padding:12px 14px;font-size:16px;font-weight:600;background:var(--card);color:var(--ink);border:var(--b3) solid var(--bc);border-radius:calc(12px*var(--rk))}
+.field input[type=text],.field input[type=password],.icon-search{width:100%;padding:12px 14px;font-size:16px;font-weight:600;background:var(--card);color:var(--ink);border:var(--b3) solid var(--bc);border-radius:calc(12px*var(--rk))}
 .field input::placeholder,.icon-search::placeholder{color:var(--mut)}
 .field input:disabled{background:var(--off);opacity:.8}
 .field small{display:block;margin-top:7px;font-size:12px;line-height:1.5;color:var(--mut)}
@@ -429,23 +449,34 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
 /* ===== Ekstra per gaya ===== */
 [data-style="neu"] .channel-row,[data-style="neu"] input,[data-style="neu"] select{box-shadow:var(--sp1)}
 [data-style="neu"] .topbar{box-shadow:0 4px 10px var(--shd)}
-[data-style="nature"] .topbar{box-shadow:var(--s4)}
+:is([data-style="nature"],[data-style="ocean"],[data-style="sunset"],[data-style="lavender"]) .topbar{box-shadow:var(--s4)}
 [data-style="flat"] :is(.btn,.icon-btn,.device-menu-btn,.ch-btn,.fab,.fbtn,.chip,.ch-toggle,.seg button):active{transform:scale(.97)}
+
+/* ===== Perataan: elemen kecil tetap terlihat saat border transparan (Neumorphism) ===== */
+[data-style="neu"] :is(.uid-chip,.chip-count,.chip b,.bulk-track,.ch-editor,.grip,.sel-box,.empty code,.lr-uid code,.list-ch code){box-shadow:var(--sp1)}
+[data-style="neu"] :is(.status-dot,.state-dot){box-shadow:inset 1px 1px 2px var(--shd),inset -1px -1px 2px var(--shl)}
+[data-style="neu"] :is(.channel-icon,.device-icon,.lr-icon,.brand-mark,.sim-pill,.ch-editor-num,.chip,.tb-sort,.fps,.toast-act){box-shadow:var(--s2)}
+[data-style="neu"] .chip.act{box-shadow:var(--sp1)}
+[data-style="neu"] :is(.set-row,.set-block,.list-row,.selbar){box-shadow:var(--s3)}
+[data-style="neu"] :is(.empty,.nomatch){box-shadow:var(--s5)}
+[data-style="terminal"] :is(select,.tb-sort){font-family:var(--font)}
+[data-style="terminal"] .brand-title{letter-spacing:-.2px}
 /* ===== Kontrol tampilan di Pengaturan ===== */
 .set-block{padding:12px;margin-bottom:10px;background:var(--card);border:var(--b2) solid var(--bc);border-radius:calc(14px*var(--rk))}
 .set-block>.set-name{margin-bottom:10px}
 .seg{display:flex;gap:8px}
 .seg button{flex:1;min-height:42px;padding:0 8px;font-size:13px;font-weight:800;color:var(--ink);background:var(--off);border:var(--b2) solid var(--bc);border-radius:calc(12px*var(--rk));box-shadow:var(--s3);cursor:pointer}
-.seg button[aria-checked="true"]{background:var(--blue);color:var(--dk);transform:translateY(calc(2px*var(--press)));box-shadow:var(--sp1)}
+.seg button[aria-checked="true"]{background:var(--blue);color:var(--dk);box-shadow:var(--sp1)}
 .theme-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:10px}
-.theme-opt{display:flex;flex-direction:column;gap:8px;padding:8px;text-align:left;font-size:12.5px;font-weight:800;color:var(--ink);background-color:var(--bg);background-image:var(--bgimg);border:var(--b2) solid var(--bc);border-radius:calc(14px*var(--rk));box-shadow:var(--s3);cursor:pointer}
+.theme-opt{font-family:var(--font);display:flex;flex-direction:column;justify-content:space-between;gap:8px;padding:calc(10px - var(--b2));text-align:left;font-size:12.5px;font-weight:800;color:var(--ink);background-color:var(--bg);background-image:var(--bgimg);border:var(--b2) solid var(--bc);border-radius:calc(14px*var(--rk));box-shadow:var(--s3);cursor:pointer}
 .theme-opt[aria-checked="true"]{outline:3px solid var(--sel);outline-offset:2px}
-.tp{display:block;padding:8px;background-color:var(--card);background-image:var(--cardimg);border:var(--b2) solid var(--bc);border-radius:calc(10px*var(--rk));box-shadow:var(--s2)}
+.tp{display:block;height:54px;padding:calc(10px - var(--b2));background-color:var(--card);background-image:var(--cardimg);border:var(--b2) solid var(--bc);border-radius:calc(10px*var(--rk));box-shadow:var(--s2)}
 .tp i{display:block;font-style:normal}
+@media (max-width:480px){.theme-grid{grid-template-columns:repeat(2,1fr)}}
 .tp-a{height:7px;width:62%;border-radius:99px;background:var(--ink);opacity:.65}
 .tp-b{margin-top:7px;height:16px;width:46px;border-radius:calc(7px*var(--rk));background:var(--ok);border:var(--b2) solid var(--bc);box-shadow:var(--s2)}
 </style>
-<script>(function(){var d=document.documentElement;try{var t=JSON.parse(localStorage.getItem("relay_theme_v1")||"{}")||{};var st=["cartoon","flat","neu","wood","nature"].indexOf(t.style)>=0?t.style:"cartoon";var dk=t.mode==="dark"||(t.mode!=="light"&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);d.setAttribute("data-style",st);d.setAttribute("data-mode",dk?"dark":"light")}catch(e){}})();</script>
+<script>(function(){var d=document.documentElement;try{var t=JSON.parse(localStorage.getItem("relay_theme_v1")||"{}")||{};var st=["cartoon","flat","neu","wood","nature","ocean","sunset","lavender","mono","terminal"].indexOf(t.style)>=0?t.style:"cartoon";var dk=t.mode==="dark"||(t.mode!=="light"&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);d.setAttribute("data-style",st);d.setAttribute("data-mode",dk?"dark":"light")}catch(e){}})();</script>
 <script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
 </head>
 <body>
@@ -542,7 +573,7 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
       </div>
       <div class="set-block">
         <div class="set-name">Gaya tampilan</div>
-        <div class="theme-grid" id="styleGrid" role="radiogroup" aria-label="Gaya tampilan"><button type="button" class="theme-opt" role="radio" aria-checked="false" data-style="cartoon" data-mode="light"><span class="tp"><i class="tp-a"></i><i class="tp-b"></i></span>Kartun</button><button type="button" class="theme-opt" role="radio" aria-checked="false" data-style="flat" data-mode="light"><span class="tp"><i class="tp-a"></i><i class="tp-b"></i></span>Flat</button><button type="button" class="theme-opt" role="radio" aria-checked="false" data-style="neu" data-mode="light"><span class="tp"><i class="tp-a"></i><i class="tp-b"></i></span>Neumorphism</button><button type="button" class="theme-opt" role="radio" aria-checked="false" data-style="wood" data-mode="light"><span class="tp"><i class="tp-a"></i><i class="tp-b"></i></span>Kayu</button><button type="button" class="theme-opt" role="radio" aria-checked="false" data-style="nature" data-mode="light"><span class="tp"><i class="tp-a"></i><i class="tp-b"></i></span>Alam</button></div>
+        <div class="theme-grid" id="styleGrid" role="radiogroup" aria-label="Gaya tampilan"><button type="button" class="theme-opt" role="radio" aria-checked="false" data-style="cartoon" data-mode="light"><span class="tp"><i class="tp-a"></i><i class="tp-b"></i></span>Kartun</button><button type="button" class="theme-opt" role="radio" aria-checked="false" data-style="flat" data-mode="light"><span class="tp"><i class="tp-a"></i><i class="tp-b"></i></span>Flat</button><button type="button" class="theme-opt" role="radio" aria-checked="false" data-style="neu" data-mode="light"><span class="tp"><i class="tp-a"></i><i class="tp-b"></i></span>Neumorphism</button><button type="button" class="theme-opt" role="radio" aria-checked="false" data-style="wood" data-mode="light"><span class="tp"><i class="tp-a"></i><i class="tp-b"></i></span>Kayu</button><button type="button" class="theme-opt" role="radio" aria-checked="false" data-style="nature" data-mode="light"><span class="tp"><i class="tp-a"></i><i class="tp-b"></i></span>Alam</button><button type="button" class="theme-opt" role="radio" aria-checked="false" data-style="ocean" data-mode="light"><span class="tp"><i class="tp-a"></i><i class="tp-b"></i></span>Samudra</button><button type="button" class="theme-opt" role="radio" aria-checked="false" data-style="sunset" data-mode="light"><span class="tp"><i class="tp-a"></i><i class="tp-b"></i></span>Senja</button><button type="button" class="theme-opt" role="radio" aria-checked="false" data-style="lavender" data-mode="light"><span class="tp"><i class="tp-a"></i><i class="tp-b"></i></span>Lavender</button><button type="button" class="theme-opt" role="radio" aria-checked="false" data-style="mono" data-mode="light"><span class="tp"><i class="tp-a"></i><i class="tp-b"></i></span>Mono</button><button type="button" class="theme-opt" role="radio" aria-checked="false" data-style="terminal" data-mode="light"><span class="tp"><i class="tp-a"></i><i class="tp-b"></i></span>Terminal</button></div>
       </div>
       <div class="set-row">
         <div class="set-info"><div class="set-name">Bar progres ON/OFF massal</div><small>Tampilkan bar &amp; tombol Batal saat relay dikirim satu per satu.</small></div>
@@ -571,7 +602,7 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
         <input type="text" id="uidInput" maxlength="5" placeholder="k9x2m" autocomplete="off" spellcheck="false">
         <button type="button" class="btn btn-primary" id="uidLoadBtn"><span data-ic="download" data-size="18"></span><span id="uidLoadTxt">Load data</span></button>
       </div>
-      <small id="uidHint">5 karakter hash MAC, lihat di Serial Monitor ESP32 (115200) saat booting. Setelah mengisi UID: tekan <b>Load data</b> untuk mengambil nama &amp; ikon yang tersimpan di ESP32, atau isi manual di bawah.</small>
+      <small id="uidHint">5 karakter hash MAC, lihat di Serial Monitor ESP32 (115200) saat booting. Setelah mengisi UID: tekan <b>Load data</b> untuk mengambil nama &amp; ikon yang tersimpan di ESP32, atau isi manual di bawah. Password device diminta (default: 4 karakter hash MAC, lihat Serial Monitor / panel AP).</small>
       <div class="field-err" id="uidErr"></div>
       <div class="load-note" id="loadNote"></div>
     </div>
@@ -615,6 +646,23 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
     <div class="modal-actions">
       <button class="btn btn-ghost" id="uidChangeNo">Batal</button>
       <button class="btn btn-primary" id="uidChangeYes">Ganti UID</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg confirm-bg" id="pwModal" role="dialog" aria-modal="true" aria-labelledby="pwTitle">
+  <div class="modal small">
+    <h3 id="pwTitle">Password device</h3>
+    <p class="msg" id="pwMsg"></p>
+    <div class="field" style="margin-top:20px;margin-bottom:0">
+      <label for="pwInput">Password</label>
+      <input type="password" id="pwInput" maxlength="32" placeholder="Password device" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <small><label style="display:inline-flex;gap:6px;align-items:center;margin:0;text-transform:none;letter-spacing:0;font-weight:600"><input type="checkbox" id="pwShow" style="width:auto"> Tampilkan password</label></small>
+      <div class="field-err" id="pwErr"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="pwNo">Batal</button>
+      <button class="btn btn-primary" id="pwYes">Verifikasi</button>
     </div>
   </div>
 </div>
@@ -897,33 +945,169 @@ function markAllOffline(){
     renderDevice(dev.uid);
   });
 }
-const subTopics = uid => [tp(uid,"+/state"), tp(uid,"status"), tp(uid,"icons"), tp(uid,"names")];
+const subTopics = uid => [tp(uid,"+/state"), tp(uid,"status"), tp(uid,"icons"), tp(uid,"names"), tp(uid,"auth/res")];
 function mqttSubscribe(uid){ if(M.up) M.client.subscribe(subTopics(uid), {qos:1}); }
 function mqttUnsubscribe(uid){ if(M.up) M.client.unsubscribe(subTopics(uid)); }
 // Ikon disimpan di ESP32 sebagai ANGKA (kode). Format: "<device>,<r1>,<r2>,<r3>,<r4>" ; -1 = relay tidak terdaftar (jangan diubah)
 // Nama device & relay juga disimpan di ESP32 (retained) agar HP1 & HP2 selalu sama. Format TAB; kosong = relay tidak terdaftar.
 const cleanName = x => String(x).replace(/[\t\r\n]/g, " ").trim();
-function mqttPublishNames(uid){
+/* ============ PASSWORD DEVICE ============
+   Password TIDAK dikirim lewat MQTT. Setiap pesan dibuktikan dengan HMAC-SHA256 (kunci = password):
+     payload = <isi>|<nonce>|<hmac hex>,  hmac = HMAC(password, "<aksi>|<nonce>|<isi>")  ; aksi = auth/req | icons/set | names/set
+   Verifikasi: kirim "ping" ke <uid>/auth/req, ESP32 membalas "<nonce>|1" (benar) / "0" (salah) / "L" (terkunci) di <uid>/auth/res.
+   Password yang sudah terverifikasi hanya disimpan di memori halaman ini (hilang saat halaman ditutup). */
+const PW = new Map();                 // uid -> password terverifikasi
+const AUTHQ = new Map();              // nonce -> { res, t }  (menunggu balasan ESP32)
+const AUTHSUB = new Set();            // uid belum terdaftar yang auth/res-nya dilangganan sementara
+let PWREQ = null;                     // { uid, promise, resolve } popup password yang sedang terbuka
+
+function rndNonce(){
+  const A = "abcdefghijklmnopqrstuvwxyz0123456789", u = new Uint8Array(12);
+  if(self.crypto && crypto.getRandomValues) crypto.getRandomValues(u);
+  else for(let i = 0; i < u.length; i++) u[i] = Math.floor(Math.random() * 256);
+  return Array.from(u, x=>A[x % 36]).join("");
+}
+// SHA-256 murni JS: cadangan bila crypto.subtle tidak ada (halaman http:// / konteks tidak aman)
+const SHA_K = [], SHA_H = [];
+(function(){ let n = 2, c = 0; while(c < 64){ let p = true; for(let i = 2; i * i <= n; i++) if(n % i === 0){ p = false; break; } if(p){ if(c < 8) SHA_H[c] = (Math.pow(n, 1/2) % 1 * 4294967296) | 0; SHA_K[c] = (Math.pow(n, 1/3) % 1 * 4294967296) | 0; c++; } n++; } })();
+function sha256(m){
+  const l = m.length, nb = ((l + 9 + 63) >> 6) << 6, buf = new Uint8Array(nb);
+  buf.set(m); buf[l] = 0x80;
+  const dv = new DataView(buf.buffer);
+  dv.setUint32(nb - 8, Math.floor(l / 0x20000000)); dv.setUint32(nb - 4, (l << 3) >>> 0);
+  const h = SHA_H.slice(), w = new Int32Array(64);
+  for(let o = 0; o < nb; o += 64){
+    for(let i = 0; i < 16; i++) w[i] = dv.getInt32(o + i * 4);
+    for(let i = 16; i < 64; i++){
+      const x = w[i-15], y = w[i-2];
+      const s0 = ((x >>> 7) | (x << 25)) ^ ((x >>> 18) | (x << 14)) ^ (x >>> 3);
+      const s1 = ((y >>> 17) | (y << 15)) ^ ((y >>> 19) | (y << 13)) ^ (y >>> 10);
+      w[i] = (w[i-16] + s0 + w[i-7] + s1) | 0;
+    }
+    let a = h[0], b = h[1], c = h[2], d = h[3], e = h[4], f = h[5], g = h[6], k = h[7];
+    for(let i = 0; i < 64; i++){
+      const S1 = ((e >>> 6) | (e << 26)) ^ ((e >>> 11) | (e << 21)) ^ ((e >>> 25) | (e << 7));
+      const t1 = (k + S1 + ((e & f) ^ (~e & g)) + SHA_K[i] + w[i]) | 0;
+      const S0 = ((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10));
+      const t2 = (S0 + ((a & b) ^ (a & c) ^ (b & c))) | 0;
+      k = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+    }
+    h[0] = (h[0] + a) | 0; h[1] = (h[1] + b) | 0; h[2] = (h[2] + c) | 0; h[3] = (h[3] + d) | 0;
+    h[4] = (h[4] + e) | 0; h[5] = (h[5] + f) | 0; h[6] = (h[6] + g) | 0; h[7] = (h[7] + k) | 0;
+  }
+  const out = new Uint8Array(32), ov = new DataView(out.buffer);
+  for(let i = 0; i < 8; i++) ov.setInt32(i * 4, h[i]);
+  return out;
+}
+function hmacJs(key, data){
+  if(key.length > 64) key = sha256(key);
+  const ip = new Uint8Array(64 + data.length), op = new Uint8Array(96);
+  for(let i = 0; i < 64; i++){ const c = key[i] || 0; ip[i] = c ^ 0x36; op[i] = c ^ 0x5c; }
+  ip.set(data, 64); op.set(sha256(ip), 64);
+  return sha256(op);
+}
+async function hmacHex(pw, msg){
+  const enc = new TextEncoder(), k = enc.encode(pw), d = enc.encode(msg);
+  let out = null;
+  if(self.crypto && crypto.subtle){
+    try{
+      const key = await crypto.subtle.importKey("raw", k, { name:"HMAC", hash:"SHA-256" }, false, ["sign"]);
+      out = new Uint8Array(await crypto.subtle.sign("HMAC", key, d));
+    }catch(e){ out = null; }
+  }
+  if(!out) out = hmacJs(k, d);
+  return Array.from(out, x=>x.toString(16).padStart(2, "0")).join("");
+}
+
+// Hasil: "1" benar | "0" salah | "L" terkunci (terlalu banyak salah) | "T" tak ada balasan | "N" MQTT belum terhubung
+function verifyPw(uid, pw){
+  return new Promise(async res=>{
+    if(!M.up) return res("N");
+    const nonce = rndNonce();
+    let sig;
+    try{ sig = await hmacHex(pw, `auth/req|${nonce}|ping`); }catch(e){ return res("N"); }
+    const t = setTimeout(()=>{ AUTHQ.delete(nonce); res("T"); }, 6000);
+    AUTHQ.set(nonce, { res, t });
+    if(!state.devices[uid]) AUTHSUB.add(uid);
+    M.client.subscribe(tp(uid, "auth/res"), { qos:1 }, ()=>{
+      if(M.up) M.client.publish(tp(uid, "auth/req"), `ping|${nonce}|${sig}`, { qos:1, retain:false });
+    });
+  });
+}
+function authOnRes(raw){
+  const p = raw.trim().split("|"), q = AUTHQ.get(p[0]);
+  if(!q) return;
+  AUTHQ.delete(p[0]); clearTimeout(q.t);
+  q.res(p[1] === "1" || p[1] === "L" ? p[1] : "0");
+}
+// Minta password device (popup) bila belum terverifikasi. Resolve: password, atau null bila dibatalkan.
+function requirePw(uid){
+  if(PW.has(uid)) return Promise.resolve(PW.get(uid));
+  if(PWREQ && PWREQ.uid === uid) return PWREQ.promise;
+  if(PWREQ) cancelPw();
+  let resolve; const promise = new Promise(r=>{ resolve = r; });
+  PWREQ = { uid, promise, resolve };
+  $("pwMsg").textContent = `Masukkan password device UID ${uid}. Default: 4 karakter hash dari MAC (tertera di Serial Monitor ESP32 dan di panel pengaturan AP).`;
+  $("pwInput").value = ""; $("pwInput").type = "password"; $("pwShow").checked = false;
+  $("pwErr").classList.remove("show"); $("pwYes").disabled = false;
+  $("pwModal").classList.add("show");
+  setTimeout(()=>$("pwInput").focus(), 80);
+  return promise;
+}
+async function submitPw(){
+  const rq = PWREQ; if(!rq) return;
+  const pw = $("pwInput").value, err = m=>{ $("pwErr").textContent = m; $("pwErr").classList.add("show"); };
+  if(pw.length < 4) return err("Password minimal 4 karakter.");
+  $("pwYes").disabled = true; $("pwYes").textContent = "Memeriksa…";
+  const r = await verifyPw(rq.uid, pw);
+  $("pwYes").disabled = false; $("pwYes").textContent = "Verifikasi";
+  if(PWREQ !== rq) return;
+  if(r === "1"){ PW.set(rq.uid, pw); PWREQ = null; $("pwModal").classList.remove("show"); rq.resolve(pw); return; }
+  err(r === "0" ? "Password salah." : r === "L" ? "Terlalu banyak percobaan salah. Tunggu 1 menit lalu coba lagi." :
+      r === "T" ? "Device tidak menjawab. Pastikan UID benar & ESP32 online." : "MQTT belum terhubung.");
+  $("pwInput").select();
+}
+function cancelPw(){
+  const rq = PWREQ; if(!rq) return;
+  PWREQ = null; $("pwModal").classList.remove("show");
+  rq.resolve(null);
+}
+// Kirim konfigurasi bertanda tangan (icons/set, names/set). prompt=false: hanya bila password sudah terverifikasi.
+async function sendSigned(uid, act, body, prompt){
+  let pw = PW.get(uid);
+  if(!pw && prompt) pw = await requirePw(uid);
+  if(!pw || !M.up) return false;
+  const nonce = rndNonce(), sig = await hmacHex(pw, `${act}|${nonce}|${body}`);
+  if(!M.up) return false;
+  M.client.publish(tp(uid, act), `${body}|${nonce}|${sig}`, { qos:1, retain:false });
+  return true;
+}
+
+function mqttPublishNames(uid, prompt = true){
   const dev = state.devices[uid];
   if(!dev) return;
   if(!M.up){ dev.namesDirty = true; return; }
   const cs = [1,2,3,4].map(n=>dev.channels[n] ? cleanName(dev.channels[n].name) : "");
-  M.client.publish(tp(uid, "names/set"), [cleanName(dev.name), ...cs].join("\t"), { qos:1, retain:true });
+  sendSigned(uid, "names/set", [cleanName(dev.name), ...cs].join("\t"), prompt).then(ok=>{ if(!ok) dev.namesDirty = true; });
 }
-function mqttPublishIcons(uid){
+function mqttPublishIcons(uid, prompt = true){
   const dev = state.devices[uid];
   if(!dev) return;
   if(!M.up){ dev.iconsDirty = true; return; }       // kirim nanti saat MQTT tersambung
   const cs = [1,2,3,4].map(n=>dev.channels[n] ? dev.channels[n].icon : -1);
-  M.client.publish(tp(uid, "icons/set"), [dev.icon, ...cs].join(","), { qos:1, retain:true });
+  sendSigned(uid, "icons/set", [dev.icon, ...cs].join(","), prompt).then(ok=>{ if(!ok) dev.iconsDirty = true; });
 }
 
-// Perubahan struktur/nama/ikon dari dashboard: tandai "dashboard yang menang" lalu kirim ke ESP32.
+// Perubahan struktur/nama/ikon dari dashboard: tandai "dashboard yang menang" lalu kirim ke ESP32 (butuh password).
 // Relay yang terdaftar (ikon >= 0) = relay yang DIPAKAI di ESP32; relay yang tidak ada dikirim -1 (tidak dipakai).
-function pushConfig(uid){
+async function pushConfig(uid){
   const dev = state.devices[uid]; if(!dev) return;
   dev.iconsDirty = true; dev.namesDirty = true;
-  mqttPublishIcons(uid); mqttPublishNames(uid);
+  if(!M.up) return;                                  // terkirim otomatis saat tersambung & password terverifikasi
+  const pw = await requirePw(uid);
+  if(!pw){ toast("Perubahan belum dikirim ke device (password dibatalkan)", "err"); return; }
+  dev.iconsDirty = false; dev.namesDirty = false;
+  mqttPublishIcons(uid, false); mqttPublishNames(uid, false);
 }
 
 let urlIdx = 0, connTimer = null, lastErr = "";
@@ -988,6 +1172,7 @@ function applyEspNames(dev){
 function onMqttMessage(topic, payload){
   const m = topic.split("/");
   if(m[0] !== CFG.TOPIC_PREFIX) return;
+  if(m.length === 4 && m[2] === "auth" && m[3] === "res"){ authOnRes(payload.toString()); return; }   // balasan verifikasi password
   if(LOAD.uid && m[1] === LOAD.uid && !state.devices[m[1]]){ loadOnMessage(m, payload.toString()); return; }   // "Load data" di modal tambah device
   const dev = state.devices[m[1]];
   if(!dev) return;
@@ -999,7 +1184,7 @@ function onMqttMessage(topic, payload){
     const v = raw.split("\t");
     if(v.length !== 6) return;
     if(v[0] !== "1" || dev.namesDirty){            // ESP32 belum dikonfigurasi / ada perubahan lokal: dashboard yang mengisi
-      if(!dev.namesSeeded || dev.namesDirty){ dev.namesSeeded = true; dev.namesDirty = false; mqttPublishNames(dev.uid); }
+      if(!dev.namesSeeded || dev.namesDirty){ const pr = !!dev.namesDirty; dev.namesSeeded = true; dev.namesDirty = false; mqttPublishNames(dev.uid, pr); }
       return;
     }
     dev.espNames = v;                               // ESP32 = sumber kebenaran (disimpan agar relay baru dari ESP32 ikut bernama)
@@ -1011,7 +1196,7 @@ function onMqttMessage(topic, payload){
     if(v.length !== 6 || v.some(isNaN)) return;
     const [cfg, d, ...cs] = v;
     if(!cfg || dev.iconsDirty){                     // ESP32 belum dikonfigurasi / ada perubahan lokal: dashboard yang mengisi
-      if(!dev.iconsSeeded || dev.iconsDirty){ dev.iconsSeeded = true; dev.iconsDirty = false; mqttPublishIcons(dev.uid); }
+      if(!dev.iconsSeeded || dev.iconsDirty){ const pr = !!dev.iconsDirty; dev.iconsSeeded = true; dev.iconsDirty = false; mqttPublishIcons(dev.uid, pr); }
       return;
     }
     let changed = false;                            // ESP32 = sumber kebenaran
@@ -1037,6 +1222,7 @@ function onMqttMessage(topic, payload){
   }
   if(m.length === 3 && m[2] === "status"){
     if(val === "ONLINE"){
+      if(devOffline(dev)) PW.delete(dev.uid);        // device sempat offline (mungkin password diganti): verifikasi ulang
       dev.online = true;
       Object.values(dev.channels).forEach(ch=>{ if(ch.status === "OFFLINE") ch.status = "SYNCING"; });
       renderDevice(dev.uid);
@@ -1130,7 +1316,7 @@ function applySettings(){
 }
 /* ============ TEMA (gaya x mode) ============
    Atribut data-style & data-mode di <html> mengganti seluruh set variabel CSS; tidak ada pembangunan ulang DOM. */
-const THEME_STYLES = ["cartoon","flat","neu","wood","nature"], THEME = { style:"cartoon", mode:"auto" };
+const THEME_STYLES = ["cartoon","flat","neu","wood","nature","ocean","sunset","lavender","mono","terminal"], THEME = { style:"cartoon", mode:"auto" };
 const darkMQ = window.matchMedia ? matchMedia("(prefers-color-scheme: dark)") : null;
 function resolvedMode(){ return THEME.mode === "dark" || (THEME.mode === "auto" && darkMQ && darkMQ.matches) ? "dark" : "light"; }
 function loadTheme(){
@@ -1741,12 +1927,14 @@ function loadFinish(){
   updateChCountUI(); renderChEditors();
   showLoadNote(`Data dimuat dari ESP32 (${nums.length} relay). Silakan edit bila perlu, lalu Simpan.`);
 }
-function startLoad(){
+async function startLoad(){
   clearErrs(); $("loadNote").classList.remove("show");
   const uid = $("uidInput").value.trim().toLowerCase();
   if(!uidValid(uid)){ showErr("uidErr", "Isi UID 5 karakter dulu, lalu tekan Load data."); return; }
   if(state.devices[uid]){ showErr("uidErr", `UID "${uid}" sudah dipakai oleh "${state.devices[uid].name}".`); return; }
   if(!M.up){ showErr("uidErr", "MQTT belum terhubung. Tunggu status Terhubung, atau isi manual."); return; }
+  const pw = await requirePw(uid);                   // popup password device; lanjut hanya bila benar
+  if(!pw || !M.up || !$("deviceModal").classList.contains("show") || $("uidInput").value.trim().toLowerCase() !== uid) return;
   loadStop();
   LOAD.uid = uid;
   M.client.subscribe([tp(uid, "names"), tp(uid, "icons")], { qos:1 });
@@ -1804,7 +1992,10 @@ function updateDevIconBtn(){
   b.title = "Ikon device · kode " + state.modalDevIcon;
   b.setAttribute("aria-label", "Ikon device, kode " + state.modalDevIcon);
 }
-function closeModal(){ loadStop(); $("deviceModal").classList.remove("show"); }
+function closeModal(){
+  loadStop(); $("deviceModal").classList.remove("show");
+  AUTHSUB.forEach(u=>{ if(!state.devices[u] && M.up) M.client.unsubscribe(tp(u, "auth/res")); AUTHSUB.delete(u); });
+}
 
 function updateChCountUI(){
   document.querySelectorAll("#chCount button").forEach(btn=>{
@@ -1913,7 +2104,7 @@ function chError(n, msg){
   if(el){ el.classList.add("bad"); el.focus(); }
 }
 
-function submitModal(){
+async function submitModal(){
   clearErrs();
   const editUid = state.editing ? state.editing.uid : null;
   let uid = editUid;
@@ -1976,6 +2167,12 @@ function submitModal(){
     return;
   }
 
+  if(!M.up){ showErr("uidErr", "MQTT belum terhubung. Password device diverifikasi lewat MQTT."); return; }
+  $("modalSave").disabled = true;
+  let pwOk = null;
+  try{ pwOk = await requirePw(uid); } finally{ $("modalSave").disabled = false; }   // simpan manual: wajib password yang cocok
+  if(!pwOk || !$("deviceModal").classList.contains("show")) return;
+  if(state.devices[uid]){ showErr("uidErr", `UID "${uid}" sudah dipakai oleh "${state.devices[uid].name}".`); return; }
   const channels = {};
   state.modalNums.forEach(n=>{
     const cfg = state.modalChConfig[n] || {};
@@ -2212,7 +2409,7 @@ function submitUidChange(){
   bulkFinish(true, true);
   mqttUnsubscribe(old);
   Object.keys(dev.channels).forEach(n=>state.pendingReq.delete(`${old}:${n}`));
-  devSeen.delete(old);
+  devSeen.delete(old); PW.delete(old);
   delete state.devices[old];
   dev.uid = nu; dev.online = undefined; dev.iconsSeeded = false; dev.namesSeeded = false;
   Object.values(dev.channels).forEach(ch=>{ ch.cmdId = ++seq; ch.status = "SYNCING"; ch.confirmed = null; ch.lastSeen = 0; ch.pendingSince = 0; });
@@ -2234,7 +2431,7 @@ function snapDevice(uid){
 function removeDevice(uid){
   const d = state.devices[uid]; if(!d) return;
   Object.keys(d.channels).forEach(n=>state.pendingReq.delete(`${uid}:${n}`));
-  mqttUnsubscribe(uid);
+  mqttUnsubscribe(uid); PW.delete(uid);
   delete state.devices[uid];
   state.order = state.order.filter(u=>u !== uid);
   VIEW.sel.delete(uid);
@@ -2451,6 +2648,12 @@ backdropClose($("uidModal"), closeUidChange);
 $("newUidInput").addEventListener("input", e=>{ e.target.value = e.target.value.toLowerCase().replace(/[^0-9a-z]/g, ""); $("newUidErr").classList.remove("show"); });
 $("newUidInput").addEventListener("keydown", e=>{ if(e.key === "Enter"){ e.preventDefault(); submitUidChange(); } });
 $("confirmNo").onclick = ()=>settleConfirm(false);
+$("pwYes").onclick = submitPw;
+$("pwNo").onclick = cancelPw;
+$("pwInput").addEventListener("keydown", e=>{ if(e.key === "Enter"){ e.preventDefault(); submitPw(); } });
+$("pwInput").addEventListener("input", ()=>$("pwErr").classList.remove("show"));
+$("pwShow").onchange = e=>{ $("pwInput").type = e.target.checked ? "text" : "password"; };
+backdropClose($("pwModal"), cancelPw);
 
 $("clearAllBtn").onclick = async ()=>{
   if(!await askConfirm("Hapus SEMUA device dari dashboard ini?", "Hapus semua")) return;
@@ -2489,6 +2692,7 @@ $("deviceNameInput").addEventListener("input", ()=>$("nameErr").classList.remove
 // Esc menutup lapisan paling atas
 document.addEventListener("keydown", e=>{
   if(e.key !== "Escape") return;
+  if($("pwModal").classList.contains("show")) return cancelPw();
   if($("confirmBg").classList.contains("show")) return settleConfirm(false);
   if($("uidModal").classList.contains("show")) return closeUidChange();
   if($("iconPicker").classList.contains("show")) return closeIconPicker();
