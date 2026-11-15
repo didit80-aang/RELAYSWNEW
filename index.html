@@ -264,6 +264,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-o
 @media (min-width:641px){.list-inner{border-radius:calc(24px*var(--rk))}}
 .list-header{display:flex;align-items:center;gap:12px;padding:18px 18px 14px;border-bottom:var(--b3) solid var(--bc)}
 .list-header h3{flex:1;margin:0;font-size:17px;font-weight:800}
+.list-count{margin-left:6px;font-size:12px;font-weight:700;color:var(--mut)}
 .list-body{flex:1;overflow-y:auto;padding:12px 14px 16px}
 .list-row{padding:12px;margin-bottom:10px;background:var(--card);border:var(--b2) solid var(--bc);border-radius:calc(14px*var(--rk))}
 .list-row-head{display:flex;align-items:center;gap:12px}
@@ -345,6 +346,7 @@ body.bulking .channel-status.pending .status-dot,body.bulking .channel-status.un
 .tb-hint{font-size:12px;line-height:1.5;color:var(--mut);padding:0 2px}
 .nomatch{margin:16px;padding:36px 20px;text-align:center;background:var(--card);border:var(--b3) solid var(--bc);border-radius:calc(20px*var(--rk));box-shadow:var(--s6)}
 .nomatch[hidden]{display:none}
+#grid>.nomatch{grid-column:1/-1;margin:0}   /* di dalam pane: ikut animasi swipe */
 .grip,.sel-box{display:none;place-items:center;flex:none;border:var(--b2) solid var(--bc);cursor:pointer}
 .grip{width:34px;height:42px;color:var(--mut);background:var(--off);border-radius:calc(10px*var(--rk));cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .channel-row .grip{width:28px;height:40px}
@@ -476,6 +478,7 @@ body.dnd,body.dnd *{user-select:none;-webkit-user-select:none;cursor:grabbing!im
 .tp-b{margin-top:7px;height:16px;width:46px;border-radius:calc(7px*var(--rk));background:var(--ok);border:var(--b2) solid var(--bc);box-shadow:var(--s2)}
 [hidden]{display:none!important}
 body{touch-action:pan-y pinch-zoom}
+.brand-sub{flex-wrap:nowrap}.brand-sub>#deviceCount{flex:0 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .g-members .list-ch{padding:6px 8px;min-height:42px}
 .g-nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .g-tg{flex:none;width:56px;height:32px;font-size:11.5px;border-radius:calc(10px*var(--rk));box-shadow:var(--s2)}
@@ -484,11 +487,10 @@ body{touch-action:pan-y pinch-zoom}
 .tab{position:relative;z-index:1;flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:5px;min-height:38px;padding:0 4px;font-size:12.5px;font-weight:800;white-space:nowrap;color:var(--ink);background:transparent;border:var(--b2) solid transparent;border-radius:calc(10px*var(--rk));cursor:pointer}
 .tab b{font-family:var(--mono);font-size:10.5px;padding:0 5px;border:var(--b15) solid var(--bc);border-radius:calc(6px*var(--rk));background:var(--card);color:var(--ink)}
 .tab.act{color:var(--dk)}
-.tab-ind{position:absolute;z-index:0;top:4px;bottom:4px;left:0;width:0;background:var(--blue);border:var(--b2) solid var(--bc);border-radius:calc(10px*var(--rk));box-shadow:var(--s2);pointer-events:none;will-change:transform,width;transition:transform .3s cubic-bezier(.2,.8,.2,1),width .3s cubic-bezier(.2,.8,.2,1)}
+.tab-ind{position:absolute;z-index:0;top:4px;bottom:4px;left:0;width:0;background:var(--blue);border:var(--b2) solid var(--bc);border-radius:calc(10px*var(--rk));box-shadow:var(--s2);pointer-events:none;will-change:transform,width;transition:transform .3s cubic-bezier(.22,1,.36,1),width .3s cubic-bezier(.22,1,.36,1)}
 .tab-ind.noanim{transition:none}
 .sl-r{animation:slr .2s ease-out}.sl-l{animation:sll .2s ease-out}
 @keyframes slr{from{transform:translateX(28px);opacity:0}}@keyframes sll{from{transform:translateX(-28px);opacity:0}}
-.gpane .globalbar{padding:14px var(--gr) 0 var(--gl)}
 .g-members{display:flex;flex-direction:column;gap:5px;padding:12px}
 .g-dev{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--mut)}
 .g-opt{display:flex;align-items:center;gap:10px;padding:8px 10px;margin-bottom:6px;background:var(--off);border:var(--b2) solid var(--bc);border-radius:calc(12px*var(--rk));cursor:pointer}
@@ -496,7 +498,7 @@ body{touch-action:pan-y pinch-zoom}
 .g-opt .g-on{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .gm-dev{padding:8px 2px 6px;font-size:12px;font-weight:800;color:var(--mut)}
 [data-style="neu"] .tabs{box-shadow:var(--sp1)}
-@media (max-width:720px){.tab{min-height:34px;font-size:11.5px}.gpane .globalbar{padding-top:10px}}
+@media (max-width:720px){.tab{min-height:34px;font-size:11.5px}}
 
 /* ---- Jadwal & pemilih waktu ---- */
 .channel-name[data-sch="1"]::after{content:"";display:inline-block;width:9px;height:9px;margin-left:7px;border-radius:50%;background:var(--blue);border:var(--b15) solid var(--bc);vertical-align:middle}
@@ -550,7 +552,7 @@ body{touch-action:pan-y pinch-zoom}
     <div class="brand-mark"><span data-ic="plug" data-size="22"></span></div>
     <div class="brand-text">
       <div class="brand-title">Relay Control</div>
-      <div class="brand-sub"><span class="sim-pill wait" id="mqttPill">Menyambung…</span><span id="deviceCount">0 device</span><span class="fps" id="fpsChip" aria-hidden="true">— FPS</span></div>
+      <div class="brand-sub"><span class="sim-pill wait" id="mqttPill">Menyambung…</span><span class="fps" id="fpsChip" aria-hidden="true">— FPS</span></div>
     </div>
   </div>
   <button class="icon-btn" id="schGlobalBtn" title="Jadwal global" aria-label="Jadwal global"><span data-ic="clock" data-size="22"></span></button>
@@ -571,8 +573,8 @@ body{touch-action:pan-y pinch-zoom}
     <button type="button" class="tab" role="tab" data-t="grp" title="Grup relay">Grup <b id="cntGrp">0</b></button>
   </div>
   <div class="globalbar" id="globalBar" hidden>
-    <button type="button" class="btn btn-ok" id="allOn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ico"><path d="M12 3v9"/><path d="M6.4 6.8a8 8 0 1 0 11.2 0"/></svg> Nyalakan semua</button>
-    <button type="button" class="btn btn-danger" id="allOff"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ico"><path d="M12 3v9"/><path d="M6.4 6.8a8 8 0 1 0 11.2 0"/><path d="M4 4l16 16"/></svg> Matikan semua</button>
+    <button type="button" class="btn btn-ok" id="allOn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ico"><path d="M12 3v9"/><path d="M6.4 6.8a8 8 0 1 0 11.2 0"/></svg><span id="allOnTx">Nyalakan semua</span></button>
+    <button type="button" class="btn btn-danger" id="allOff"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ico"><path d="M12 3v9"/><path d="M6.4 6.8a8 8 0 1 0 11.2 0"/><path d="M4 4l16 16"/></svg><span id="allOffTx">Matikan semua</span></button>
   </div>
   <div class="tb-hint" id="orgHint" hidden></div>
 </div>
@@ -584,12 +586,14 @@ body{touch-action:pan-y pinch-zoom}
   </div>
 </div>
 
-<main class="grid" id="grid"></main>
-<section class="gpane" id="gpane" hidden>
-  <div class="globalbar" id="gGlobal">
-    <button type="button" class="btn btn-ok" id="gAllOn"><span data-ic="power" data-size="18"></span> Semua grup ON</button>
-    <button type="button" class="btn btn-danger" id="gAllOff"><span data-ic="power" data-size="18"></span> Semua grup OFF</button>
+<main class="grid" id="grid">
+  <div class="nomatch" id="noMatch" hidden>
+    <div data-ic="search" data-size="34"></div>
+    <p style="margin:8px 0 14px;font-weight:700">Tidak ada device yang cocok dengan pencarian atau tab ini.</p>
+    <button type="button" class="btn btn-primary" id="noMatchReset">Reset pencarian &amp; filter</button>
   </div>
+</main>
+<section class="gpane" id="gpane" hidden>
   <div class="grid" id="gGrid">
     <div class="empty" id="gEmpty" hidden>
       <div class="empty-icon" data-ic="box" data-size="52"></div>
@@ -599,11 +603,6 @@ body{touch-action:pan-y pinch-zoom}
     </div>
   </div>
 </section>
-<div class="nomatch" id="noMatch" hidden>
-  <div data-ic="search" data-size="34"></div>
-  <p style="margin:8px 0 14px;font-weight:700">Tidak ada device yang cocok dengan pencarian atau tab ini.</p>
-  <button type="button" class="btn btn-primary" id="noMatchReset">Reset pencarian &amp; filter</button>
-</div>
 
 <div class="selbar" id="selBar" hidden>
   <div class="selbar-in">
@@ -623,7 +622,7 @@ body{touch-action:pan-y pinch-zoom}
 <div class="list-panel" id="listPanel">
   <div class="list-inner">
     <div class="list-header">
-      <h3>Daftar Device</h3>
+      <h3>Daftar Device <span class="list-count" id="deviceCount">0 device</span></h3>
       <button class="icon-btn" id="listClose" aria-label="Tutup" style="width:34px;height:34px"><span data-ic="x" data-size="16"></span></button>
     </div>
     <div class="list-body" id="listBody"></div>
@@ -2091,12 +2090,12 @@ function renderGrid(){
 function updateCount(){
   const uids = Object.keys(state.devices), n = uids.length, none = n === 0;
   const gb = $("globalBar"), tb = $("toolbar");
-  const gh = none || VIEW.tab === "grp"; if(gb.hidden !== gh) gb.hidden = gh;
+  if(gb.hidden !== none) gb.hidden = none;   // satu bar yang sama untuk semua tab: posisi tidak pernah berpindah
   if(tb.hidden !== none) tb.hidden = none;
   if(none && VIEW.organize) setOrganize(false);
   let shown = 0;
   if(!none) for(const u of uids){ const c = cardOf(u); if(c && !c.hidden) shown++; }
-  setText($("deviceCount"), none ? "kosong" : shown !== n ? `${shown} dari ${n} device` : n === 1 ? "1 device" : `${n} device`);
+  setText($("deviceCount"), none ? "kosong" : n === 1 ? "1 device" : `${n} device`);
   const nm = $("noMatch"), hide = VIEW.tab === "grp" || !(n > 0 && shown === 0);
   if(nm.hidden !== hide) nm.hidden = hide;
 }
@@ -2699,11 +2698,14 @@ const tabInd = { el:null, raf:0 };
 function tabList(){ return tabEls || (tabEls = [...document.querySelectorAll("#tabs .tab")]); }
 function placeInd(pos, animate){
   const ind = tabInd.el || (tabInd.el = $("tabInd")), ts = tabList();
-  if(!ind || !ts.length || !ts[0].offsetWidth) return;
+  if(!ind || !ts.length) return;
+  // saat drag: pakai geometri yang dibaca sekali di awal (tanpa layout thrashing di tiap touchmove)
+  const G = (tabInd.dragging && tabInd.geo) || ts.map(t=>[t.offsetLeft, t.offsetWidth]);
+  if(!G[0][1]) return;
   pos = Math.max(0, Math.min(ts.length - 1, pos));
   const i = Math.floor(pos), j = Math.min(ts.length - 1, i + 1), f = pos - i;
-  const left = ts[i].offsetLeft + (ts[j].offsetLeft - ts[i].offsetLeft) * f;
-  const w = ts[i].offsetWidth + (ts[j].offsetWidth - ts[i].offsetWidth) * f;
+  const left = G[i][0] + (G[j][0] - G[i][0]) * f;
+  const w = G[i][1] + (G[j][1] - G[i][1]) * f;
   ind.classList.toggle("noanim", !animate);
   ind.style.width = w + "px";
   ind.style.transform = `translate3d(${left}px,0,0)`;
@@ -3026,11 +3028,22 @@ const gMembers = g => g.members.map(k=>{ const [u, n] = k.split(":"), dev = stat
 const gPairs = gs => gs.flatMap(g=>gMembers(g).map(m=>[m.uid, m.n]));
 function gRemap(o, n){ GROUPS.forEach(g=>{ g.members = g.members.map(k=>k.startsWith(o + ":") ? n + k.slice(o.length) : k); }); gSave(); }
 
+function syncBulkBtns(){ const d = VIEW.tab === "grp" && GROUPS.length === 0; ["allOn", "allOff"].forEach(id=>{ const b = $(id); if(b.disabled !== d) b.disabled = d; }); }
 function showPane(){
   const g = VIEW.tab === "grp";
   $("grid").hidden = g; $("gpane").hidden = !g;
+  syncBulkBtns();
+  [["allOnTx", g ? "Semua grup ON" : "Nyalakan semua"], ["allOffTx", g ? "Semua grup OFF" : "Matikan semua"]].forEach(([id, t])=>{ const e = $(id); if(e._k !== t){ e._k = t; e.textContent = t; } });   // _k: hindari tulis ulang (teks bisa sudah diterjemahkan)
   $("viewSearch").placeholder = g ? "Cari grup atau relay…" : "Cari device, UID, atau relay…";
   const f = $("fabAdd"), t = g ? "Tambah grup" : "Tambah device"; f.title = t; f.setAttribute("aria-label", t);
+}
+// Animasi masuk pane lewat Web Animations (transform+opacity di compositor, tanpa paksa reflow). Dipakai tap tab & swipe.
+function slideIn(el, dir, dist, ms){
+  if(!el || !el.animate) return null;
+  el.style.willChange = "transform,opacity";
+  const a = el.animate([{ transform:`translate3d(${dir * dist}px,0,0)`, opacity:0 }, { transform:"translate3d(0,0,0)", opacity:1 }], { duration: ms || 220, easing:"cubic-bezier(.2,.8,.2,1)" });
+  a.onfinish = a.oncancel = () => { el.style.willChange = ""; };
+  return a;
 }
 function setTab(t, quiet){
   if(t === VIEW.tab) return;
@@ -3038,57 +3051,131 @@ function setTab(t, quiet){
   VIEW.tab = t; if(t !== "grp") VIEW.filter = t;
   VIEW.sel.clear(); GSEL.clear(); saveView(); showPane(); applyView();
   if(quiet) return;
-  const el = $(t === "grp" ? "gpane" : "grid");
-  el.classList.remove("sl-l", "sl-r"); void el.offsetWidth; el.classList.add(b > a ? "sl-r" : "sl-l");
+  const el = $(t === "grp" ? "gGrid" : "grid");
+  slideIn(el, b > a ? 1 : -1, 28, 200);
 }
-// Geser kiri/kanan: konten mengikuti jari secara langsung (transform di compositor), lepas melewati ambang/kecepatan -> pindah tab.
+// Geser kiri/kanan ala carousel: konten mengikuti jari (hanya transform di compositor); saat dilepas melewati ambang/kecepatan,
+// konten lama (salinan "hantu") dan konten baru meluncur BERSAMAAN sebagai satu pita -> tanpa jeda kosong / fade.
+// Kerja berat (setTab) selesai SEBELUM animasi dimulai, jadi tidak pernah memotong gerakan. Style ditulis max 1x/frame; tanpa baca layout saat drag.
 (function(){
-  let x0 = 0, y0 = 0, mode = 0, el = null, w = 360, lx = 0, px = 0, pt = 0, vx = 0;
-  const paneOf = () => $(VIEW.tab === "grp" ? "gpane" : "grid");
+  let x0 = 0, y0 = 0, mode = 0, el = null, w = 360, lx = 0, px = 0, pt = 0, vx = 0, rx = 0, fr = 0, back = null, active = null;
+  const paneOf = () => $(VIEW.tab === "grp" ? "gGrid" : "grid");
   const canGo = d => { const i = TABS.indexOf(VIEW.tab) + d; return i >= 0 && i < TABS.length; };
   const reset = n => { n.style.transition = ""; n.style.transform = ""; n.style.opacity = ""; n.style.willChange = ""; };
-  const EASE = "transform .2s cubic-bezier(.2,.8,.2,1),opacity .2s";
+  const EZ = "cubic-bezier(.25,.8,.25,1)";   // ease-out halus
+  const frame = () => {
+    fr = 0;
+    el.style.transform = `translate3d(${rx}px,0,0)`;
+    placeInd(TABS.indexOf(VIEW.tab) - rx / w, false);          // pil tab ikut bergeser bersama jari
+  };
+  const flush = () => { if(fr){ cancelAnimationFrame(fr); frame(); } };
+  // Salinan konten lama yang RINGAN: hanya kartu yang terlihat di layar yang disalin penuh; sisanya diganti penampung kosong
+  // setinggi aslinya (tata letak grid tetap identik). Menyalin ribuan node sekaligus adalah penyebab macet saat jari dilepas.
+  function liteGhost(n){
+    const NEAR = 160, vh = innerHeight;
+    const grid = g => {
+      const c = g.cloneNode(false);
+      for(const k of g.children){
+        if(k.hidden){ c.appendChild(k.cloneNode(false)); continue; }
+        const r = k.getBoundingClientRect();
+        if((r.bottom > -NEAR && r.top < vh + NEAR) || k.matches(".nomatch,.empty")) c.appendChild(k.cloneNode(true));
+        else{ const ph = document.createElement("div"); ph.style.cssText = `height:${r.height}px;order:${k.style.order || 0}`; c.appendChild(ph); }
+      }
+      return c;
+    };
+    const root = n.classList.contains("grid") ? grid(n) : (()=>{ const c = n.cloneNode(false); for(const k of n.children) c.appendChild(k.classList.contains("grid") ? grid(k) : k.cloneNode(true)); return c; })();
+    root.removeAttribute("id"); root.querySelectorAll("[id]").forEach(x=>x.removeAttribute("id"));
+    return root;
+  }
+  // Sentuhan baru selalu menang: animasi yang masih berjalan langsung dituntaskan, tanpa kunci waktu.
+  const settle = () => {
+    if(back){ const b = back; back = null; b.a.onfinish = b.a.oncancel = null; b.a.cancel(); reset(b.n); }
+    if(active){
+      const a = active; active = null;
+      if(a.pending){ a.pending = false; try{ setTab(a.next, true); }finally{ a.n.style.visibility = ""; } }   // tab tetap berpindah, tanpa animasi
+      a.ga.onfinish = a.ga.oncancel = null; a.ga.cancel();
+      if(a.ma){ a.ma.onfinish = a.ma.oncancel = null; a.ma.cancel(); }
+      if(a.ghost.isConnected) a.ghost.remove();
+      if(a.m){ a.m.style.willChange = ""; a.m.style.transform = ""; }
+    }
+  };
+  const abort = () => { if(fr){ cancelAnimationFrame(fr); fr = 0; } };
   addEventListener("touchstart", e=>{
     mode = 0;
+    settle();                                                    // animasi sebelumnya (kembali / pindah tab) dituntaskan seketika
     if(e.touches.length !== 1 || DND || $("toolbar").hidden || document.querySelector(".modal-bg.show,.list-panel.show,.menu-sheet.show,.icon-picker.show")) return;
     if(e.target.closest(".grip,input,select,textarea,.selbar,.toasts")) return;
-    const t = e.touches[0]; x0 = lx = px = t.clientX; y0 = t.clientY; pt = performance.now(); vx = 0; el = paneOf(); w = innerWidth; mode = 1;
+    const t = e.touches[0]; x0 = lx = px = t.clientX; y0 = t.clientY; pt = performance.now(); vx = 0; rx = 0; el = paneOf(); w = innerWidth; mode = 1;
   }, { passive:true });
   addEventListener("touchmove", e=>{
     if(mode < 1 || mode > 2) return;
-    if(e.touches.length !== 1 || DND){ if(mode === 2){ reset(el); tabInd.dragging = false; placeInd(TABS.indexOf(VIEW.tab), true); } mode = 0; return; }
+    if(e.touches.length !== 1 || DND){ if(mode === 2){ abort(); reset(el); tabInd.dragging = false; placeInd(TABS.indexOf(VIEW.tab), true); } mode = 0; return; }
     const t = e.touches[0], dx = t.clientX - x0, dy = t.clientY - y0;
     if(mode === 1){
       if(Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
-      if(Math.abs(dx) > Math.abs(dy) * 1.2){ mode = 2; el.style.transition = "none"; el.style.willChange = "transform,opacity"; }
+      if(Math.abs(dx) > Math.abs(dy) * 1.2){
+        mode = 2;
+        tabInd.geo = tabList().map(b=>[b.offsetLeft, b.offsetWidth]);   // baca geometri tab sekali, sebelum ada tulis style
+        tabInd.dragging = true;
+        el.style.transition = "none"; el.style.willChange = "transform";
+      }
       else{ mode = 3; return; }
     }
     const now = performance.now(); if(now > pt){ vx = (t.clientX - px) / (now - pt); px = t.clientX; pt = now; }
     lx = t.clientX;
-    const r = canGo(dx < 0 ? 1 : -1) ? dx : dx * 0.25;               // di tepi: tahanan karet
-    el.style.transform = `translate3d(${r}px,0,0)`;
-    el.style.opacity = String(1 - Math.min(Math.abs(r) / w, 1) * 0.6);
-    tabInd.dragging = true; placeInd(TABS.indexOf(VIEW.tab) - r / w, false);   // pil tab ikut bergeser bersama jari
+    rx = canGo(dx < 0 ? 1 : -1) ? dx : dx * 0.25;               // di tepi: tahanan karet
+    if(!fr) fr = requestAnimationFrame(frame);                    // batch: maks 1x tulis per frame
   }, { passive:true });
-  function end(){
+  function end(cancelled){
     if(mode !== 2){ mode = 0; return; }
-    mode = 0; tabInd.dragging = false;
-    const dx = lx - x0, dir = dx < 0 ? 1 : -1, n = el;
-    const go = canGo(dir) && (Math.abs(dx) > w * 0.25 || Math.abs(vx) > 0.45);
-    if(!go){ placeInd(TABS.indexOf(VIEW.tab), true); n.style.transition = EASE; n.style.transform = "translate3d(0,0,0)"; n.style.opacity = "1"; setTimeout(()=>reset(n), 230); return; }
-    placeInd(TABS.indexOf(VIEW.tab) + dir, true);     // pil tab meluncur ke tab tujuan selagi konten keluar
-    n.style.transition = "transform .12s ease-in,opacity .12s"; n.style.transform = `translate3d(${-dir * w * 0.5}px,0,0)`; n.style.opacity = "0";
-    setTimeout(()=>{
-      reset(n); setTab(TABS[TABS.indexOf(VIEW.tab) + dir], true);
-      const m = paneOf();
-      m.style.transition = "none"; m.style.transform = `translate3d(${dir * w * 0.3}px,0,0)`; m.style.opacity = "0";
-      void m.offsetWidth;
-      m.style.transition = EASE; m.style.transform = "translate3d(0,0,0)"; m.style.opacity = "1";
-      setTimeout(()=>reset(m), 230);
-    }, 120);
+    mode = 0; flush(); tabInd.dragging = false;
+    const dx = lx - x0, dir = dx < 0 ? 1 : -1, n = el, cur = rx;
+    const v = performance.now() - pt > 100 ? 0 : vx;            // berhenti dulu lalu lepas = bukan lemparan
+    const go = cancelled !== true && canGo(dir) && (Math.abs(dx) > w * 0.25 || Math.abs(v) > 0.45);
+    if(!n.animate){ reset(n); if(go) setTab(TABS[TABS.indexOf(VIEW.tab) + dir], true); else placeInd(TABS.indexOf(VIEW.tab), true); return; }
+    if(!go){                                                      // batal: kembali ke posisi semula
+      placeInd(TABS.indexOf(VIEW.tab), true);
+      n.style.transform = "translate3d(0,0,0)";
+      const RD = 240;
+      const a = n.animate([{ transform:`translate3d(${cur}px,0,0)` }, { transform:"translate3d(0,0,0)" }], { duration:RD, easing:EZ });
+      back = { a, n };
+      a.onfinish = a.oncancel = () => { reset(n); if(back && back.a === a) back = null; };
+      return;
+    }
+    // pindah tab
+    const next = TABS[TABS.indexOf(VIEW.tab) + dir], D = 320;
+    const ez = EZ;
+    placeInd(TABS.indexOf(next), true);                           // pil tab meluncur ke tab tujuan
+    // 1) salinan konten lama menggantikan pane di posisi jari dan LANGSUNG meluncur keluar (di compositor, tetap jalan walau thread utama sibuk)
+    const nr = n.getBoundingClientRect(), sy0 = scrollY;          // posisi yang dilihat pengguna (viewport) & scroll sebelum ganti tab
+    const ghost = liteGhost(n);
+    ghost.hidden = false; ghost.setAttribute("inert", ""); ghost.setAttribute("aria-hidden", "true");
+    ghost.style.cssText = `position:fixed;top:${nr.top}px;left:${nr.left - cur}px;width:${n.offsetWidth}px;margin:0;box-sizing:border-box;pointer-events:none;will-change:transform;transform:translate3d(${-dir * w}px,0,0)`;
+    document.body.appendChild(ghost);                              // di body: tetap terlihat walau pane asal (mis. panel grup) disembunyikan
+    n.style.visibility = "hidden";
+    reset(n);
+    const ga = ghost.animate([{ transform:`translate3d(${cur}px,0,0)` }, { transform:`translate3d(${-dir * w}px,0,0)` }], { duration:D, easing:ez });
+    const st = { ga, ma:null, ghost, m:n, n, next, pending:true };
+    active = st;
+    const rmGhost = () => { if(ghost.isConnected) ghost.remove(); };
+    ga.onfinish = ga.oncancel = rmGhost; setTimeout(rmGhost, D + 400);
+    // 2) kerja berat (ganti tab) dikerjakan setelah frame pertama meluncur; pane baru lalu disinkronkan ke waktu berjalan salinan lama
+    const swap = () => {
+      if(!st.pending) return; st.pending = false;
+      try{ setTab(next, true); }finally{ n.style.visibility = ""; }
+      const m = paneOf(); st.m = m;
+      m.style.willChange = "transform"; m.style.transform = "translate3d(0,0,0)"; m.style.opacity = "";
+      // bila scroll tidak berubah, selaraskan posisi vertikal pane baru dengan yang lama lalu luncurkan ke posisi akhir
+      const dy = Math.abs(scrollY - sy0) < 1 ? Math.max(-120, Math.min(120, nr.top - m.getBoundingClientRect().top)) : 0;
+      const ma = m.animate([{ transform:`translate3d(${cur + dir * w}px,${dy}px,0)` }, { transform:"translate3d(0,0,0)" }], { duration:D, easing:ez });
+      ma.currentTime = ga.startTime == null ? 0 : Math.max(0, Math.min(D, performance.now() - ga.startTime - 4));   // sejajar dengan salinan lama
+      st.ma = ma;
+      ma.onfinish = ma.oncancel = () => { m.style.willChange = ""; m.style.transform = ""; if(active && active.ma === ma) active = null; };
+    };
+    ga.ready.then(swap, swap); setTimeout(swap, 150);
   }
-  addEventListener("touchend", end, { passive:true });
-  addEventListener("touchcancel", end, { passive:true });
+  addEventListener("touchend", ()=>end(false), { passive:true });
+  addEventListener("touchcancel", ()=>end(true), { passive:true });
 })();
 
 const gSig = g => g.name + "|" + g.icon + "|" + gMembers(g).map(m=>m.k + m.ch.status + (m.ch.confirmed ? m.ch.confirmed.state : "") + m.ch.name + m.ch.icon + m.dev.name).join(",");
@@ -3122,7 +3209,7 @@ function renderGroups(){
   });
   const none = GROUPS.length === 0;
   if($("gEmpty").hidden !== !none) $("gEmpty").hidden = !none;
-  $("gGlobal").hidden = none;
+  syncBulkBtns();
 }
 function gUpdateSel(){
   const n = GSEL.size;
@@ -3231,8 +3318,6 @@ $("gGrid").addEventListener("click", e=>{
   if(b){ const a = b.dataset.g; if(a === "menu") openGMenu(g.id); else if(a === "sel") gToggleSel(g.id); else bulkRelays(gMembers(g).map(m=>[m.uid, m.n]), a === "on" ? "ON" : "OFF"); return; }
   if(VIEW.organize && e.target.closest(".device-head") && !e.target.closest(".grip")) gToggleSel(g.id);
 });
-$("gAllOn").onclick = async ()=>{ if(await askConfirm("Nyalakan SEMUA relay di semua grup?", "Nyalakan")) bulkRelays(gPairs(GROUPS), "ON"); };
-$("gAllOff").onclick = ()=>bulkRelays(gPairs(GROUPS), "OFF");
 $("gmList").addEventListener("change", e=>{ const k = e.target.dataset.k; if(!k || !GM) return; if(e.target.checked) GM.sel.add(k); else GM.sel.delete(k); gmCount(); $("gmErr").classList.remove("show"); });
 $("gmIcon").onclick = ()=>openIconPicker({ type:"grp" });
 $("gmSave").onclick = submitGroup;
@@ -3284,8 +3369,11 @@ $("iconPickerClose").onclick = closeIconPicker;
 $("iconSearch").addEventListener("input", renderIconPickerGrid);
 $("listBtn").onclick = openList;
 $("devIconBtn").onclick = ()=>openIconPicker({ type:"dev" });
-$("allOn").onclick  = async ()=>{ if(await askConfirm("Nyalakan SEMUA relay di semua device?", "Nyalakan")) bulkSend(orderedUids(), "ON"); };
-$("allOff").onclick = ()=>bulkSend(orderedUids(), "OFF");
+$("allOn").onclick  = async ()=>{
+  if(VIEW.tab === "grp"){ if(await askConfirm("Nyalakan SEMUA relay di semua grup?", "Nyalakan")) bulkRelays(gPairs(GROUPS), "ON"); return; }
+  if(await askConfirm("Nyalakan SEMUA relay di semua device?", "Nyalakan")) bulkSend(orderedUids(), "ON");
+};
+$("allOff").onclick = ()=>{ if(VIEW.tab === "grp") bulkRelays(gPairs(GROUPS), "OFF"); else bulkSend(orderedUids(), "OFF"); };
 $("listClose").onclick = closeList;
 $("bulkCancel").onclick = ()=>bulkFinish(true);
 $("setBtn").onclick = openSettings;
