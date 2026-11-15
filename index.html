@@ -605,6 +605,21 @@ html,*{scrollbar-width:none;-ms-overflow-style:none}
 *::-webkit-scrollbar{display:none;width:0;height:0;background:transparent}
 /* panel memotong isinya mengikuti sudut membulat */
 .list-inner,.icon-picker-inner{overflow:hidden}
+/* ---- penanda jenis jadwal & daftar jadwal lain ---- */
+.channel-name[data-sch="1"]::after,.device-name[data-sch="1"]::after{background:var(--schc,var(--blue))}
+#schOthers{margin-top:12px}
+.sch-oth-h{margin:0 0 8px;font-size:12px;font-weight:800;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.sch-oth{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;margin-bottom:6px;background:var(--off);border:var(--b2) solid var(--bc);border-radius:calc(10px*var(--rk))}
+.sch-oth.off{opacity:.55}
+.sch-src{flex:none;padding:1px 8px;font-size:11px;font-weight:800;color:var(--dk);border:var(--b15) solid var(--bc);border-radius:calc(8px*var(--rk))}
+.sch-oth-t{flex:none;font:800 13px var(--mono)}
+.sch-oth-s{flex:1;min-width:0;font-size:12px;line-height:1.5;color:var(--mut);word-break:break-word}
+.sch-oth-n{margin:2px 0 10px;font-size:11.5px;color:var(--mut)}
+/* ---- badge jumlah event global & pilih device ---- */
+#schGlobalBtn{position:relative}
+.sch-badge{position:absolute;top:-5px;right:-5px;box-sizing:border-box;min-width:16px;height:16px;padding:0 4px;display:grid;place-items:center;font:800 9.5px/1 var(--mono);font-variant-numeric:tabular-nums;color:var(--dk);background:var(--wn);border:var(--b15) solid var(--bc);border-radius:99px;pointer-events:none}
+.sch-devbtn{margin-top:6px}
+.sch-devbtn .sch-sub{text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 <script>(function(){var d=document.documentElement;try{var t=JSON.parse(localStorage.getItem("relay_theme_v1")||"{}")||{};var st=["cartoon","flat","neu","wood","nature","ocean","sunset","lavender","mono","terminal"].indexOf(t.style)>=0?t.style:"cartoon";var dk=t.mode==="dark"||(t.mode!=="light"&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);d.setAttribute("data-style",st);d.setAttribute("data-mode",dk?"dark":"light")}catch(e){}})();</script>
 <script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
@@ -619,7 +634,7 @@ html,*{scrollbar-width:none;-ms-overflow-style:none}
       <div class="brand-sub"><span class="sim-pill wait" id="mqttPill">Menyambung…</span><span class="fps clk" id="clkChip" aria-hidden="true">--:--<span class="clk-s">:--</span></span><span class="fps" id="fpsChip" aria-hidden="true">— FPS</span></div>
     </div>
   </div>
-  <button class="icon-btn" id="schGlobalBtn" title="Jadwal global" aria-label="Jadwal global"><span data-ic="clock" data-size="22"></span></button>
+  <button class="icon-btn" id="schGlobalBtn" title="Jadwal global" aria-label="Jadwal global"><span data-ic="clock" data-size="22"></span><span class="sch-badge" id="schGBadge" hidden>0</span></button>
   <button class="icon-btn" id="setBtn" title="Pengaturan" aria-label="Pengaturan"><span data-ic="settings" data-size="22"></span></button>
   <button class="icon-btn" id="listBtn" title="Daftar device" aria-label="Daftar device"><span data-ic="list" data-size="22"></span></button>
 </header>
@@ -874,6 +889,7 @@ html,*{scrollbar-width:none;-ms-overflow-style:none}
   <div class="modal">
     <h3 id="schTitle">Jadwal relay</h3>
     <div class="sch-list" id="schList"></div>
+    <div id="schOthers"></div>
     <div class="sch-add"><button type="button" class="btn btn-ghost" id="schAddOn">+ ON</button><button type="button" class="btn btn-ghost" id="schAddOff">+ OFF</button></div>
     <small style="color:var(--mut)">Jadwal disimpan & dijalankan oleh ESP32 (maks. 20 event per device), akurat per detik, dan sinkron di semua HP.</small>
     <div class="modal-actions"><button type="button" class="btn btn-ghost" id="schCancel">Batal</button><button type="button" class="btn btn-primary" id="schSave">Simpan ke ESP32</button></div>
@@ -886,6 +902,15 @@ html,*{scrollbar-width:none;-ms-overflow-style:none}
     <div class="tp-disp" id="tpDisp">06:00:00</div>
     <div class="sch-days" id="tpDays"></div>
     <div class="modal-actions"><button type="button" class="btn btn-ghost" id="tpCancel">Batal</button><button type="button" class="btn btn-primary" id="tpOk">Pilih</button></div>
+  </div>
+</div>
+<div class="modal-bg confirm-bg" id="sdModal" role="dialog" aria-modal="true" aria-labelledby="sdTitle">
+  <div class="modal small">
+    <h3 id="sdTitle">Device untuk event ini</h3>
+    <div class="sch-top" style="margin-bottom:10px"><span id="sdCount"></span><button type="button" class="btn btn-ghost" id="sdAll" style="min-height:34px;padding:0 12px;font-size:12px">Pilih semua</button></div>
+    <div id="sdList" style="max-height:46vh;overflow-y:auto"></div>
+    <div class="field-err" id="sdErr"></div>
+    <div class="modal-actions"><button type="button" class="btn btn-ghost" id="sdCancel">Batal</button><button type="button" class="btn btn-primary" id="sdOk">Pilih</button></div>
   </div>
 </div>
 <div class="menu-sheet" id="menuSheet"><div class="menu-panel" id="menuPanel"></div></div>
@@ -1761,28 +1786,46 @@ const daysTxt = d => d === 127 ? "Setiap hari" : d === 31 ? "Hari kerja" : d ===
 // Jadwal TIDAK memakai password: dikirim polos (ESP32 harus menerima sched/set tanpa tanda tangan)
 function sendPlain(uid, act, body){ if(!M.up) return false; M.client.publish(tp(uid, act), body, { qos:1, retain:false }); return true; }
 
+/* 3 jenis jadwal: Relay (satu relay), Device (semua relay satu device), Global (semua device). Dibedakan dengan warna ikon jam & label. */
+function schGlobalBadge(){                                  // angka kecil di ikon jam header = jumlah event jadwal global
+  const gs = new Set();
+  Object.keys(state.devices).forEach(u=>(SCHED.get(u) || []).forEach(e=>{ if(e.g) gs.add(e.g); }));
+  const b = $("schGBadge"), n = gs.size, t = n > 99 ? "99+" : String(n);
+  if(b.textContent !== t) b.textContent = t;
+  if(b.hidden !== !n) b.hidden = !n;
+  $("schGlobalBtn").title = n ? `Jadwal global (${n} event)` : "Jadwal global";
+}
+const SRC_N = { r:"Relay", d:"Device", g:"Global" }, SRC_C = { r:"var(--blue)", d:"var(--vi)", g:"var(--wn)" };
+const evSrc = e => e.g ? "g" : (e.m & (e.m - 1)) ? "d" : "r";      // g>0 = global; mask >1 relay = device; 1 relay = relay
+function schPaint(nm, srcs){
+  if(!srcs.length){ delete nm.dataset.sch; nm.style.removeProperty("--schc"); nm.removeAttribute("title"); return; }
+  const n = srcs.length, g = n === 1 ? SRC_C[srcs[0]] : "linear-gradient(90deg," + srcs.map((x, i)=>`${SRC_C[x]} ${i * 100 / n}% ${(i + 1) * 100 / n}%`).join(",") + ")";
+  nm.dataset.sch = "1"; nm.style.setProperty("--schc", g);
+  nm.title = "Jadwal aktif: " + srcs.map(x=>SRC_N[x]).join(" + ");
+}
 function schMark(uid, n, row){
   const rows = row ? [row] : [...document.querySelectorAll(`.device-card[data-uid="${uid}"] [data-ch]`)], L = SCHED.get(uid) || [];
   rows.forEach(r=>{ const k = +r.dataset.ch, nm = r.querySelector(".channel-name"); if(!nm) return;
-    if(L.some(e=>e.a && (e.m >> (k-1) & 1))) nm.dataset.sch = "1"; else delete nm.dataset.sch; });
-  if(!row) schMarkDev(cardOf(uid), state.devices[uid]);
+    schPaint(nm, ["r","d","g"].filter(x=>L.some(e=>e.a && (e.m >> (k-1) & 1) && evSrc(e) === x))); });
+  if(!row){ schMarkDev(cardOf(uid), state.devices[uid]); schGlobalBadge(); }
 }
 // Ikon jam di judul device: ada event aktif yang mencakup SEMUA relay device (jadwal device / global); hanya untuk device >1 relay
 function schMarkDev(card, dev){
   if(!card || !dev) return;
   const nm = card.querySelector(".device-name"); if(!nm) return;
   const am = allMask(dev), multi = Object.keys(dev.channels).length > 1;
-  if(multi && (SCHED.get(dev.uid) || []).some(e=>e.a && (e.m & am) === am)) nm.dataset.sch = "1"; else delete nm.dataset.sch;
+  const Ld = multi ? (SCHED.get(dev.uid) || []).filter(e=>e.a && (e.m & am) === am) : [];
+  schPaint(nm, ["r","d","g"].filter(x=>Ld.some(e=>evSrc(e) === x)));
 }
 function schScope(sc){
-  if(sc.scope === "global"){ const seen = new Map(); SCHED.forEach(L=>L.forEach(e=>{ if(e.g && !seen.has(e.g)) seen.set(e.g, { ...e }); })); return [...seen.values()]; }
+  if(sc.scope === "global"){ const seen = new Map(); Object.keys(state.devices).forEach(u=>(SCHED.get(u) || []).forEach(e=>{ if(!e.g) return; let x = seen.get(e.g); if(!x){ x = { ...e, devs:new Set() }; seen.set(e.g, x); } x.devs.add(u); })); return [...seen.values()]; }
   const dev = state.devices[sc.uid], L = SCHED.get(sc.uid) || [];
   if(sc.scope === "device") return L.filter(e=>isDevEv(e, dev)).map(e=>({ ...e }));
   return L.filter(e=>!e.g && e.m === 1 << (sc.n-1)).map(e=>({ ...e }));
 }
 function schCompose(sc, uid){
   const cur = SCHED.get(uid) || [], dev = state.devices[uid], am = allMask(dev);
-  if(sc.scope === "global") return cur.filter(e=>!e.g).concat(sc.ev.map(e=>({ ...e, m:am })));
+  if(sc.scope === "global") return cur.filter(e=>!e.g).concat(sc.ev.filter(e=>e.devs && e.devs.has(uid)).map(e=>({ ...e, m:am })));
   if(sc.scope === "device") return cur.filter(e=>!isDevEv(e, dev)).concat(sc.ev.map(e=>({ ...e, g:0, m:am })));
   const bit = 1 << (sc.n-1);
   return cur.filter(e=>e.g || e.m !== bit).concat(sc.ev.map(e=>({ ...e, g:0, m:bit })));
@@ -1798,7 +1841,7 @@ function schOnMsg(uid, raw){
     }
     return;
   }
-  if(!SCH.dirty){ SCH.ev = schScope(SCH); renderSched(); }
+  if(!SCH.dirty){ SCH.ev = schScope(SCH); renderSched(); } else renderSchOthers();
 }
 function resetSaveBtn(){ const b = $("schSave"); b.disabled = false; b.textContent = "Simpan ke ESP32"; }
 function openSched(scope, uid, n){
@@ -1812,15 +1855,38 @@ function openSched(scope, uid, n){
   resetSaveBtn(); renderSched(); $("schedModal").classList.add("show");
   if(M.up) Object.keys(state.devices).forEach(u=>M.client.publish(tp(u, "sched/get"), "1", { qos:0 }));
 }
-function closeSched(){ if(SCH) clearTimeout(SCH.tm); SCH = null; closeTp(); $("schedModal").classList.remove("show"); resetSaveBtn(); }
+function closeSched(){ if(SCH) clearTimeout(SCH.tm); SCH = null; closeTp(); closeSd(); $("schedModal").classList.remove("show"); resetSaveBtn(); }
+// Jadwal dari jenis lain yang juga mengatur relay/device ini (hanya baca) -> menjelaskan kenapa ikon jam menyala
+function renderSchOthers(){
+  const box = $("schOthers"); if(!box) return;
+  if(!SCH || SCH.scope === "global"){ box.innerHTML = ""; return; }
+  const dev = state.devices[SCH.uid], L = SCHED.get(SCH.uid) || [], bit = SCH.scope === "relay" ? 1 << (SCH.n - 1) : 0;
+  const own = SCH.scope === "relay" ? e=>!e.g && e.m === bit : e=>isDevEv(e, dev);
+  const oth = L.filter(e=>!own(e) && (SCH.scope === "device" || (e.m & bit)));
+  if(!oth.length){ box.innerHTML = ""; return; }
+  const hint = { g:"Jadwal Global diubah lewat ikon jam di header.", d:"Jadwal Device diubah lewat menu ⋯ device › Jadwal device.", r:"Jadwal Relay diubah lewat menu ⋯ relay › Jadwal relay." };
+  const rl = e=>SCH.scope === "device" && evSrc(e) === "r" ? " · " + escapeHtml(Object.keys(dev.channels).filter(n=>e.m >> (n-1) & 1).map(n=>dev.channels[n].name).join(", ")) : "";
+  let h = `<div class="sch-oth-h">Jadwal lain yang juga berlaku di ${SCH.scope === "relay" ? "relay" : "device"} ini</div>`;
+  ["g","d","r"].forEach(x=>{
+    const g = oth.filter(e=>evSrc(e) === x); if(!g.length) return;
+    h += g.map(e=>`<div class="sch-oth${e.a ? "" : " off"}"><span class="sch-src" style="background:${SRC_C[x]}">${SRC_N[x]}</span><span class="sch-oth-t">${e.t ? "ON" : "OFF"} ${secStr(e.sec)}</span><span class="sch-oth-s">${escapeHtml(e.name || "")}${rl(e)}<br>${daysTxt(e.d)}${e.a ? "" : " · Nonaktif"}</span></div>`).join("") + `<div class="sch-oth-n">${hint[x]}</div>`;
+  });
+  box.innerHTML = h;
+}
+function schDevBtn(e){
+  const all = Object.keys(state.devices), sel = all.filter(u=>e.devs && e.devs.has(u));
+  const txt = sel.length === all.length ? `Semua device (${all.length})` : `${sel.length}/${all.length} device · ` + sel.map(u=>state.devices[u].name).join(", ");
+  return `<button type="button" class="sch-body sch-devbtn" data-a="devs" aria-label="Pilih device untuk event ini">${ic("plug", 16)}<span class="sch-sub">${escapeHtml(txt)}</span>${ic("edit", 16)}</button>`;
+}
 function renderSched(){
   if(!SCH) return;
   $("schList").innerHTML = SCH.ev.length ? SCH.ev.map((e, i)=>`<div class="sch-ev${e.a ? "" : " off"}" data-i="${i}">
     <div class="sch-ev-h"><span class="sch-tag t${e.t}">${e.t ? "ON" : "OFF"}</span><input class="sch-name" data-a="name" maxlength="20" placeholder="Nama jadwal" value="${escapeHtml(e.name)}" aria-label="Nama jadwal">
     <button type="button" class="sw${e.a ? " on" : ""}" role="switch" aria-checked="${!!e.a}" aria-label="Aktifkan jadwal" title="${e.a ? "Aktif" : "Nonaktif"}" data-a="act"></button><button type="button" class="sch-ic" data-a="del" aria-label="Hapus">${ic("trash", 18)}</button></div>
-    <button type="button" class="sch-body" data-a="edit" aria-label="Ubah waktu dan hari"><span class="sch-time2">${secStr(e.sec)}</span><span class="sch-sub">${daysTxt(e.d)}${e.a ? "" : " · Nonaktif"}</span>${ic("edit", 16)}</button></div>`).join("")
+    <button type="button" class="sch-body" data-a="edit" aria-label="Ubah waktu dan hari"><span class="sch-time2">${secStr(e.sec)}</span><span class="sch-sub">${daysTxt(e.d)}${e.a ? "" : " · Nonaktif"}</span>${ic("edit", 16)}</button>${SCH.scope === "global" ? schDevBtn(e) : ""}</div>`).join("")
     : '<div class="sch-empty">Belum ada event. Tambahkan ON atau OFF.</div>';
   $("schAddOn").disabled = $("schAddOff").disabled = SCH.ev.length >= SCH_MAX;
+  renderSchOthers();
 }
 // Nama bawaan: "ON event1", "OFF event2", ... sesuai urutan penambahan
 function schDefName(t){
@@ -1834,7 +1900,7 @@ function schAdd(t){
   SCH.dirty = true;
   openTp(t ? 21600 : 79200, 127, (sec, d)=>{
     if(!SCH || SCH.ev.length >= SCH_MAX) return;
-    SCH.ev.push({ id:0, t, sec, d, a:1, m:SCH.scope === "relay" ? 1 << (SCH.n-1) : 15, g:SCH.scope === "global" ? 1 + (Math.random() * 99998 | 0) : 0, name:schDefName(t) });
+    SCH.ev.push({ id:0, t, sec, d, a:1, m:SCH.scope === "relay" ? 1 << (SCH.n-1) : 15, g:SCH.scope === "global" ? 1 + (Math.random() * 99998 | 0) : 0, name:schDefName(t), devs:SCH.scope === "global" ? new Set(Object.keys(state.devices)) : null });
     renderSched(); const l = $("schList"); l.scrollTop = l.scrollHeight;
   }, t ? "Waktu ON" : "Waktu OFF");
 }
@@ -1845,6 +1911,7 @@ $("schList").addEventListener("input", e=>{ const c = e.target.closest(".sch-ev"
 $("schList").onclick = async e=>{
   const b = e.target.closest("[data-a]"), card = e.target.closest(".sch-ev"); if(!b || !card || !SCH || SCH.wait || b.dataset.a === "name") return;
   const i = +card.dataset.i, ev = SCH.ev[i], a = b.dataset.a;
+  if(a === "devs"){ openSd(ev); return; }
   if(a === "edit"){
     SCH.dirty = true;
     openTp(ev.sec, ev.d, (sec, d)=>{ if(!SCH) return; ev.sec = sec; ev.d = d; renderSched(); }, ev.t ? "Waktu ON" : "Waktu OFF");
@@ -1876,6 +1943,30 @@ $("schSave").onclick = ()=>{
     toast(cur.scope === "global" ? "Tidak ada balasan dari: " + miss.join(", ") : "ESP32 tidak membalas, jadwal belum tersimpan", "err");
   }, 8000);
 };
+/* ---- pilih device per event jadwal global (dengan tombol Pilih semua) ---- */
+let SD = null;
+function sdSync(){
+  const n = Object.keys(state.devices).length;
+  $("sdCount").textContent = `${SD.sel.size} / ${n} device`;
+  $("sdAll").textContent = SD.sel.size === n ? "Kosongkan" : "Pilih semua";
+}
+function sdRender(){
+  $("sdList").innerHTML = orderedUids().map(u=>{ const d = state.devices[u]; return `<label class="g-opt"><input type="checkbox" data-u="${u}"${SD.sel.has(u) ? " checked" : ""}><span>${iconOf(d.icon)}</span><span class="g-on">${escapeHtml(d.name)}</span><small class="g-dev">${u}</small></label>`; }).join("");
+  sdSync();
+}
+function openSd(ev){ SD = { ev, sel:new Set([...(ev.devs || [])].filter(u=>state.devices[u])) }; $("sdErr").classList.remove("show"); sdRender(); $("sdModal").classList.add("show"); }
+function closeSd(){ SD = null; $("sdModal").classList.remove("show"); }
+$("sdList").addEventListener("change", e=>{ const u = e.target.dataset.u; if(!u || !SD) return; if(e.target.checked) SD.sel.add(u); else SD.sel.delete(u); $("sdErr").classList.remove("show"); sdSync(); });
+$("sdAll").onclick = ()=>{ if(!SD) return; const all = Object.keys(state.devices); SD.sel = SD.sel.size === all.length ? new Set() : new Set(all); sdRender(); };
+$("sdCancel").onclick = closeSd;
+$("sdOk").onclick = ()=>{
+  if(!SD) return;
+  if(!SD.sel.size){ $("sdErr").textContent = "Pilih minimal 1 device."; $("sdErr").classList.add("show"); return; }
+  const cur = SD; closeSd();
+  if(!SCH || SCH.wait || !SCH.ev.includes(cur.ev)) return;
+  cur.ev.devs = cur.sel; SCH.dirty = true; renderSched();
+};
+backdropClose($("sdModal"), closeSd);
 /* ---- pemilih waktu: roda jam : menit : detik (scroll tak terbatas) + pilihan hari ----
    Daftar angka diulang 7x; saat berhenti menggulir, posisi dipindah diam-diam ke salinan tengah (isinya identik) sehingga tak pernah mentok. */
 let TP = null;
@@ -2394,6 +2485,7 @@ function renderGrid(){
 
 function updateCount(){
   const uids = Object.keys(state.devices), n = uids.length, none = n === 0;
+  schGlobalBadge();
   const gb = $("globalBar"), tb = $("toolbar");
   if(gb.hidden !== none) gb.hidden = none;   // satu bar yang sama untuk semua tab: posisi tidak pernah berpindah
   if(tb.hidden !== none) tb.hidden = none;
@@ -3740,6 +3832,7 @@ $("deviceNameInput").addEventListener("input", ()=>$("nameErr").classList.remove
 // Esc menutup lapisan paling atas
 document.addEventListener("keydown", e=>{
   if(e.key !== "Escape") return;
+  if($("sdModal").classList.contains("show")) return closeSd();
   if($("pwModal").classList.contains("show")) return cancelPw();
   if($("confirmBg").classList.contains("show")) return settleConfirm(false);
   if($("uidModal").classList.contains("show")) return closeUidChange();
