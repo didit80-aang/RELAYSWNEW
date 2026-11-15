@@ -325,6 +325,8 @@ body.bulking .channel-status.pending .status-dot,body.bulking .channel-status.un
 @media (max-width:640px){.bulkbar{padding:12px 14px 0}}
 .fps{flex:none;display:inline-block;width:56px;padding:0 6px;text-align:center;font:800 10px/1.6 var(--mono);color:var(--dk);background:var(--ok);border:var(--b2) solid var(--bc);border-radius:calc(8px*var(--rk));box-shadow:var(--s2);font-variant-numeric:tabular-nums;contain:layout paint;pointer-events:none}
 .fps[hidden]{display:none}
+.fps.clk{width:auto;min-width:56px;background:var(--card);color:var(--ink)}
+@media (max-width:400px){.clk-s{display:none}.fps.clk{min-width:0}}   /* layar sempit: HH:MM saja agar baris tidak melebar */
 .fps[data-lvl="wn"]{background:var(--wn)}
 .fps[data-lvl="er"]{background:var(--er)}
 .btn:disabled{opacity:.4;pointer-events:none}
@@ -541,6 +543,50 @@ body{touch-action:pan-y pinch-zoom}
 [data-style="neu"] .sch-ev{box-shadow:var(--s3)}
 [data-style="neu"] .sw::after{box-shadow:var(--s2)}
 [data-style="neu"] .sw.on{box-shadow:var(--sp1)}
+/* ---- ringkas: pill status header (Terhubung / jam / FPS) seragam, tab & spacing mobile (nilai diatur di Pengaturan > Ukuran tampilan) ---- */
+.brand-sub .sim-pill,.brand-sub .fps{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;width:auto;min-width:0;height:18px;padding:0 7px;font:800 10px/1 var(--font);font-variant-numeric:tabular-nums;white-space:nowrap;border-width:var(--b2);border-radius:99px;box-shadow:none}
+.brand-sub .fps.clk{min-width:0}
+.brand-sub .clk-s{display:inline}
+.brand-sub{flex-wrap:nowrap;gap:4px}
+/* berlaku di semua lebar layar, langsung mengikuti slider */
+  .brand-sub .sim-pill,.brand-sub .fps{height:var(--u-ph,16px);padding:0 var(--u-ppx,5px);font-size:var(--u-pfs,9px);border-width:var(--b15)}
+  .brand-sub{gap:var(--u-pgap,3px);margin-top:0}
+  .topbar{gap:var(--u-topgap,6px);padding-top:calc(var(--u-toppy,6px) + var(--safe-top));padding-bottom:var(--u-toppy,6px)}
+  .brand{gap:7px}
+  .brand-mark{width:var(--u-mark,32px);height:var(--u-mark,32px)}
+  .brand-mark svg{width:18px;height:18px}
+  .brand-title{font-size:var(--u-ttlfs,14px);line-height:1.2}
+  .icon-btn,.device-menu-btn{width:var(--u-ib,34px);height:var(--u-ib,34px)}
+  .icon-btn svg,.device-menu-btn svg{width:18px;height:18px}
+  .toolbar{padding-top:var(--u-tbpt,8px);gap:var(--u-tbgap,6px)}
+  .tb-row{gap:6px}
+  .tb-search,.tb-search.icon-search{min-height:var(--u-sh,34px);padding-block:5px;padding-inline:10px}
+  .tb-org{min-height:var(--u-oh,34px);padding:0 10px}
+  .tabs{padding:var(--u-tp,2px);gap:2px}
+  .tab{min-height:var(--u-th,26px);padding:0 3px;gap:4px;font-size:var(--u-tfs,11.5px);border-radius:calc(8px*var(--rk))}
+  .tab b{padding:0 4px;font-size:var(--u-bfs,9.5px);line-height:1.35;border-radius:calc(5px*var(--rk))}
+  .tab-ind{top:var(--u-tp,2px);bottom:var(--u-tp,2px);border-radius:calc(8px*var(--rk))}
+  .globalbar{gap:8px}
+  .globalbar .btn{min-height:var(--u-gh,34px);padding:0 8px;font-size:var(--u-gfs,12px)}
+  .bulkbar{padding-top:6px}
+  .grid{gap:var(--u-gg,10px);padding-top:var(--u-gpt,8px);padding-bottom:8px}
+  .device-head{padding:var(--u-hpy,7px) 9px;gap:8px}
+  .device-icon{width:34px;height:34px;font-size:17px}
+  .channels{gap:var(--u-cg,6px);padding:8px}
+  .channel-row{min-height:var(--u-rh,50px);padding:5px 7px;gap:7px}
+  .channel-icon{width:32px;height:32px;font-size:16px}
+  .ch-toggle{width:58px;height:var(--u-tgh,36px)}
+  .ch-btn{width:32px;height:32px}
+  .device-foot{gap:6px;padding:0 8px 8px}
+  .fbtn{min-height:var(--u-fh,30px)}
+/* slider ukuran di Pengaturan */
+.uz{display:grid;grid-template-columns:1fr auto;gap:0 8px;padding:4px 0;font-size:13px;font-weight:700}
+.uz output{font:800 12px var(--mono);color:var(--mut)}
+.uz input{grid-column:1/3;width:100%;margin:4px 0 0;accent-color:var(--blue)}
+.uz-h{margin:12px 0 2px;font-size:11px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--mut)}
+#uiDet>summary{cursor:pointer;font-weight:800;padding:6px 0}
+.list-panel.peek{background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.list-panel.peek .list-inner{opacity:.14}
 </style>
 <script>(function(){var d=document.documentElement;try{var t=JSON.parse(localStorage.getItem("relay_theme_v1")||"{}")||{};var st=["cartoon","flat","neu","wood","nature","ocean","sunset","lavender","mono","terminal"].indexOf(t.style)>=0?t.style:"cartoon";var dk=t.mode==="dark"||(t.mode!=="light"&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);d.setAttribute("data-style",st);d.setAttribute("data-mode",dk?"dark":"light")}catch(e){}})();</script>
 <script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
@@ -552,7 +598,7 @@ body{touch-action:pan-y pinch-zoom}
     <div class="brand-mark"><span data-ic="plug" data-size="22"></span></div>
     <div class="brand-text">
       <div class="brand-title">Relay Control</div>
-      <div class="brand-sub"><span class="sim-pill wait" id="mqttPill">Menyambung…</span><span class="fps" id="fpsChip" aria-hidden="true">— FPS</span></div>
+      <div class="brand-sub"><span class="sim-pill wait" id="mqttPill">Menyambung…</span><span class="fps clk" id="clkChip" aria-hidden="true">--:--<span class="clk-s">:--</span></span><span class="fps" id="fpsChip" aria-hidden="true">— FPS</span></div>
     </div>
   </div>
   <button class="icon-btn" id="schGlobalBtn" title="Jadwal global" aria-label="Jadwal global"><span data-ic="clock" data-size="22"></span></button>
@@ -669,6 +715,17 @@ body{touch-action:pan-y pinch-zoom}
       <div class="set-row">
         <div class="set-info"><div class="set-name">Bahasa</div><small>Bahasa tampilan dashboard.</small></div>
         <div style="display:flex;gap:6px"><button type="button" class="btn" data-lang="id" style="min-height:38px;padding:0 14px">ID</button><button type="button" class="btn" data-lang="en" style="min-height:38px;padding:0 14px">EN</button></div>
+      </div>
+      <div class="set-block">
+        <div class="set-name">Ukuran tampilan</div>
+        <small style="display:block;margin-bottom:6px;font-size:12px;line-height:1.5;color:var(--mut)">Langsung diterapkan saat slider digeser, di semua ukuran layar. Panel memudar agar hasilnya terlihat di belakang.</small>
+        <details id="uiDet"><summary>Atur ukuran (px)</summary>
+          <div id="uiSizes"></div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button type="button" class="btn" id="uiRapat" style="flex:1;min-height:38px">Rapat</button>
+            <button type="button" class="btn" id="uiAwal" style="flex:1;min-height:38px">Awal</button>
+          </div>
+        </details>
       </div>
       <div class="set-note">Pengaturan tersimpan otomatis di browser ini.</div>
     </div>
@@ -1436,6 +1493,51 @@ function applySettings(){
     b.setAttribute("aria-checked", String(on));
   });
 }
+
+/* ============ UKURAN TAMPILAN (slider di Pengaturan) ============
+   Tiap kunci k menjadi variabel CSS --u-k (px) yang dipakai blok "ringkas" di <style>. [kunci, label, min, max, step, "Rapat", "Awal"] */
+(function(){
+  const UI_KEY = "relay_ui_sizes_v1";
+  const DEF = [
+    ["Pill status (Terhubung · jam · FPS)", [["ph","Tinggi pill",12,26,1,16,20],["pfs","Ukuran font (sama untuk ketiganya)",7,13,.5,9,10],["ppx","Padding kiri-kanan pill",2,12,1,5,8],["pgap","Jarak antar pill",1,10,1,3,6]]],
+    ["Header", [["toppy","Padding atas-bawah header",2,16,1,6,8],["topgap","Jarak antar elemen header",2,14,1,6,10],["mark","Ukuran logo",24,44,1,32,34],["ttlfs","Font judul",12,20,.5,14,15],["ib","Ukuran tombol ikon",28,44,1,34,38]]],
+    ["Toolbar", [["tbpt","Jarak header ke pencarian",2,16,1,8,10],["tbgap","Jarak antar baris toolbar",2,14,1,6,8],["sh","Tinggi kolom cari",28,46,1,34,38],["oh","Tinggi tombol Atur",28,46,1,34,38]]],
+    ["Tab", [["th","Tinggi tab",20,40,1,26,32],["tfs","Font tab",9,14,.5,11.5,12],["bfs","Font angka badge",8,12,.5,9.5,10.5],["tp","Padding wadah tab",0,6,1,2,3]]],
+    ["Tombol Nyalakan / Matikan semua", [["gh","Tinggi tombol",28,48,1,34,38],["gfs","Font tombol",10,15,.5,12,12.5]]],
+    ["Daftar device", [["gpt","Jarak toolbar ke kartu",2,20,1,8,12],["gg","Jarak antar kartu",4,20,1,10,12],["hpy","Padding kepala kartu",3,14,1,7,9],["cg","Jarak antar relay",2,14,1,6,8],["rh","Tinggi baris relay",40,64,1,50,56],["tgh","Tinggi tombol ON/OFF",28,46,1,36,40],["fh","Tinggi Semua ON/OFF",24,40,1,30,34]]]
+  ];
+  const box = document.getElementById("uiSizes"), panel = document.getElementById("setPanel");
+  if(!box) return;
+  const S = {}, ins = {}, outs = {}, meta = {};
+  DEF.forEach(g=>g[1].forEach(r=>{ S[r[0]] = r[5]; meta[r[0]] = r; }));
+  try{
+    const o = JSON.parse(localStorage.getItem(UI_KEY) || "{}") || {};
+    Object.keys(S).forEach(k=>{ const n = Number(o[k]); if(o[k] != null && o[k] !== "" && isFinite(n)) S[k] = Math.min(meta[k][3], Math.max(meta[k][2], n)); });
+  }catch(e){}
+  function apply(sync){
+    const st = document.documentElement.style;
+    Object.keys(S).forEach(k=>{ st.setProperty("--u-" + k, S[k] + "px"); outs[k].textContent = S[k]; ins[k].value = S[k]; });
+    try{ localStorage.setItem(UI_KEY, JSON.stringify(S)); }catch(e){}
+    if(sync) try{ syncIndSoon(); }catch(e){}
+  }
+  DEF.forEach(g=>{
+    const h = document.createElement("div"); h.className = "uz-h"; h.textContent = g[0]; box.appendChild(h);
+    g[1].forEach(r=>{
+      const l = document.createElement("label"); l.className = "uz";
+      l.innerHTML = "<span>" + r[1] + "</span><output></output><input type=\"range\" min=\"" + r[2] + "\" max=\"" + r[3] + "\" step=\"" + r[4] + "\">";
+      const i = l.querySelector("input"); ins[r[0]] = i; outs[r[0]] = l.querySelector("output");
+      i.addEventListener("input", ()=>{ S[r[0]] = Number(i.value); apply(true); });
+      i.addEventListener("pointerdown", ()=>panel.classList.add("peek"));
+      box.appendChild(l);
+    });
+  });
+  const unpeek = ()=>panel.classList.remove("peek");
+  ["pointerup","pointercancel","touchend","touchcancel","blur"].forEach(ev=>window.addEventListener(ev, unpeek, true));
+  const preset = i=>{ Object.keys(S).forEach(k=>{ S[k] = meta[k][5 + i]; }); apply(true); };
+  document.getElementById("uiRapat").onclick = ()=>preset(0);
+  document.getElementById("uiAwal").onclick = ()=>preset(1);
+  apply(false);
+})();
 
 /* ============ TEMA (gaya x mode) ============
    Atribut data-style & data-mode di <html> mengganti seluruh set variabel CSS; tidak ada pembangunan ulang DOM. */
@@ -3484,6 +3586,23 @@ addEventListener("pagehide", ()=>{ if(persistPending) persistNow(); });
     requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);
+})();
+
+/* ============ JAM ============
+   Jam perangkat ini (HP/PC). Satu timer yang disejajarkan ke pergantian detik; berhenti saat tab di latar; DOM ditulis hanya bila teks berubah. */
+(function(){
+  const el = $("clkChip"), hm = el.firstChild, sec = el.lastChild;
+  let tm = 0, lastHM = "";
+  const p2 = n => (n < 10 ? "0" : "") + n;
+  function tick(){
+    tm = 0;
+    const d = new Date(), h = p2(d.getHours()) + ":" + p2(d.getMinutes());
+    if(h !== lastHM){ lastHM = h; hm.data = h; el.title = d.toLocaleDateString(undefined, { weekday:"long", day:"numeric", month:"long", year:"numeric" }); }
+    const s = ":" + p2(d.getSeconds()); if(sec.textContent !== s) sec.textContent = s;
+    if(!document.hidden) tm = setTimeout(tick, 1000 - d.getMilliseconds() + 5);
+  }
+  document.addEventListener("visibilitychange", ()=>{ if(!document.hidden && !tm) tick(); });
+  tick();
 })();
 
 function boot(){
