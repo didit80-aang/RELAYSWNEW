@@ -497,6 +497,48 @@ body{touch-action:pan-y pinch-zoom}
 .gm-dev{padding:8px 2px 6px;font-size:12px;font-weight:800;color:var(--mut)}
 [data-style="neu"] .tabs{box-shadow:var(--sp1)}
 @media (max-width:720px){.tab{min-height:34px;font-size:11.5px}.gpane .globalbar{padding-top:10px}}
+
+/* ---- Jadwal & pemilih waktu ---- */
+.channel-name[data-sch="1"]::after{content:"";display:inline-block;width:9px;height:9px;margin-left:7px;border-radius:50%;background:var(--blue);border:var(--b15) solid var(--bc);vertical-align:middle}
+.sch-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;margin-bottom:12px;background:var(--off);border:var(--b2) solid var(--bc);border-radius:calc(14px*var(--rk));font-weight:800;font-size:13px}
+.sch-add{display:flex;gap:10px;margin:12px 0}.sch-add .btn{flex:1;min-height:42px}
+.sch-list{display:flex;flex-direction:column;gap:10px;max-height:46vh;overflow-y:auto}
+.sch-ev{padding:10px 12px;background:var(--card);border:var(--b2) solid var(--bc);border-radius:calc(14px*var(--rk))}.sch-ev.off .sch-body,.sch-ev.off .sch-name{opacity:.5}
+.sch-ev-h{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.sch-tag{padding:2px 10px;font-size:11px;font-weight:800;color:var(--dk);border:var(--b15) solid var(--bc);border-radius:calc(8px*var(--rk));background:var(--ok)}.sch-tag.t0{background:var(--er)}
+.sch-time{flex:1;min-height:40px;font-family:var(--mono);font-size:18px;font-weight:800;background:var(--off);color:var(--ink);border:var(--b2) solid var(--bc);border-radius:calc(10px*var(--rk));cursor:pointer}
+.sch-days{display:flex;gap:4px}.sch-day{flex:1;min-height:32px;font-size:10.5px;font-weight:800;background:var(--card);color:var(--mut);border:var(--b15) solid var(--bc);border-radius:calc(8px*var(--rk));cursor:pointer}.sch-day.sel{background:var(--blue);color:var(--dk)}
+.sch-ic{width:36px;height:36px;display:grid;place-items:center;background:var(--card);color:var(--ink);border:var(--b2) solid var(--bc);border-radius:calc(10px*var(--rk));cursor:pointer}.sch-ic.on{background:var(--ok);color:var(--dk)}
+.sch-empty{padding:18px;text-align:center;font-size:13px;color:var(--mut)}
+.wheels{display:flex;align-items:center;justify-content:center;gap:10px;margin:6px 0 12px}
+.wheel{position:relative;width:92px;height:200px;overflow:hidden;background:var(--off);border:var(--b2) solid var(--bc);border-radius:calc(14px*var(--rk))}
+.wheel::after{content:"";position:absolute;left:6px;right:6px;top:75px;height:50px;border:var(--b2) solid var(--blue);border-radius:calc(10px*var(--rk));pointer-events:none}
+.wheel-sc{height:100%;overflow-y:scroll;scroll-snap-type:y mandatory;padding:75px 0;scrollbar-width:none}.wheel-sc::-webkit-scrollbar{display:none}
+.wheel-it{height:50px;display:grid;place-items:center;scroll-snap-align:center;font-family:var(--mono);font-size:20px;font-weight:700;color:var(--mut);cursor:pointer}.wheel-it.act{color:var(--ink);font-size:26px;font-weight:800}
+.tp-disp{text-align:center;font-family:var(--mono);font-size:30px;font-weight:800}
+
+/* ---- slide switch, jadwal v2, ikon jam, tinggi toolbar ---- */
+.sw{position:relative;width:48px;height:28px;flex:none;padding:0;background:var(--off);border:var(--b2) solid var(--bc);border-radius:99px;cursor:pointer;transition:background .18s}
+.sw::after{content:"";position:absolute;top:50%;left:3px;width:18px;height:18px;margin-top:-9px;border-radius:50%;background:var(--ink);transition:left .18s,background .18s}
+.sw.on{background:var(--ok)}.sw.on::after{left:calc(100% - 21px);background:var(--dk)}
+.channel-name[data-sch="1"]::after{width:15px;height:15px;margin-left:6px;vertical-align:-2px;border:0;border-radius:0;background:var(--blue);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E") center/contain no-repeat}
+.sch-name{flex:1;min-width:0;padding:6px 10px;font:700 13px var(--font);color:var(--ink);background:var(--card);border:var(--b2) solid var(--bc);border-radius:calc(10px*var(--rk))}
+.sch-tag{cursor:pointer}.sch-row2{display:flex;gap:8px;margin-bottom:8px}.sch-rel{display:flex;gap:4px;margin-top:6px}
+.sch-rel .sch-day{min-height:30px}.wheel{width:76px}.sch-list{max-height:50vh}
+.tb-search.icon-search{padding-block:8px;font-size:14px}.tb-org{min-height:38px}.toolbar{gap:8px;padding-top:10px}.tab{min-height:32px;font-size:12px}.tabs{padding:3px}.chip{min-height:32px}
+/* ---- perbaikan: indikator tab, switch, jadwal, kontras ---- */
+.tab-ind{top:3px;bottom:3px}
+.sch-tag{cursor:default}
+.sch-ev-h .sw{margin-left:2px}
+.sch-body{display:flex;align-items:center;gap:10px;width:100%;margin-top:2px;padding:8px 12px;text-align:left;background:var(--off);color:var(--ink);border:var(--b2) solid var(--bc);border-radius:calc(10px*var(--rk));cursor:pointer}
+.sch-time2{font-family:var(--mono);font-size:22px;font-weight:800;color:var(--ink)}
+.sch-sub{flex:1;min-width:0;font-size:12px;font-weight:700;color:var(--mut);text-align:right}
+#tpDays{margin-top:14px}
+.device-name[data-sch="1"]::after{content:"";display:inline-block;width:15px;height:15px;margin-left:6px;vertical-align:-2px;background:var(--blue);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7v5l3 2'/%3E%3C/svg%3E") center/contain no-repeat}
+[data-style="neu"] :is(.sw,.sch-time,.sch-name,.wheel,.sch-day,.sch-ic,.sch-tag,.sch-body){box-shadow:var(--sp1)}
+[data-style="neu"] .sch-ev{box-shadow:var(--s3)}
+[data-style="neu"] .sw::after{box-shadow:var(--s2)}
+[data-style="neu"] .sw.on{box-shadow:var(--sp1)}
 </style>
 <script>(function(){var d=document.documentElement;try{var t=JSON.parse(localStorage.getItem("relay_theme_v1")||"{}")||{};var st=["cartoon","flat","neu","wood","nature","ocean","sunset","lavender","mono","terminal"].indexOf(t.style)>=0?t.style:"cartoon";var dk=t.mode==="dark"||(t.mode!=="light"&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);d.setAttribute("data-style",st);d.setAttribute("data-mode",dk?"dark":"light")}catch(e){}})();</script>
 <script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
@@ -511,6 +553,7 @@ body{touch-action:pan-y pinch-zoom}
       <div class="brand-sub"><span class="sim-pill wait" id="mqttPill">Menyambung…</span><span id="deviceCount">0 device</span><span class="fps" id="fpsChip" aria-hidden="true">— FPS</span></div>
     </div>
   </div>
+  <button class="icon-btn" id="schGlobalBtn" title="Jadwal global" aria-label="Jadwal global"><span data-ic="clock" data-size="22"></span></button>
   <button class="icon-btn" id="setBtn" title="Pengaturan" aria-label="Pengaturan"><span data-ic="settings" data-size="22"></span></button>
   <button class="icon-btn" id="listBtn" title="Daftar device" aria-label="Daftar device"><span data-ic="list" data-size="22"></span></button>
 </header>
@@ -610,15 +653,23 @@ body{touch-action:pan-y pinch-zoom}
       </div>
       <div class="set-row">
         <div class="set-info"><div class="set-name">Bar progres ON/OFF massal</div><small>Tampilkan bar &amp; tombol Batal saat relay dikirim satu per satu.</small></div>
-        <button type="button" class="ch-toggle" role="switch" data-set="bulkProgress"></button>
+        <button type="button" class="sw" role="switch" data-set="bulkProgress"></button>
       </div>
       <div class="set-row">
         <div class="set-info"><div class="set-name">Notifikasi hasil massal</div><small>Toast ringkasan setelah ON/OFF massal selesai.</small></div>
-        <button type="button" class="ch-toggle" role="switch" data-set="bulkToast"></button>
+        <button type="button" class="sw" role="switch" data-set="bulkToast"></button>
       </div>
       <div class="set-row">
         <div class="set-info"><div class="set-name">Penghitung FPS</div><small>Chip FPS di header, di samping jumlah device.</small></div>
-        <button type="button" class="ch-toggle" role="switch" data-set="fps"></button>
+        <button type="button" class="sw" role="switch" data-set="fps"></button>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-name">Suara</div><small>Bunyi klik tombol, relay ON/OFF, jendela, pemilih waktu &amp; notifikasi.</small></div>
+        <button type="button" class="sw" role="switch" data-set="sound"></button>
+      </div>
+      <div class="set-row">
+        <div class="set-info"><div class="set-name">Bahasa</div><small>Bahasa tampilan dashboard.</small></div>
+        <div style="display:flex;gap:6px"><button type="button" class="btn" data-lang="id" style="min-height:38px;padding:0 14px">ID</button><button type="button" class="btn" data-lang="en" style="min-height:38px;padding:0 14px">EN</button></div>
       </div>
       <div class="set-note">Pengaturan tersimpan otomatis di browser ini.</div>
     </div>
@@ -709,6 +760,24 @@ body{touch-action:pan-y pinch-zoom}
   </div>
 </div>
 
+<div class="modal-bg" id="schedModal" role="dialog" aria-modal="true" aria-labelledby="schTitle">
+  <div class="modal">
+    <h3 id="schTitle">Jadwal relay</h3>
+    <div class="sch-list" id="schList"></div>
+    <div class="sch-add"><button type="button" class="btn btn-ghost" id="schAddOn">+ ON</button><button type="button" class="btn btn-ghost" id="schAddOff">+ OFF</button></div>
+    <small style="color:var(--mut)">Jadwal disimpan & dijalankan oleh ESP32 (maks. 20 event per device), akurat per detik, dan sinkron di semua HP.</small>
+    <div class="modal-actions"><button type="button" class="btn btn-ghost" id="schCancel">Batal</button><button type="button" class="btn btn-primary" id="schSave">Simpan ke ESP32</button></div>
+  </div>
+</div>
+<div class="modal-bg confirm-bg" id="tpModal" style="z-index:105" role="dialog" aria-modal="true">
+  <div class="modal small">
+    <h3 id="tpTitle">Atur waktu</h3>
+    <div class="wheels"><div class="wheel"><div class="wheel-sc" id="whH"></div></div><b style="font-size:24px">:</b><div class="wheel"><div class="wheel-sc" id="whM"></div></div><b style="font-size:24px">:</b><div class="wheel"><div class="wheel-sc" id="whS"></div></div></div>
+    <div class="tp-disp" id="tpDisp">06:00:00</div>
+    <div class="sch-days" id="tpDays"></div>
+    <div class="modal-actions"><button type="button" class="btn btn-ghost" id="tpCancel">Batal</button><button type="button" class="btn btn-primary" id="tpOk">Pilih</button></div>
+  </div>
+</div>
 <div class="menu-sheet" id="menuSheet"><div class="menu-panel" id="menuPanel"></div></div>
 
 <div class="modal-bg confirm-bg" id="confirmBg" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle">
@@ -754,6 +823,7 @@ const IC_PATHS = {
   search:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',
   trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/>',
   plus:'<path d="M12 5v14M5 12h14"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   x:'<path d="M6 6l12 12M18 6L6 18"/>',
   check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
   dots:'<circle cx="5" cy="12" r="1.9" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.9" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1.9" fill="currentColor" stroke="none"/>',
@@ -998,8 +1068,8 @@ function markAllOffline(){
     renderDevice(dev.uid);
   });
 }
-const subTopics = uid => [tp(uid,"+/state"), tp(uid,"status"), tp(uid,"icons"), tp(uid,"names"), tp(uid,"auth/res")];
-function mqttSubscribe(uid){ if(M.up) M.client.subscribe(subTopics(uid), {qos:1}); }
+const subTopics = uid => [tp(uid,"+/state"), tp(uid,"status"), tp(uid,"icons"), tp(uid,"names"), tp(uid,"auth/res"), tp(uid,"sched")];
+function mqttSubscribe(uid){ if(M.up){ M.client.subscribe(subTopics(uid), {qos:1}); M.client.publish(tp(uid, "sched/get"), "1", { qos:0 }); } }
 function mqttUnsubscribe(uid){ if(M.up) M.client.unsubscribe(subTopics(uid)); }
 // Ikon disimpan di ESP32 sebagai ANGKA (kode). Format: "<device>,<r1>,<r2>,<r3>,<r4>" ; -1 = relay tidak terdaftar (jangan diubah)
 // Nama device & relay juga disimpan di ESP32 (retained) agar HP1 & HP2 selalu sama. Format TAB; kosong = relay tidak terdaftar.
@@ -1231,6 +1301,7 @@ function onMqttMessage(topic, payload){
   if(!dev) return;
   const raw = payload.toString();                 // mentah (nama harus mempertahankan huruf besar/kecil)
   const val = raw.trim().toUpperCase();
+  if(m.length === 3 && m[2] === "sched"){ schOnMsg(dev.uid, raw.trim()); devSeen.set(dev.uid, Date.now()); return; }
   if((m.length === 4 && m[3] === "state") || (m.length === 3 && m[2] === "status" && val === "ONLINE")) devSeen.set(dev.uid, Date.now());
 
   if(m.length === 3 && m[2] === "names"){          // "<cfg>\t<device>\t<r1>\t<r2>\t<r3>\t<r4>" (kosong = belum diatur)
@@ -1346,7 +1417,7 @@ function queueGet(uid){
 }
 
 /* ============ PENGATURAN (tersimpan di localStorage browser) ============ */
-const SETTINGS = { bulkProgress:false, bulkToast:true, fps:true };
+const SETTINGS = { bulkProgress:false, bulkToast:true, fps:true, sound:true };
 function loadSettings(){
   try{
     const o = JSON.parse(localStorage.getItem(CFG.SET_KEY) || "{}") || {};
@@ -1362,11 +1433,11 @@ function applySettings(){
   if(!SETTINGS.bulkProgress) $("bulkBar").hidden = true;
   document.querySelectorAll("[data-set]").forEach(b=>{
     const on = !!SETTINGS[b.dataset.set];
-    b.className = "ch-toggle" + (on ? " on" : "");
-    b.textContent = on ? "ON" : "OFF";
+    b.className = "sw" + (on ? " on" : "");
     b.setAttribute("aria-checked", String(on));
   });
 }
+
 /* ============ TEMA (gaya x mode) ============
    Atribut data-style & data-mode di <html> mengganti seluruh set variabel CSS; tidak ada pembangunan ulang DOM. */
 const THEME_STYLES = ["cartoon","flat","neu","wood","nature","ocean","sunset","lavender","mono","terminal"], THEME = { style:"cartoon", mode:"auto" };
@@ -1494,6 +1565,7 @@ function relTime(ts){
   return Math.floor(d/3600) + " jam lalu";
 }
 function toast(msg, type=""){
+  snd(type === "ok" ? "toast-ok" : type === "err" ? "toast-err" : "toast");
   const el = document.createElement("div");
   el.className = "toast " + type;
   const icon = type === "ok" ? ic("check", 16) : type === "err" ? "!" : "•";
@@ -1508,6 +1580,253 @@ function toast(msg, type=""){
     setTimeout(()=>el.remove(), 300);
   }, 2600);
 }
+/* ============ JADWAL ============
+   ESP32 = penyimpan & eksekutor (resolusi detik, jalan walau dashboard ditutup); web = tampilan, pengaturan & sinkronisasi (semua HP).
+   ESP -> web  PREFIX/<uid>/sched  (retained)  daftar event dipisah koma: "<id>.<t>.<sec>.<d>.<a>.<m>.<g>.<nama>,..."
+      id nomor urut | t 1=ON 0=OFF | sec detik sejak 00:00 (0-86399) | d bitmask hari (bit0=Senin..bit6=Minggu) | a 1=aktif
+      m bitmask relay (bit0=R1..bit3=R4) | g 0=jadwal relay/device, >0=ID jadwal global (salinan sama di semua device) | nama URL-encode ("." jadi %2E)
+   web -> ESP  PREFIX/<uid>/sched/set  (bertanda tangan seperti icons/set)  body = seluruh daftar baru (mengganti yang lama)
+               ESP menyimpan lalu publish ulang PREFIX/<uid>/sched = konfirmasi.   web -> ESP  PREFIX/<uid>/sched/get  "1" */
+const SCHED = new Map(), SCH_MAX = 20, DAYS = ["Sen","Sel","Rab","Kam","Jum","Sab","Min"];
+let SCH = null;
+const secStr = v => [v/3600|0, v%3600/60|0, v%60].map(x=>String(x).padStart(2,"0")).join(":");
+const encN = x => encodeURIComponent(x).replace(/\./g, "%2E"), decN = x => { try{ return decodeURIComponent(x); }catch(e){ return x; } };
+function schParse(raw){
+  const n = v => parseInt(v, 10) || 0;
+  return raw.split(",").filter(Boolean).slice(0, SCH_MAX).map(x=>{ const f = x.split(".");
+    return { id:n(f[0]), t:n(f[1]) ? 1 : 0, sec:Math.min(86399, Math.max(0, n(f[2]))), d:n(f[3]) & 127, a:n(f[4]) ? 1 : 0, m:n(f[5]) & 15, g:n(f[6]), name:decN(f[7] || "") }; });
+}
+const schBody = l => l.map((e, i)=>[i+1, e.t, e.sec, e.d, e.a, e.m, e.g, encN(e.name)].join(".")).join(",");
+const allMask = dev => Object.keys(dev.channels).reduce((a, n)=>a | 1 << (+n - 1), 0);
+const isDevEv = (e, dev) => { const am = allMask(dev); return !e.g && am && (e.m & am) === am; };
+const schSig = l => l.map(e=>[e.t, e.sec, e.d, e.a, e.m, e.g, e.name].join(".")).sort().join(",");
+const daysTxt = d => d === 127 ? "Setiap hari" : d === 31 ? "Hari kerja" : d === 96 ? "Akhir pekan" : (DAYS.filter((_, k)=>d >> k & 1).join(" ") || "Tidak ada hari");
+// Jadwal TIDAK memakai password: dikirim polos (ESP32 harus menerima sched/set tanpa tanda tangan)
+function sendPlain(uid, act, body){ if(!M.up) return false; M.client.publish(tp(uid, act), body, { qos:1, retain:false }); return true; }
+
+function schMark(uid, n, row){
+  const rows = row ? [row] : [...document.querySelectorAll(`.device-card[data-uid="${uid}"] [data-ch]`)], L = SCHED.get(uid) || [];
+  rows.forEach(r=>{ const k = +r.dataset.ch, nm = r.querySelector(".channel-name"); if(!nm) return;
+    if(L.some(e=>e.a && (e.m >> (k-1) & 1))) nm.dataset.sch = "1"; else delete nm.dataset.sch; });
+  if(!row) schMarkDev(cardOf(uid), state.devices[uid]);
+}
+// Ikon jam di judul device: ada event aktif yang mencakup SEMUA relay device (jadwal device / global); hanya untuk device >1 relay
+function schMarkDev(card, dev){
+  if(!card || !dev) return;
+  const nm = card.querySelector(".device-name"); if(!nm) return;
+  const am = allMask(dev), multi = Object.keys(dev.channels).length > 1;
+  if(multi && (SCHED.get(dev.uid) || []).some(e=>e.a && (e.m & am) === am)) nm.dataset.sch = "1"; else delete nm.dataset.sch;
+}
+function schScope(sc){
+  if(sc.scope === "global"){ const seen = new Map(); SCHED.forEach(L=>L.forEach(e=>{ if(e.g && !seen.has(e.g)) seen.set(e.g, { ...e }); })); return [...seen.values()]; }
+  const dev = state.devices[sc.uid], L = SCHED.get(sc.uid) || [];
+  if(sc.scope === "device") return L.filter(e=>isDevEv(e, dev)).map(e=>({ ...e }));
+  return L.filter(e=>!e.g && e.m === 1 << (sc.n-1)).map(e=>({ ...e }));
+}
+function schCompose(sc, uid){
+  const cur = SCHED.get(uid) || [], dev = state.devices[uid], am = allMask(dev);
+  if(sc.scope === "global") return cur.filter(e=>!e.g).concat(sc.ev.map(e=>({ ...e, m:am })));
+  if(sc.scope === "device") return cur.filter(e=>!isDevEv(e, dev)).concat(sc.ev.map(e=>({ ...e, g:0, m:am })));
+  const bit = 1 << (sc.n-1);
+  return cur.filter(e=>e.g || e.m !== bit).concat(sc.ev.map(e=>({ ...e, g:0, m:bit })));
+}
+// Konfirmasi = ESP32 mem-publish ulang daftar jadwal (retained) yang isinya sama dengan yang dikirim
+function schOnMsg(uid, raw){
+  const list = schParse(raw); SCHED.set(uid, list); schMark(uid);
+  if(!SCH) return;
+  if(SCH.wait){
+    if(SCH.wait.has(uid) && schSig(list) === SCH.exp.get(uid)){
+      SCH.wait.delete(uid);
+      if(!SCH.wait.size){ clearTimeout(SCH.tm); closeSched(); toast("Jadwal tersimpan & dikonfirmasi ESP32", "ok"); }
+    }
+    return;
+  }
+  if(!SCH.dirty){ SCH.ev = schScope(SCH); renderSched(); }
+}
+function resetSaveBtn(){ const b = $("schSave"); b.disabled = false; b.textContent = "Simpan ke ESP32"; }
+function openSched(scope, uid, n){
+  let name = "";
+  if(scope !== "global"){
+    const dev = state.devices[uid]; if(!dev || (scope === "relay" && !dev.channels[n])) return;
+    name = scope === "relay" ? dev.channels[n].name : dev.name;
+  }else if(!Object.keys(state.devices).length) return toast("Belum ada device", "err");
+  SCH = { scope, uid, n, dirty:false, wait:null, exp:null, tm:0 }; SCH.ev = schScope(SCH);
+  $("schTitle").innerHTML = scope === "global" ? "<span>Jadwal global</span>" : `<span>${scope === "relay" ? "Jadwal relay" : "Jadwal device"}</span> · ${escapeHtml(name || "")}`;
+  resetSaveBtn(); renderSched(); $("schedModal").classList.add("show");
+  if(M.up) Object.keys(state.devices).forEach(u=>M.client.publish(tp(u, "sched/get"), "1", { qos:0 }));
+}
+function closeSched(){ if(SCH) clearTimeout(SCH.tm); SCH = null; closeTp(); $("schedModal").classList.remove("show"); resetSaveBtn(); }
+function renderSched(){
+  if(!SCH) return;
+  $("schList").innerHTML = SCH.ev.length ? SCH.ev.map((e, i)=>`<div class="sch-ev${e.a ? "" : " off"}" data-i="${i}">
+    <div class="sch-ev-h"><span class="sch-tag t${e.t}">${e.t ? "ON" : "OFF"}</span><input class="sch-name" data-a="name" maxlength="20" placeholder="Nama jadwal" value="${escapeHtml(e.name)}" aria-label="Nama jadwal">
+    <button type="button" class="sw${e.a ? " on" : ""}" role="switch" aria-checked="${!!e.a}" aria-label="Aktifkan jadwal" title="${e.a ? "Aktif" : "Nonaktif"}" data-a="act"></button><button type="button" class="sch-ic" data-a="del" aria-label="Hapus">${ic("trash", 18)}</button></div>
+    <button type="button" class="sch-body" data-a="edit" aria-label="Ubah waktu dan hari"><span class="sch-time2">${secStr(e.sec)}</span><span class="sch-sub">${daysTxt(e.d)}${e.a ? "" : " · Nonaktif"}</span>${ic("edit", 16)}</button></div>`).join("")
+    : '<div class="sch-empty">Belum ada event. Tambahkan ON atau OFF.</div>';
+  $("schAddOn").disabled = $("schAddOff").disabled = SCH.ev.length >= SCH_MAX;
+}
+// Nama bawaan: "ON event1", "OFF event2", ... sesuai urutan penambahan
+function schDefName(t){
+  const used = new Set(SCH.ev.map(e=>e.name)); let i = SCH.ev.length + 1, nm;
+  do{ nm = `${t ? "ON" : "OFF"} event${i++}`; }while(used.has(nm));
+  return nm;
+}
+// Alur: tekan +ON/+OFF -> pemilih waktu & hari -> Pilih -> event muncul di daftar -> Simpan ke ESP32
+function schAdd(t){
+  if(!SCH || SCH.wait || SCH.ev.length >= SCH_MAX) return;
+  SCH.dirty = true;
+  openTp(t ? 21600 : 79200, 127, (sec, d)=>{
+    if(!SCH || SCH.ev.length >= SCH_MAX) return;
+    SCH.ev.push({ id:0, t, sec, d, a:1, m:SCH.scope === "relay" ? 1 << (SCH.n-1) : 15, g:SCH.scope === "global" ? 1 + (Math.random() * 99998 | 0) : 0, name:schDefName(t) });
+    renderSched(); const l = $("schList"); l.scrollTop = l.scrollHeight;
+  }, t ? "Waktu ON" : "Waktu OFF");
+}
+$("schAddOn").onclick = ()=>schAdd(1); $("schAddOff").onclick = ()=>schAdd(0);
+$("schCancel").onclick = closeSched; $("schGlobalBtn").onclick = ()=>openSched("global");
+$("schedModal").addEventListener("click", e=>{ if(e.target === $("schedModal")) closeSched(); });
+$("schList").addEventListener("input", e=>{ const c = e.target.closest(".sch-ev"); if(c && SCH && !SCH.wait && e.target.dataset.a === "name"){ SCH.ev[+c.dataset.i].name = e.target.value.slice(0, 20); SCH.dirty = true; } });
+$("schList").onclick = e=>{
+  const b = e.target.closest("[data-a]"), card = e.target.closest(".sch-ev"); if(!b || !card || !SCH || SCH.wait || b.dataset.a === "name") return;
+  const i = +card.dataset.i, ev = SCH.ev[i], a = b.dataset.a;
+  if(a === "edit"){
+    SCH.dirty = true;
+    openTp(ev.sec, ev.d, (sec, d)=>{ if(!SCH) return; ev.sec = sec; ev.d = d; renderSched(); }, ev.t ? "Waktu ON" : "Waktu OFF");
+    return;
+  }
+  if(a === "act") ev.a = ev.a ? 0 : 1;
+  else if(a === "del") SCH.ev.splice(i, 1);
+  SCH.dirty = true; renderSched();
+};
+$("schSave").onclick = ()=>{
+  const cur = SCH; if(!cur || cur.wait) return;
+  if(!M.up) return toast("MQTT belum terhubung", "err");
+  const uids = cur.scope === "global" ? Object.keys(state.devices) : [cur.uid], plan = uids.map(u=>[u, schCompose(cur, u)]);
+  if(plan.some(x=>x[1].length > SCH_MAX)) return toast("Batas 20 event per device terlampaui", "err");
+  cur.wait = new Set(uids); cur.exp = new Map(plan.map(([u, l])=>[u, schSig(l)]));
+  const btn = $("schSave"); btn.disabled = true; btn.textContent = "Menyimpan…";
+  plan.forEach(([u, l])=>{ if(!sendPlain(u, "sched/set", schBody(l))) cur.wait.delete(u); });
+  if(!cur.wait.size){ cur.wait = null; resetSaveBtn(); return toast("MQTT belum terhubung", "err"); }
+  cur.tm = setTimeout(()=>{
+    if(SCH !== cur) return;
+    const miss = [...cur.wait]; cur.wait = null; resetSaveBtn();
+    toast(cur.scope === "global" ? "Tidak ada balasan dari: " + miss.join(", ") : "ESP32 tidak membalas, jadwal belum tersimpan", "err");
+  }, 8000);
+};
+/* ---- pemilih waktu: roda jam : menit : detik (scroll tak terbatas) + pilihan hari ----
+   Daftar angka diulang 7x; saat berhenti menggulir, posisi dipindah diam-diam ke salinan tengah (isinya identik) sehingga tak pernah mentok. */
+let TP = null;
+function buildWheel(el, n, val, onVal){
+  const C = 7, MID = 3;
+  el.innerHTML = Array.from({ length:C * n }, (_, i)=>`<div class="wheel-it" data-i="${i}">${String(i % n).padStart(2, "0")}</div>`).join("");
+  let lastIdx = -1, lastV = -1, tm = 0;
+  const mark = play=>{
+    const idx = Math.max(0, Math.min(C * n - 1, Math.round(el.scrollTop / 50)));
+    if(idx === lastIdx) return;
+    if(lastIdx >= 0 && el.children[lastIdx]) el.children[lastIdx].classList.remove("act");
+    lastIdx = idx; el.children[idx].classList.add("act");
+    const v = idx % n;
+    if(v !== lastV){ lastV = v; onVal(v); if(play) snd("wheel"); }
+  };
+  el.onscroll = ()=>{
+    mark(true); clearTimeout(tm);
+    tm = setTimeout(()=>{ const idx = Math.round(el.scrollTop / 50); if(idx < 2 * n || idx >= (C - 2) * n) el.scrollTop = (MID * n + idx % n) * 50; }, 140);
+  };
+  el.onclick = e=>{ const it = e.target.closest(".wheel-it"); if(it) el.scrollTo({ top:+it.dataset.i * 50, behavior:"smooth" }); };
+  requestAnimationFrame(()=>{ el.scrollTop = (MID * n + val) * 50; mark(false); });
+}
+function openTp(sec, d, cb, title){
+  TP = { h:sec / 3600 | 0, m:sec % 3600 / 60 | 0, s:sec % 60, d:d & 127, cb }; $("tpTitle").textContent = title || "Atur waktu";
+  const disp = ()=>{ $("tpDisp").textContent = secStr(TP.h * 3600 + TP.m * 60 + TP.s); };
+  $("tpDays").innerHTML = DAYS.map((x, k)=>`<button type="button" class="sch-day${TP.d >> k & 1 ? " sel" : ""}" data-k="${k}">${x}</button>`).join("");
+  $("tpModal").classList.add("show");
+  buildWheel($("whH"), 24, TP.h, v=>{ TP.h = v; disp(); }); buildWheel($("whM"), 60, TP.m, v=>{ TP.m = v; disp(); }); buildWheel($("whS"), 60, TP.s, v=>{ TP.s = v; disp(); }); disp();
+}
+const closeTp = ()=>{ TP = null; $("tpModal").classList.remove("show"); };
+$("tpDays").onclick = e=>{ const b = e.target.closest("[data-k]"); if(!b || !TP) return; const k = +b.dataset.k; TP.d ^= 1 << k; b.classList.toggle("sel", !!(TP.d >> k & 1)); };
+$("tpCancel").onclick = closeTp;
+$("tpOk").onclick = ()=>{
+  if(!TP) return;
+  if(!TP.d) return toast("Pilih minimal 1 hari", "err");
+  const t = TP; closeTp(); t.cb(t.h * 3600 + t.m * 60 + t.s, t.d);
+};
+$("tpModal").addEventListener("click", e=>{ if(e.target === $("tpModal")) closeTp(); });
+
+/* ============ SUARA (Web Audio, tanpa berkas; dapat dimatikan di Pengaturan) ============ */
+let AC = null, sndLast = 0;
+const SND = {   // [nada awal Hz, nada akhir Hz, durasi dtk, gelombang, volume]
+  on:[900,1500,.09,"triangle",.5], off:[700,350,.09,"triangle",.4], tap:[1400,700,.04,"triangle",.3], save:[800,1300,.1,"sine",.45],
+  danger:[500,220,.1,"square",.18], toggle:[1100,800,.05,"triangle",.35], wheel:[2600,1200,.018,"square",.1],
+  open:[500,900,.07,"sine",.3], close:[900,500,.07,"sine",.3], "toast-ok":[880,1320,.13,"sine",.4], "toast-err":[440,300,.16,"sine",.4], toast:[700,900,.1,"sine",.3],
+};
+function snd(type){
+  if(!SETTINGS.sound) return;
+  const d = SND[type]; if(!d) return;
+  const now = performance.now(); if(type !== "wheel" && now - sndLast < 40) return; sndLast = now;
+  try{
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if(AC.state === "suspended") AC.resume();
+    const t = AC.currentTime, o = AC.createOscillator(), g = AC.createGain();
+    o.type = d[3]; o.frequency.setValueAtTime(d[0], t); o.frequency.exponentialRampToValueAtTime(d[1], t + d[2]);
+    g.gain.setValueAtTime(d[4], t); g.gain.exponentialRampToValueAtTime(.001, t + d[2] + .02);
+    o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + d[2] + .03);
+  }catch(e){}
+}
+document.addEventListener("click", e=>{
+  const t = e.target;
+  if(t.closest(".ch-toggle-wrap")){ const r = t.closest("[data-ch]"); snd(r && r.classList.contains("on") ? "off" : "on"); return; }
+  if(t.closest(".wheel,.sch-day")) return;
+  if(t.closest(".sw,.sch-ic")) return snd("toggle");
+  if(t.closest(".btn-danger,.menu-panel .danger")) return snd("danger");
+  if(t.closest(".btn-primary")) return snd("save");
+  if(t.closest("button,.menu-panel button,.theme-opt,.iccell,.tab")) snd("tap");
+}, true);
+new MutationObserver(ms=>ms.forEach(m=>{
+  const el = m.target; if(!el.matches || !el.matches(".modal-bg,.menu-sheet,.list-panel,.icon-picker")) return;
+  const was = (m.oldValue || "").split(" ").includes("show"), now = el.classList.contains("show");
+  if(was !== now) snd(now ? "open" : "close");
+})).observe(document.body, { subtree:true, attributes:true, attributeFilter:["class"], attributeOldValue:true });
+/* ============ BAHASA (id / en, dipilih di Pengaturan) ============
+   Teks asli (Indonesia) tetap di kode; mode English menerjemahkan teks yang cocok persis lewat kamus di bawah. Teks tanpa entri tetap Indonesia. */
+const EN = {
+"Atur":"Edit","Atur waktu":"Set time","Bar progres ON/OFF massal":"Bulk ON/OFF progress bar","Batal":"Cancel","Belum ada grup":"No groups yet","Belum ada yang dipilih":"Nothing selected","Buat Grup Pertama":"Create First Group",
+"Bunyi klik tombol, relay ON/OFF, jendela, pemilih waktu & notifikasi.":"Click sounds for buttons, relay ON/OFF, dialogs, time picker & notifications.","Cari device":"Search devices","Cari device, UID, atau relay…":"Search device, UID, or relay…","Cari ikon":"Search icons","Cari: lampu, kipas, 14…":"Search: lamp, fan, 14…",
+"Chip FPS di header, di samping jumlah device.":"FPS chip in the header, next to the device count.","Daftar Device":"Device List","Daftar device":"Device list","Device offline":"Offline devices","Ganti UID":"Change UID","Ganti UID Device":"Change Device UID","Gaya tampilan":"Display style","Gelap":"Dark",
+"Grup":"Groups","Grup relay":"Relay groups","Hapus":"Delete","Hapus semua device":"Delete all devices","Ikon device":"Device icon","Ikon grup":"Group icon","Jumlah Relay":"Relay Count","Kartun":"Cartoon","Kayu":"Wood","Konfigurasi Relay":"Relay Configuration","Konfirmasi":"Confirm","Alam":"Nature","Samudra":"Ocean","Senja":"Sunset","Terang":"Light","Otomatis":"Auto",
+"Kumpulkan relay dari device mana saja ke dalam satu grup, lalu nyalakan atau matikan sekaligus. Maksimal 10 grup.":"Collect relays from any device into one group, then turn them on or off together. Up to 10 groups.",
+"Maksimal 4 relay per ESP32. Setiap relay punya nama & ikon sendiri.":"Max 4 relays per ESP32. Each relay has its own name & icon.","Matikan semua":"Turn all off","Nyalakan semua":"Turn all on","Mengirim…":"Sending…","Menyala":"On","Menyambung…":"Connecting…","Mewakili perangkat ESP32 secara keseluruhan.":"Represents the whole ESP32 device.",
+"Mode warna":"Color mode","Nama & Ikon Device":"Device Name & Icon","Nama & Ikon Grup":"Group Name & Icon","Notifikasi hasil massal":"Bulk result notification","Otomatis mengikuti pengaturan terang/gelap perangkat.":"Automatically follows the device light/dark setting.",
+"Pengaturan":"Settings","Pengaturan tersimpan otomatis di browser ini.":"Settings are saved automatically in this browser.","Penghitung FPS":"FPS counter","Pilih":"Select","Pilih Ikon":"Choose Icon","Pilih Relay":"Choose Relay","Pilih semua":"Select all","Relay yang menyala":"Relays that are on",
+"Reset pencarian & filter":"Reset search & filters","Selesai":"Done","Semua":"All","Semua grup OFF":"All groups OFF","Semua grup ON":"All groups ON","Simpan":"Save","Simpan ke ESP32":"Save to ESP32","Suara":"Sound","Tambah Device":"Add Device","Tambah Grup":"Add Group","Tambah device":"Add device","Tampilan":"Display",
+"Tampilkan bar & tombol Batal saat relay dikirim satu per satu.":"Show a bar & Cancel button while relays are sent one by one.","Tampilkan password":"Show password","Tidak ada device yang cocok dengan pencarian atau tab ini.":"No devices match the search or this tab.",
+"Toast ringkasan setelah ON/OFF massal selesai.":"Summary toast after bulk ON/OFF finishes.","Tutup":"Close","UID Device":"Device UID","UID baru":"New UID","Verifikasi":"Verify","Password device":"Device password","· angka kecil = kode untuk ESP32":"· small number = code for ESP32",
+"Bahasa":"Language","Bahasa tampilan dashboard.":"Dashboard display language.","Jadwal relay":"Relay schedule","Jadwal device":"Device schedule","Jadwal global":"Global schedule","Nama jadwal":"Schedule name","Waktu ON":"ON time","Waktu OFF":"OFF time","Hapus relay":"Delete relay","Belum ada device":"No devices yet",
+"Jadwal disimpan & dijalankan oleh ESP32 (maks. 20 event per device), akurat per detik, dan sinkron di semua HP.":"Schedules are stored & run by the ESP32 (max 20 events per device), accurate to the second, and synced across all phones.",
+"Belum ada event. Tambahkan ON atau OFF.":"No events yet. Add an ON or OFF.","Jadwal tersimpan di ESP32":"Schedule saved to ESP32","ESP32 tidak membalas, jadwal belum tersimpan":"ESP32 did not reply, schedule not saved","MQTT belum terhubung":"MQTT not connected","Batas 20 event per device terlampaui":"Limit of 20 events per device exceeded",
+"Sen":"Mon","Sel":"Tue","Rab":"Wed","Kam":"Thu","Jum":"Fri","Sab":"Sat","Min":"Sun","Terhubung":"Connected","Terputus":"Disconnected","Gagal":"Failed","Setiap hari":"Every day","Hari kerja":"Weekdays","Akhir pekan":"Weekends","Menyimpan…":"Saving…","Pilih minimal 1 hari":"Pick at least 1 day","Aktifkan jadwal":"Enable schedule","Ubah waktu dan hari":"Edit time and days","Nonaktif":"Disabled","Aktif":"Enabled","Jadwal tersimpan & dikonfirmasi ESP32":"Schedule saved & confirmed by ESP32"};
+const ENX = [[/^(\d+) device$/, "$1 device(s)"], [/^(\d+) dipilih$/, "$1 selected"], [/^(\d+) relay$/, "$1 relays"]];
+let LANG = "id"; try{ LANG = localStorage.getItem("relay_lang_v1") === "en" ? "en" : "id"; }catch(e){}
+function trTxt(s){ const k = s.trim(); if(!k) return s; let v = EN[k]; if(v === undefined) for(const [r, x] of ENX) if(r.test(k)){ v = k.replace(r, x); break; } return v === undefined ? s : s.replace(k, v); }
+function trNode(n){
+  if(n.nodeType === 3){
+    const p = n.parentNode; if(!p || /^(SCRIPT|STYLE|TEXTAREA)$/.test(p.nodeName)) return;
+    if(n._tr !== n.data) n._o = n.data;
+    const out = LANG === "en" ? trTxt(n._o) : n._o; if(n.data !== out) n.data = out; n._tr = n.data; return;
+  }
+  if(n.nodeType !== 1) return;
+  ["placeholder", "title", "aria-label"].forEach(a=>{
+    if(!n.hasAttribute(a)) return; const o = n._oa || (n._oa = {}), cur = n.getAttribute(a);
+    if(o[a + "_t"] !== cur) o[a] = cur; const out = LANG === "en" ? trTxt(o[a]) : o[a]; if(cur !== out) n.setAttribute(a, out); o[a + "_t"] = out;
+  });
+}
+function trTree(root){ const w = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT); let n = root; do{ trNode(n); }while((n = w.nextNode())); }
+const trObs = new MutationObserver(ms=>{ trObs.disconnect(); ms.forEach(m=>{ if(m.type === "childList") m.addedNodes.forEach(trTree); else trNode(m.target); }); trObs.observe(document.body, TR_OPT); });
+const TR_OPT = { childList:true, subtree:true, characterData:true, attributes:true, attributeFilter:["placeholder", "title", "aria-label"] };
+function applyLang(){
+  document.documentElement.lang = LANG; trObs.disconnect(); trTree(document.body); if(LANG === "en") trObs.observe(document.body, TR_OPT);
+  document.querySelectorAll("[data-lang]").forEach(b=>b.classList.toggle("btn-primary", b.dataset.lang === LANG));
+}
+document.querySelectorAll("[data-lang]").forEach(b=>{ b.onclick = ()=>{ LANG = b.dataset.lang; try{ localStorage.setItem("relay_lang_v1", LANG); }catch(e){} applyLang(); }; });
+applyLang();
+
 function addRipple(el, e){
   const rect = el.getBoundingClientRect();
   const r = document.createElement("span");
@@ -1641,6 +1960,7 @@ function buildChannelRow(uid, chNum){
   row.querySelector(".ch-toggle-wrap").onclick = e=>{ e.stopPropagation(); onChannelToggle(uid, chNum); };
   row.querySelector(".ch-btn").onclick = e=>{ e.stopPropagation(); openMenu(uid, chNum); };
   patchChannelRow(row, getCh(uid, chNum));
+  schMark(uid, chNum, row);
   return row;
 }
 
@@ -1677,6 +1997,7 @@ function patchDeviceHead(card, dev, n){
   card.querySelector(".device-name").textContent = dev.name;
   card.querySelector(".device-icon").textContent = iconOf(dev.icon);
   card.querySelector(".chip-count").textContent = n + " relay";
+  schMarkDev(card, dev);
 }
 
 function buildDevice(uid){
@@ -1812,6 +2133,7 @@ function openMenu(uid, chNum){
     panel.innerHTML = `
       <div class="menu-label">${escapeHtml(dev.name)} · ${escapeHtml(uid)}</div>
       <button data-act="refresh-all">${ic("refresh", 18)} Refresh semua relay</button>
+      ${Object.keys(dev.channels).length > 1 ? `<button data-act="sched-dev">${ic("clock", 18)} Jadwal device</button>` : ""}
       <button data-act="edit-device">${ic("edit", 18)} Edit device</button>
       <button data-act="change-uid">${ic("swap", 18)} Ganti UID</button>
       <button data-act="duplicate-device">${ic("copy", 18)} Duplikat device</button>
@@ -1823,6 +2145,7 @@ function openMenu(uid, chNum){
     panel.innerHTML = `
       <div class="menu-label">${escapeHtml(dev.name)} · Relay ${chNum}</div>
       <button data-act="refresh-ch">${ic("refresh", 18)} Refresh relay</button>
+      <button data-act="sched-ch">${ic("clock", 18)} Jadwal relay</button>
       <button data-act="edit-ch">${ic("edit", 18)} Edit nama & ikon</button>
       <button data-act="delete-ch" class="danger">${ic("trash", 18)} Hapus relay</button>
       <button data-act="close" class="menu-close">Tutup</button>`;
@@ -1889,6 +2212,8 @@ async function handleMenuAction(act){
     toast("Isi UID device baru, lalu simpan");
     return;
   }
+  if(act === "sched-ch"){ openSched("relay", uid, chNum); return; }
+  if(act === "sched-dev"){ openSched("device", uid); return; }
   if(act === "edit-ch"){ openEditModal(uid, chNum); return; }
   if(act === "delete-device"){
     const snap = snapDevice(uid);
