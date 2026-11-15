@@ -583,6 +583,14 @@ body{touch-action:pan-y pinch-zoom}
   .ch-btn{width:32px;height:32px}
   .device-foot{gap:6px;padding:0 8px 8px}
   .fbtn{min-height:var(--u-fh,30px)}
+/* WiFi per device */
+.wf-st{margin:0 0 12px;padding:10px 12px;font-size:13px;font-weight:700;line-height:1.5;background:var(--off);border:var(--b2) solid var(--bc);border-radius:calc(12px*var(--rk));word-break:break-word}
+.wf-bar{display:flex;gap:8px;margin-bottom:12px}.wf-bar .btn{flex:1;min-height:40px}
+.wf-list{display:grid;gap:6px;max-height:190px;overflow-y:auto;margin-bottom:14px}.wf-list:empty{display:none}
+.wf-net{display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;text-align:left;font-size:14px;font-weight:700;color:var(--ink);background:var(--card);border:var(--b2) solid var(--bc);border-radius:calc(10px*var(--rk));cursor:pointer}
+.wf-net .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wf-net small{font:800 11px var(--mono);color:var(--mut)}
+.wf-net.sel{background:var(--blue);color:var(--dk)}.wf-net.sel small{color:var(--dk)}
 /* slider ukuran di Pengaturan */
 .uz{display:grid;grid-template-columns:1fr auto;gap:0 8px;padding:4px 0;font-size:13px;font-weight:700}
 .uz output{font:800 12px var(--mono);color:var(--mut)}
@@ -591,6 +599,12 @@ body{touch-action:pan-y pinch-zoom}
 #uiDet>summary{cursor:pointer;font-weight:800;padding:6px 0}
 .list-panel.peek{background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 .list-panel.peek .list-inner{opacity:.14}
+
+/* ===== Scrollbar disembunyikan: halaman & semua panel tetap bisa digulir (sentuh, roda mouse, keyboard) ===== */
+html,*{scrollbar-width:none;-ms-overflow-style:none}
+*::-webkit-scrollbar{display:none;width:0;height:0;background:transparent}
+/* panel memotong isinya mengikuti sudut membulat */
+.list-inner,.icon-picker-inner{overflow:hidden}
 </style>
 <script>(function(){var d=document.documentElement;try{var t=JSON.parse(localStorage.getItem("relay_theme_v1")||"{}")||{};var st=["cartoon","flat","neu","wood","nature","ocean","sunset","lavender","mono","terminal"].indexOf(t.style)>=0?t.style:"cartoon";var dk=t.mode==="dark"||(t.mode!=="light"&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);d.setAttribute("data-style",st);d.setAttribute("data-mode",dk?"dark":"light")}catch(e){}})();</script>
 <script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
@@ -716,6 +730,26 @@ body{touch-action:pan-y pinch-zoom}
         <div class="set-info"><div class="set-name">Suara</div><small>Bunyi klik tombol, relay ON/OFF, jendela, pemilih waktu &amp; notifikasi.</small></div>
         <button type="button" class="sw" role="switch" data-set="sound"></button>
       </div>
+      <div class="set-block">
+        <div class="set-row" style="margin:0;padding:0;border:0;box-shadow:none;background:transparent">
+          <div class="set-info"><div class="set-name">Suara roda waktu (scroll tak terbatas)</div><small>Bunyi &ldquo;tik&rdquo; tiap angka berganti di pemilih jam : menit : detik. Butuh <b>Suara</b> di atas aktif.</small></div>
+          <button type="button" class="sw" role="switch" id="wsOn"></button>
+        </div>
+        <details id="wsDet" style="margin-top:8px"><summary style="cursor:pointer;font-weight:800;padding:6px 0">Atur bunyi tik</summary>
+          <div id="wsBox"></div>
+          <div class="uz-h">Gelombang</div>
+          <div class="seg" id="wsWave" role="radiogroup" aria-label="Gelombang">
+            <button type="button" role="radio" aria-checked="false" data-wave="sine" style="min-height:36px">Sine</button>
+            <button type="button" role="radio" aria-checked="false" data-wave="triangle" style="min-height:36px">Segitiga</button>
+            <button type="button" role="radio" aria-checked="false" data-wave="square" style="min-height:36px">Kotak</button>
+            <button type="button" role="radio" aria-checked="false" data-wave="sawtooth" style="min-height:36px">Gergaji</button>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button type="button" class="btn" id="wsTest" style="flex:1;min-height:38px">Coba</button>
+            <button type="button" class="btn" id="wsReset" style="flex:1;min-height:38px">Reset</button>
+          </div>
+        </details>
+      </div>
       <div class="set-row">
         <div class="set-info"><div class="set-name">Bahasa</div><small>Bahasa tampilan dashboard.</small></div>
         <div style="display:flex;gap:6px"><button type="button" class="btn" data-lang="id" style="min-height:38px;padding:0 14px">ID</button><button type="button" class="btn" data-lang="en" style="min-height:38px;padding:0 14px">EN</button></div>
@@ -794,6 +828,22 @@ body{touch-action:pan-y pinch-zoom}
   </div>
 </div>
 
+<div class="modal-bg" id="wfModal" role="dialog" aria-modal="true" aria-labelledby="wfTitle">
+  <div class="modal">
+    <h3 id="wfTitle">WiFi device</h3>
+    <div class="wf-st" id="wfSt">Belum dimuat.</div>
+    <div class="wf-bar"><button type="button" class="btn" id="wfLoad">Muat dari ESP32</button><button type="button" class="btn" id="wfScan">Scan WiFi</button></div>
+    <div class="wf-list" id="wfList"></div>
+    <div class="field"><label for="wfSsid">SSID</label>
+      <input type="text" id="wfSsid" maxlength="32" placeholder="Nama WiFi" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+    <div class="field" style="margin-bottom:0"><label for="wfPass">Password WiFi</label>
+      <input type="password" id="wfPass" maxlength="63" placeholder="Kosongkan bila jaringan terbuka" autocomplete="new-password" autocapitalize="off" spellcheck="false">
+      <small><label style="display:inline-flex;gap:6px;align-items:center;margin:0;text-transform:none;letter-spacing:0;font-weight:600"><input type="checkbox" id="wfShow" style="width:auto"> Tampilkan password</label></small>
+      <small>Dikirim terenkripsi dengan password device &amp; tidak disimpan di dashboard. Bila gagal tersambung, ESP32 sebaiknya kembali ke jaringan lama / mode AP.</small>
+      <div class="field-err" id="wfErr"></div></div>
+    <div class="modal-actions"><button class="btn btn-ghost" id="wfClose">Tutup</button><button class="btn btn-primary" id="wfSend">Kirim ke ESP32</button></div>
+  </div>
+</div>
 <div class="modal-bg confirm-bg" id="pwModal" role="dialog" aria-modal="true" aria-labelledby="pwTitle">
   <div class="modal small">
     <h3 id="pwTitle">Password device</h3>
@@ -877,6 +927,7 @@ body{touch-action:pan-y pinch-zoom}
    Semua ikon antarmuka berupa SVG inline, bukan karakter Unicode, sehingga tampil sama di semua HP
    (karakter seperti power/panah/centang sering menjadi kotak silang bila font perangkat tidak punya glyph-nya). */
 const IC_PATHS = {
+  wifi:'<path d="M2 9a15 15 0 0 1 20 0"/><path d="M5.5 12.5a10 10 0 0 1 13 0"/><path d="M9 16a5 5 0 0 1 6 0"/><circle cx="12" cy="19.5" r="1"/>',
   plug:'<path d="M9 2v5M15 2v5"/><path d="M6 7h12v4a6 6 0 0 1-12 0z"/><path d="M12 17v5"/>',
   settings:'<path d="M4 6h9M19 6h1M4 12h3M13 12h7M4 18h11M21 18h-1"/><circle cx="16" cy="6" r="2.2"/><circle cx="10" cy="12" r="2.2"/><circle cx="17.5" cy="18" r="2.2"/>',
   list:'<path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/>',
@@ -1128,7 +1179,7 @@ function markAllOffline(){
     renderDevice(dev.uid);
   });
 }
-const subTopics = uid => [tp(uid,"+/state"), tp(uid,"status"), tp(uid,"icons"), tp(uid,"names"), tp(uid,"auth/res"), tp(uid,"sched")];
+const subTopics = uid => [tp(uid,"+/state"), tp(uid,"status"), tp(uid,"icons"), tp(uid,"names"), tp(uid,"auth/res"), tp(uid,"sched"), tp(uid,"wifi/#")];
 function mqttSubscribe(uid){ if(M.up){ M.client.subscribe(subTopics(uid), {qos:1}); M.client.publish(tp(uid, "sched/get"), "1", { qos:0 }); } }
 function mqttUnsubscribe(uid){ if(M.up) M.client.unsubscribe(subTopics(uid)); }
 // Ikon disimpan di ESP32 sebagai ANGKA (kode). Format: "<device>,<r1>,<r2>,<r3>,<r4>" ; -1 = relay tidak terdaftar (jangan diubah)
@@ -1361,6 +1412,7 @@ function onMqttMessage(topic, payload){
   if(!dev) return;
   const raw = payload.toString();                 // mentah (nama harus mempertahankan huruf besar/kecil)
   const val = raw.trim().toUpperCase();
+  if(m[2] === "wifi" && m.length <= 4){ wfOnMsg(dev.uid, m[3] || "", raw); devSeen.set(dev.uid, Date.now()); return; }   // WiFi: status / scan / hasil set
   if(m.length === 3 && m[2] === "sched"){ schOnMsg(dev.uid, raw.trim()); devSeen.set(dev.uid, Date.now()); return; }
   if((m.length === 4 && m[3] === "state") || (m.length === 3 && m[2] === "status" && val === "ONLINE")) devSeen.set(dev.uid, Date.now());
 
@@ -1790,7 +1842,7 @@ $("schAddOn").onclick = ()=>schAdd(1); $("schAddOff").onclick = ()=>schAdd(0);
 $("schCancel").onclick = closeSched; $("schGlobalBtn").onclick = ()=>openSched("global");
 $("schedModal").addEventListener("click", e=>{ if(e.target === $("schedModal")) closeSched(); });
 $("schList").addEventListener("input", e=>{ const c = e.target.closest(".sch-ev"); if(c && SCH && !SCH.wait && e.target.dataset.a === "name"){ SCH.ev[+c.dataset.i].name = e.target.value.slice(0, 20); SCH.dirty = true; } });
-$("schList").onclick = e=>{
+$("schList").onclick = async e=>{
   const b = e.target.closest("[data-a]"), card = e.target.closest(".sch-ev"); if(!b || !card || !SCH || SCH.wait || b.dataset.a === "name") return;
   const i = +card.dataset.i, ev = SCH.ev[i], a = b.dataset.a;
   if(a === "edit"){
@@ -1798,8 +1850,15 @@ $("schList").onclick = e=>{
     openTp(ev.sec, ev.d, (sec, d)=>{ if(!SCH) return; ev.sec = sec; ev.d = d; renderSched(); }, ev.t ? "Waktu ON" : "Waktu OFF");
     return;
   }
+  if(a === "del"){                                    // konfirmasi dulu sebelum menghapus event jadwal
+    const cur = SCH, label = ev.name || (ev.t ? "ON" : "OFF");
+    if(!await askConfirm(`Hapus jadwal "${label}" (${ev.t ? "ON" : "OFF"} ${secStr(ev.sec)} · ${daysTxt(ev.d)})?`, "Hapus")) return;
+    if(SCH !== cur || cur.wait) return;               // jendela jadwal sudah ditutup / sedang menyimpan
+    const j = cur.ev.indexOf(ev); if(j < 0) return;
+    cur.ev.splice(j, 1); cur.dirty = true; renderSched();
+    return;
+  }
   if(a === "act") ev.a = ev.a ? 0 : 1;
-  else if(a === "del") SCH.ev.splice(i, 1);
   SCH.dirty = true; renderSched();
 };
 $("schSave").onclick = ()=>{
@@ -1856,6 +1915,105 @@ $("tpOk").onclick = ()=>{
 };
 $("tpModal").addEventListener("click", e=>{ if(e.target === $("tpModal")) closeTp(); });
 
+/* ============ WIFI PER DEVICE (scan / muat / kirim) ============
+   web -> ESP (bertanda tangan HMAC seperti icons/set), semua di PREFIX/<uid>/ :
+     wifi/get   body "1"  -> ESP membalas  wifi       "<ssid>\t<state>\t<ip>\t<rssi>\t<kanal>"   state: 1 tersambung | 0 tidak | A mode AP
+     wifi/scan  body "1"  -> ESP membalas  wifi/list  baris "<ssid>\t<rssi>\t<enc 0|1>" dipisah \n (maks 20, sinyal terkuat dulu)
+     wifi/set   body = hex 128 byte terenkripsi -> ESP membalas  wifi/res  "<nonce>|ok" atau "<nonce>|err|<alasan>"
+   Enkripsi (password WiFi tidak pernah polos di broker): plaintext = "<ssid>\t<password>" diisi 0x00 sampai 128 byte;
+     keystream blok i (i=0..3, tiap 32 byte) = HMAC-SHA256(passwordDevice, "wifi/enc|<nonce>|<i>"); cipher = plaintext XOR keystream; body = hex(cipher).
+     Tanda tangan = HMAC(passwordDevice, "wifi/set|<nonce>|<body>"), kirim "<body>|<nonce>|<sig>" (encrypt-then-MAC). Balasan ESP tidak retained. */
+const WF = { uid:null, nonce:"", tGet:0, tScan:0, tSet:0, touched:false };
+async function hmacRaw(pw, msg){
+  const enc = new TextEncoder(), k = enc.encode(pw), d = enc.encode(msg);
+  if(self.crypto && crypto.subtle){
+    try{ const key = await crypto.subtle.importKey("raw", k, { name:"HMAC", hash:"SHA-256" }, false, ["sign"]); return new Uint8Array(await crypto.subtle.sign("HMAC", key, d)); }catch(e){}
+  }
+  return hmacJs(k, d);
+}
+async function wfEncrypt(pw, nonce, text){
+  const pt = new Uint8Array(128), out = new Uint8Array(128);
+  pt.set(new TextEncoder().encode(text).slice(0, 128));
+  for(let i = 0; i < 4; i++){ const ks = await hmacRaw(pw, `wifi/enc|${nonce}|${i}`); for(let j = 0; j < 32; j++) out[i * 32 + j] = pt[i * 32 + j] ^ ks[j]; }
+  return Array.from(out, x=>x.toString(16).padStart(2, "0")).join("");
+}
+function wfSt(t, bad){ const e = $("wfSt"); e.textContent = t; e.style.color = bad ? "var(--er)" : ""; }
+function openWifi(uid){
+  const dev = state.devices[uid]; if(!dev) return;
+  WF.uid = uid; WF.touched = false; WF.nonce = "";
+  $("wfTitle").textContent = "WiFi · " + dev.name;
+  $("wfSsid").value = ""; $("wfPass").value = ""; $("wfPass").type = "password"; $("wfShow").checked = false;
+  $("wfErr").classList.remove("show"); $("wfList").innerHTML = "";
+  ["wfLoad","wfScan","wfSend"].forEach(i=>{ $(i).disabled = false; }); $("wfSend").textContent = "Kirim ke ESP32";
+  wfSt("Memuat data dari ESP32…"); $("wfModal").classList.add("show");
+  if(M.up) M.client.subscribe(tp(uid, "wifi/#"), { qos:1 });
+  wfLoad();
+}
+function closeWifi(){ WF.uid = null; WF.nonce = ""; clearTimeout(WF.tGet); clearTimeout(WF.tScan); clearTimeout(WF.tSet); $("wfPass").value = ""; $("wfModal").classList.remove("show"); }
+async function wfReq(act){
+  if(!M.up){ wfSt("MQTT belum terhubung.", true); return false; }
+  const ok = await sendSigned(WF.uid, act, "1", true);
+  if(!ok) wfSt("Password device dibatalkan / belum terverifikasi.", true);
+  return ok;
+}
+async function wfLoad(){
+  const uid = WF.uid; WF.touched = false; clearTimeout(WF.tGet); $("wfLoad").disabled = true;
+  if(await wfReq("wifi/get")) WF.tGet = setTimeout(()=>{ if(WF.uid === uid){ wfSt("ESP32 tidak menjawab (offline atau firmware belum mendukung WiFi).", true); $("wfLoad").disabled = false; } }, 8000);
+  else if(WF.uid === uid) $("wfLoad").disabled = false;
+}
+async function wfScan(){
+  const uid = WF.uid; clearTimeout(WF.tScan); $("wfScan").disabled = true; $("wfList").innerHTML = ""; wfSt("Memindai WiFi di ESP32… (sekitar 5–10 detik)");
+  if(await wfReq("wifi/scan")) WF.tScan = setTimeout(()=>{ if(WF.uid === uid){ wfSt("Tidak ada hasil scan dari ESP32.", true); $("wfScan").disabled = false; } }, 20000);
+  else if(WF.uid === uid) $("wfScan").disabled = false;
+}
+function wfOnMsg(uid, sub, raw){
+  if(uid !== WF.uid) return;
+  if(sub === ""){
+    clearTimeout(WF.tGet); $("wfLoad").disabled = false;
+    const v = raw.split("\t"), st = v[1] === "1" ? "Tersambung" : v[1] === "A" ? "Mode AP (belum tersambung ke router)" : "Tidak tersambung";
+    wfSt("SSID: " + (v[0] || "—") + " · " + st + (v[2] ? " · IP " + v[2] : "") + (v[3] ? " · " + v[3] + " dBm" : "") + (v[4] ? " · CH " + v[4] : ""));
+    if(!WF.touched && v[0]) $("wfSsid").value = v[0];
+  }else if(sub === "list"){   // balasan scan (JANGAN "wifi/scan": itu topik permintaan, pesan kita sendiri ikut terbaca)
+    clearTimeout(WF.tScan); $("wfScan").disabled = false;
+    const nets = raw.split("\n").map(l=>l.split("\t")).filter(a=>a[0] && a.length >= 2 && /^-?\d+$/.test(a[1])).slice(0, 20);
+    $("wfList").innerHTML = nets.map(a=>`<button type="button" class="wf-net" data-s="${escapeHtml(a[0])}"><span class="n">${escapeHtml(a[0])}</span><small>${a[2] === "1" ? "🔒 " : ""}${escapeHtml(a[1] || "")} dBm</small></button>`).join("");
+    wfSt(nets.length ? nets.length + " jaringan ditemukan. Ketuk untuk memilih." : "Tidak ada jaringan ditemukan.", !nets.length);
+  }else if(sub === "res"){
+    const p = raw.trim().split("|"); if(!WF.nonce || p[0] !== WF.nonce) return;
+    clearTimeout(WF.tSet); WF.nonce = ""; $("wfSend").disabled = false; $("wfSend").textContent = "Kirim ke ESP32";
+    if(p[1] === "ok"){ toast("WiFi diterima ESP32. Menyambung ulang…", "ok"); wfSt("Diterima. ESP32 sedang berpindah jaringan…"); $("wfPass").value = ""; setTimeout(()=>{ if(WF.uid === uid) wfLoad(); }, 9000); }
+    else{ const r = p[2] || "ditolak"; toast("WiFi ditolak: " + r, "err"); wfSt("Ditolak ESP32: " + r, true); }
+  }
+}
+async function wfSend(){
+  const uid = WF.uid, ssid = $("wfSsid").value.trim(), pass = $("wfPass").value, byt = x=>new TextEncoder().encode(x).length;
+  const err = m=>{ $("wfErr").textContent = m; $("wfErr").classList.add("show"); }, reset = ()=>{ $("wfSend").disabled = false; $("wfSend").textContent = "Kirim ke ESP32"; };
+  $("wfErr").classList.remove("show");
+  if(!ssid) return err("SSID wajib diisi.");
+  if(byt(ssid) > 32) return err("SSID maksimal 32 byte.");
+  if(pass && (pass.length < 8 || byt(pass) > 63)) return err("Password WPA minimal 8 dan maksimal 63 karakter (kosongkan bila jaringan terbuka).");
+  if(/[\t\r\n\0]/.test(ssid + pass)) return err("SSID/password tidak boleh memuat tab atau baris baru.");
+  if(!M.up) return err("MQTT belum terhubung.");
+  $("wfSend").disabled = true; $("wfSend").textContent = "Mengirim…";
+  const pw = await requirePw(uid);
+  if(!pw || WF.uid !== uid) return reset();
+  const nonce = rndNonce(); WF.nonce = nonce;
+  try{
+    const body = await wfEncrypt(pw, nonce, ssid + "\t" + pass), sig = await hmacHex(pw, `wifi/set|${nonce}|${body}`);
+    if(!M.up){ WF.nonce = ""; reset(); return err("MQTT terputus."); }
+    M.client.publish(tp(uid, "wifi/set"), `${body}|${nonce}|${sig}`, { qos:1, retain:false });
+  }catch(e){ WF.nonce = ""; reset(); return err("Gagal mengenkripsi data."); }
+  wfSt("Terkirim (terenkripsi). Menunggu jawaban ESP32…");
+  WF.tSet = setTimeout(()=>{ if(WF.nonce === nonce){ WF.nonce = ""; reset(); wfSt("Tidak ada jawaban. ESP32 mungkin sudah pindah jaringan — tekan Muat untuk memeriksa.", true); } }, 20000);
+}
+(function(){
+  $("wfLoad").onclick = wfLoad; $("wfScan").onclick = wfScan; $("wfSend").onclick = wfSend; $("wfClose").onclick = closeWifi;
+  $("wfShow").onchange = ()=>{ $("wfPass").type = $("wfShow").checked ? "text" : "password"; };
+  $("wfSsid").oninput = ()=>{ WF.touched = true; };
+  $("wfList").onclick = e=>{ const b = e.target.closest("[data-s]"); if(!b) return; $("wfSsid").value = b.dataset.s; WF.touched = true; document.querySelectorAll("#wfList .wf-net").forEach(x=>x.classList.toggle("sel", x === b)); $("wfPass").focus(); };
+  backdropClose($("wfModal"), closeWifi);
+})();
+
 /* ============ SUARA (Web Audio, tanpa berkas; dapat dimatikan di Pengaturan) ============ */
 let AC = null, sndLast = 0;
 const SND = {   // [nada awal Hz, nada akhir Hz, durasi dtk, gelombang, volume]
@@ -1863,10 +2021,19 @@ const SND = {   // [nada awal Hz, nada akhir Hz, durasi dtk, gelombang, volume]
   danger:[500,220,.1,"square",.18], toggle:[1100,800,.05,"triangle",.35], wheel:[2600,1200,.018,"square",.1],
   open:[500,900,.07,"sine",.3], close:[900,500,.07,"sine",.3], "toast-ok":[880,1320,.13,"sine",.4], "toast-err":[440,300,.16,"sine",.4], toast:[700,900,.1,"sine",.3],
 };
-function snd(type){
+const WS = { on:true, vol:17, f1:2600, f2:1200, dur:18, wave:"square", gap:0 };   // bunyi tik roda waktu (diatur di Pengaturan)
+const WS_DEF = Object.assign({}, WS), WS_KEY = "relay_wheel_snd_v1";
+let wheelLast = 0;
+function snd(type, force){
   if(!SETTINGS.sound) return;
-  const d = SND[type]; if(!d) return;
-  const now = performance.now(); if(type !== "wheel" && now - sndLast < 40) return; sndLast = now;
+  let d = SND[type]; if(!d) return;
+  const now = performance.now();
+  if(type === "wheel"){
+    if(!force && (!WS.on || now - wheelLast < WS.gap)) return;
+    wheelLast = now;
+    if(WS.vol <= 0) return;
+    d = [WS.f1, WS.f2, WS.dur / 1000, WS.wave, Math.max(.001, WS.vol / 100 * .6)];
+  }else{ if(now - sndLast < 40) return; sndLast = now; }
   try{
     AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if(AC.state === "suspended") AC.resume();
     const t = AC.currentTime, o = AC.createOscillator(), g = AC.createGain();
@@ -1889,6 +2056,38 @@ new MutationObserver(ms=>ms.forEach(m=>{
   const was = (m.oldValue || "").split(" ").includes("show"), now = el.classList.contains("show");
   if(was !== now) snd(now ? "open" : "close");
 })).observe(document.body, { subtree:true, attributes:true, attributeFilter:["class"], attributeOldValue:true });
+/* ---- pengaturan bunyi roda waktu (Pengaturan > Suara roda waktu) ---- */
+(function(){
+  const box = document.getElementById("wsBox"); if(!box) return;
+  const R = [["vol","Volume",0,100,1,"%"],["f1","Nada awal",200,6000,50," Hz"],["f2","Nada akhir",200,6000,50," Hz"],["dur","Durasi bunyi",5,120,1," ms"],["gap","Jeda minimum antar bunyi",0,150,5," ms"]];
+  const WAVES = ["sine","triangle","square","sawtooth"], ins = {}, outs = {};
+  try{
+    const o = JSON.parse(localStorage.getItem(WS_KEY) || "{}") || {};
+    if(typeof o.on === "boolean") WS.on = o.on;
+    if(WAVES.includes(o.wave)) WS.wave = o.wave;
+    R.forEach(r=>{ const n = Number(o[r[0]]); if(o[r[0]] != null && o[r[0]] !== "" && isFinite(n)) WS[r[0]] = Math.min(r[3], Math.max(r[2], n)); });
+  }catch(e){}
+  const save = ()=>{ try{ localStorage.setItem(WS_KEY, JSON.stringify(WS)); }catch(e){} };
+  function paint(){
+    R.forEach(r=>{ ins[r[0]].value = WS[r[0]]; outs[r[0]].textContent = WS[r[0]] + r[5]; });
+    const b = document.getElementById("wsOn"); b.className = "sw" + (WS.on ? " on" : ""); b.setAttribute("aria-checked", String(WS.on));
+    document.querySelectorAll("#wsWave [data-wave]").forEach(x=>x.setAttribute("aria-checked", String(x.dataset.wave === WS.wave)));
+  }
+  let lastPrev = 0;
+  const preview = ()=>{ const t = performance.now(); if(t - lastPrev < 60) return; lastPrev = t; snd("wheel", true); };
+  R.forEach(r=>{
+    const l = document.createElement("label"); l.className = "uz";
+    l.innerHTML = "<span>" + r[1] + "</span><output></output><input type=\"range\" min=\"" + r[2] + "\" max=\"" + r[3] + "\" step=\"" + r[4] + "\">";
+    ins[r[0]] = l.querySelector("input"); outs[r[0]] = l.querySelector("output");
+    ins[r[0]].addEventListener("input", ()=>{ WS[r[0]] = Number(ins[r[0]].value); paint(); save(); if(r[0] !== "gap") preview(); });
+    box.appendChild(l);
+  });
+  document.getElementById("wsOn").onclick = ()=>{ WS.on = !WS.on; paint(); save(); };
+  document.getElementById("wsWave").addEventListener("click", e=>{ const b = e.target.closest("[data-wave]"); if(!b) return; WS.wave = b.dataset.wave; paint(); save(); snd("wheel", true); });
+  document.getElementById("wsTest").onclick = ()=>{ for(let i = 0; i < 10; i++) setTimeout(()=>snd("wheel", true), 120 + i * Math.max(55, WS.gap)); };
+  document.getElementById("wsReset").onclick = ()=>{ Object.assign(WS, WS_DEF); paint(); save(); snd("wheel", true); };
+  paint();
+})();
 /* ============ BAHASA (id / en, dipilih di Pengaturan) ============
    Teks asli (Indonesia) tetap di kode; mode English menerjemahkan teks yang cocok persis lewat kamus di bawah. Teks tanpa entri tetap Indonesia. */
 const EN = {
@@ -2239,6 +2438,7 @@ function openMenu(uid, chNum){
       <div class="menu-label">${escapeHtml(dev.name)} · ${escapeHtml(uid)}</div>
       <button data-act="refresh-all">${ic("refresh", 18)} Refresh semua relay</button>
       ${Object.keys(dev.channels).length > 1 ? `<button data-act="sched-dev">${ic("clock", 18)} Jadwal device</button>` : ""}
+      <button data-act="wifi-dev">${ic("wifi", 18)} Kustomisasi WiFi</button>
       <button data-act="edit-device">${ic("edit", 18)} Edit device</button>
       <button data-act="change-uid">${ic("swap", 18)} Ganti UID</button>
       <button data-act="duplicate-device">${ic("copy", 18)} Duplikat device</button>
@@ -2318,6 +2518,7 @@ async function handleMenuAction(act){
     return;
   }
   if(act === "sched-ch"){ openSched("relay", uid, chNum); return; }
+  if(act === "wifi-dev"){ openWifi(uid); return; }
   if(act === "sched-dev"){ openSched("device", uid); return; }
   if(act === "edit-ch"){ openEditModal(uid, chNum); return; }
   if(act === "delete-device"){
