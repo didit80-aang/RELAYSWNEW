@@ -890,6 +890,7 @@ html,*{scrollbar-width:none;-ms-overflow-style:none}
     <h3 id="schTitle">Jadwal relay</h3>
     <div class="sch-list" id="schList"></div>
     <div id="schOthers"></div>
+    <small id="schOff" style="display:none;color:var(--mut);margin-bottom:6px"></small>
     <div class="sch-add"><button type="button" class="btn btn-ghost" id="schAddOn">+ ON</button><button type="button" class="btn btn-ghost" id="schAddOff">+ OFF</button></div>
     <small style="color:var(--mut)">Jadwal disimpan & dijalankan oleh ESP32 (maks. 20 event per device), akurat per detik, dan sinkron di semua HP.</small>
     <div class="modal-actions"><button type="button" class="btn btn-ghost" id="schCancel">Batal</button><button type="button" class="btn btn-primary" id="schSave">Simpan ke ESP32</button></div>
@@ -1362,7 +1363,7 @@ function mqttPublishIcons(uid, prompt = true){
 async function pushConfig(uid){
   const dev = state.devices[uid]; if(!dev) return;
   dev.iconsDirty = true; dev.namesDirty = true;
-  if(!M.up) return;                                  // terkirim otomatis saat tersambung & password terverifikasi
+  if(!M.up || devOffline(dev)) return;              // MQTT putus / device offline: dilewati, terkirim otomatis saat tersambung & password terverifikasi
   const pw = await requirePw(uid);
   if(!pw){ toast("Perubahan belum dikirim ke device (password dibatalkan)", "err"); return; }
   dev.iconsDirty = false; dev.namesDirty = false;
@@ -1837,12 +1838,22 @@ function schOnMsg(uid, raw){
   if(SCH.wait){
     if(SCH.wait.has(uid) && schSig(list) === SCH.exp.get(uid)){
       SCH.wait.delete(uid);
-      if(!SCH.wait.size){ clearTimeout(SCH.tm); closeSched(); toast("Jadwal tersimpan & dikonfirmasi ESP32", "ok"); }
+      if(!SCH.wait.size){
+        clearTimeout(SCH.tm); const sk = SCH.skipped || []; closeSched();
+        toast(sk.length ? "Jadwal tersimpan. Dilewati (offline): " + sk.join(", ") : "Jadwal tersimpan & dikonfirmasi ESP32", "ok");
+      }
     }
     return;
   }
-  if(!SCH.dirty){ SCH.ev = schScope(SCH); renderSched(); } else renderSchOthers();
+  if(!SCH.dirty && !SCH.busy){
+    // Balasan ESP32 yang isinya sama (mis. hasil sched/get) JANGAN membangun ulang daftar: objek event yang sedang
+    // dikonfirmasi/diedit akan menjadi usang sehingga aksi (mis. hapus) diam-diam batal & harus diulang.
+    const nev = schScope(SCH);
+    if(evListKey(nev) !== evListKey(SCH.ev)){ SCH.ev = nev; renderSched(); }
+  }else renderSchOthers();
 }
+const evKey = e => [e.t, e.sec, e.d, e.a, e.g, e.name, e.devs ? [...e.devs].sort().join("|") : ""].join(".");
+const evListKey = l => l.map(evKey).sort().join(",");
 function resetSaveBtn(){ const b = $("schSave"); b.disabled = false; b.textContent = "Simpan ke ESP32"; }
 function openSched(scope, uid, n){
   let name = "";
@@ -1886,6 +1897,8 @@ function renderSched(){
     <button type="button" class="sch-body" data-a="edit" aria-label="Ubah waktu dan hari"><span class="sch-time2">${secStr(e.sec)}</span><span class="sch-sub">${daysTxt(e.d)}${e.a ? "" : " · Nonaktif"}</span>${ic("edit", 16)}</button>${SCH.scope === "global" ? schDevBtn(e) : ""}</div>`).join("")
     : '<div class="sch-empty">Belum ada event. Tambahkan ON atau OFF.</div>';
   $("schAddOn").disabled = $("schAddOff").disabled = SCH.ev.length >= SCH_MAX;
+  const off = SCH.scope === "global" ? Object.keys(state.devices).filter(u=>devOffline(state.devices[u])).map(u=>state.devices[u].name) : [], offEl = $("schOff");
+  offEl.textContent = off.length ? "Device offline akan dilewati: " + off.join(", ") : ""; offEl.style.display = off.length ? "block" : "none";
   renderSchOthers();
 }
 // Nama bawaan: "ON event1", "OFF event2", ... sesuai urutan penambahan
@@ -1911,17 +1924,22 @@ $("schList").addEventListener("input", e=>{ const c = e.target.closest(".sch-ev"
 $("schList").onclick = async e=>{
   const b = e.target.closest("[data-a]"), card = e.target.closest(".sch-ev"); if(!b || !card || !SCH || SCH.wait || b.dataset.a === "name") return;
   const i = +card.dataset.i, ev = SCH.ev[i], a = b.dataset.a;
-  if(a === "devs"){ openSd(ev); return; }
+  if(a === "devs"){ SCH.busy = (SCH.busy || 0) + 1; openSd(ev); return; }
   if(a === "edit"){
     SCH.dirty = true;
     openTp(ev.sec, ev.d, (sec, d)=>{ if(!SCH) return; ev.sec = sec; ev.d = d; renderSched(); }, ev.t ? "Waktu ON" : "Waktu OFF");
     return;
   }
   if(a === "del"){                                    // konfirmasi dulu sebelum menghapus event jadwal
-    const cur = SCH, label = ev.name || (ev.t ? "ON" : "OFF");
-    if(!await askConfirm(`Hapus jadwal "${label}" (${ev.t ? "ON" : "OFF"} ${secStr(ev.sec)} · ${daysTxt(ev.d)})?`, "Hapus")) return;
+    const cur = SCH, label = ev.name || (ev.t ? "ON" : "OFF"), key = evKey(ev);
+    cur.busy = (cur.busy || 0) + 1;                   // tahan sinkronisasi MQTT selama dialog terbuka
+    const yes = await askConfirm(`Hapus jadwal "${label}" (${ev.t ? "ON" : "OFF"} ${secStr(ev.sec)} · ${daysTxt(ev.d)})?`, "Hapus");
+    cur.busy = Math.max(0, (cur.busy || 1) - 1);
     if(SCH !== cur || cur.wait) return;               // jendela jadwal sudah ditutup / sedang menyimpan
-    const j = cur.ev.indexOf(ev); if(j < 0) return;
+    if(!yes){ if(!cur.dirty && !cur.busy){ cur.ev = schScope(cur); renderSched(); } return; }
+    let j = cur.ev.indexOf(ev);
+    if(j < 0) j = cur.ev.findIndex(x=>evKey(x) === key);   // cadangan bila objek sempat diganti
+    if(j < 0) return;
     cur.ev.splice(j, 1); cur.dirty = true; renderSched();
     return;
   }
@@ -1931,15 +1949,20 @@ $("schList").onclick = async e=>{
 $("schSave").onclick = ()=>{
   const cur = SCH; if(!cur || cur.wait) return;
   if(!M.up) return toast("MQTT belum terhubung", "err");
-  const uids = cur.scope === "global" ? Object.keys(state.devices) : [cur.uid], plan = uids.map(u=>[u, schCompose(cur, u)]);
+  const all = cur.scope === "global" ? Object.keys(state.devices) : [cur.uid];
+  // Device offline DILEWATI (tidak dikirim, tidak ditunggu); device online tetap diproses
+  const uids = all.filter(u=>!devOffline(state.devices[u])), skipped = all.filter(u=>devOffline(state.devices[u]));
+  if(!uids.length) return toast(cur.scope === "global" ? "Semua device offline, jadwal tidak dikirim" : "Device offline, jadwal tidak dikirim", "err");
+  const plan = uids.map(u=>[u, schCompose(cur, u)]);
   if(plan.some(x=>x[1].length > SCH_MAX)) return toast("Batas 20 event per device terlampaui", "err");
+  cur.skipped = skipped.map(u=>state.devices[u].name);
   cur.wait = new Set(uids); cur.exp = new Map(plan.map(([u, l])=>[u, schSig(l)]));
   const btn = $("schSave"); btn.disabled = true; btn.textContent = "Menyimpan…";
   plan.forEach(([u, l])=>{ if(!sendPlain(u, "sched/set", schBody(l))) cur.wait.delete(u); });
   if(!cur.wait.size){ cur.wait = null; resetSaveBtn(); return toast("MQTT belum terhubung", "err"); }
   cur.tm = setTimeout(()=>{
     if(SCH !== cur) return;
-    const miss = [...cur.wait]; cur.wait = null; resetSaveBtn();
+    const miss = [...cur.wait].map(u=>state.devices[u] ? state.devices[u].name : u); cur.wait = null; resetSaveBtn();
     toast(cur.scope === "global" ? "Tidak ada balasan dari: " + miss.join(", ") : "ESP32 tidak membalas, jadwal belum tersimpan", "err");
   }, 8000);
 };
@@ -1951,11 +1974,11 @@ function sdSync(){
   $("sdAll").textContent = SD.sel.size === n ? "Kosongkan" : "Pilih semua";
 }
 function sdRender(){
-  $("sdList").innerHTML = orderedUids().map(u=>{ const d = state.devices[u]; return `<label class="g-opt"><input type="checkbox" data-u="${u}"${SD.sel.has(u) ? " checked" : ""}><span>${iconOf(d.icon)}</span><span class="g-on">${escapeHtml(d.name)}</span><small class="g-dev">${u}</small></label>`; }).join("");
+  $("sdList").innerHTML = orderedUids().map(u=>{ const d = state.devices[u]; return `<label class="g-opt"><input type="checkbox" data-u="${u}"${SD.sel.has(u) ? " checked" : ""}><span>${iconOf(d.icon)}</span><span class="g-on">${escapeHtml(d.name)}</span><small class="g-dev">${u}${devOffline(d) ? " · Offline" : ""}</small></label>`; }).join("");
   sdSync();
 }
 function openSd(ev){ SD = { ev, sel:new Set([...(ev.devs || [])].filter(u=>state.devices[u])) }; $("sdErr").classList.remove("show"); sdRender(); $("sdModal").classList.add("show"); }
-function closeSd(){ SD = null; $("sdModal").classList.remove("show"); }
+function closeSd(){ if(SD && SCH && SCH.busy) SCH.busy--; SD = null; $("sdModal").classList.remove("show"); }
 $("sdList").addEventListener("change", e=>{ const u = e.target.dataset.u; if(!u || !SD) return; if(e.target.checked) SD.sel.add(u); else SD.sel.delete(u); $("sdErr").classList.remove("show"); sdSync(); });
 $("sdAll").onclick = ()=>{ if(!SD) return; const all = Object.keys(state.devices); SD.sel = SD.sel.size === all.length ? new Set() : new Set(all); sdRender(); };
 $("sdCancel").onclick = closeSd;
@@ -2197,9 +2220,282 @@ const EN = {
 "Jadwal disimpan & dijalankan oleh ESP32 (maks. 20 event per device), akurat per detik, dan sinkron di semua HP.":"Schedules are stored & run by the ESP32 (max 20 events per device), accurate to the second, and synced across all phones.",
 "Belum ada event. Tambahkan ON atau OFF.":"No events yet. Add an ON or OFF.","Jadwal tersimpan di ESP32":"Schedule saved to ESP32","ESP32 tidak membalas, jadwal belum tersimpan":"ESP32 did not reply, schedule not saved","MQTT belum terhubung":"MQTT not connected","Batas 20 event per device terlampaui":"Limit of 20 events per device exceeded",
 "Sen":"Mon","Sel":"Tue","Rab":"Wed","Kam":"Thu","Jum":"Fri","Sab":"Sat","Min":"Sun","Terhubung":"Connected","Terputus":"Disconnected","Gagal":"Failed","Setiap hari":"Every day","Hari kerja":"Weekdays","Akhir pekan":"Weekends","Menyimpan…":"Saving…","Pilih minimal 1 hari":"Pick at least 1 day","Aktifkan jadwal":"Enable schedule","Ubah waktu dan hari":"Edit time and days","Nonaktif":"Disabled","Aktif":"Enabled","Jadwal tersimpan & dikonfirmasi ESP32":"Schedule saved & confirmed by ESP32"};
-const ENX = [[/^(\d+) device$/, "$1 device(s)"], [/^(\d+) dipilih$/, "$1 selected"], [/^(\d+) relay$/, "$1 relays"]];
+Object.assign(EN, {
+"5 karakter, lihat di Serial Monitor ESP32 (115200) saat booting. Setelah mengisi UID: tekan": "5 characters, shown in the ESP32 Serial Monitor (115200) at boot. After entering the UID, press",
+"untuk mengambil nama & ikon yang tersimpan di ESP32, atau isi manual di bawah. Password device diminta (password awal tertera di Serial Monitor atau panel pengaturan AP).": "to fetch the name & icons stored on the ESP32, or fill them in manually below. The device password is required (the initial password is shown in the Serial Monitor or the AP settings panel).",
+"Atur bunyi tik": "Adjust tick sound",
+"Gelombang": "Waveform",
+"Kotak": "Square",
+"Segitiga": "Triangle",
+"Gergaji": "Sawtooth",
+"Bunyi “tik” tiap angka berganti di pemilih jam : menit : detik. Butuh": "A “tick” sound each time a number changes in the hour : minute : second picker. Requires",
+"di atas aktif.": "above to be on.",
+"Suara roda waktu (scroll tak terbatas)": "Time wheel sound (infinite scroll)",
+"Ukuran tampilan": "Display size",
+"Langsung diterapkan saat slider digeser, di semua ukuran layar. Panel memudar agar hasilnya terlihat di belakang.": "Applied instantly as the slider moves, on all screen sizes. The panel fades so you can see the result behind it.",
+"Atur ukuran (px)": "Adjust sizes (px)",
+"Rapat": "Compact",
+"Awal": "Default",
+"WiFi device": "Device WiFi",
+"Belum dimuat.": "Not loaded yet.",
+"Muat dari ESP32": "Load from ESP32",
+"Password WiFi": "WiFi password",
+"Kosongkan bila jaringan terbuka": "Leave empty for an open network",
+"Nama WiFi": "WiFi name",
+"Dikirim terenkripsi dengan password device & tidak disimpan di dashboard. Bila gagal tersambung, ESP32 sebaiknya kembali ke jaringan lama / mode AP.": "Sent encrypted with the device password & not stored in the dashboard. If the connection fails, the ESP32 should return to the old network / AP mode.",
+"Kirim ke ESP32": "Send to ESP32",
+"Device untuk event ini": "Devices for this event",
+"Pilih device untuk event ini": "Choose devices for this event",
+"Pilih device": "Select device",
+"Umum": "General",
+"Lampu": "Lamps",
+"Rumah": "Home",
+"Elektronik": "Electronics",
+"Iklim & Air": "Climate & Water",
+"Kebun & Ternak": "Garden & Livestock",
+"Kendaraan": "Vehicles",
+"Bangunan": "Buildings",
+"Lainnya": "Others",
+"Pill status (Terhubung · jam · FPS)": "Status pill (Connected · clock · FPS)",
+"Tinggi pill": "Pill height",
+"Ukuran font (sama untuk ketiganya)": "Font size (same for all three)",
+"Padding kiri-kanan pill": "Pill left-right padding",
+"Jarak antar pill": "Pill spacing",
+"Header": "Header",
+"Padding atas-bawah header": "Header top-bottom padding",
+"Jarak antar elemen header": "Header element spacing",
+"Ukuran logo": "Logo size",
+"Font judul": "Title font",
+"Ukuran tombol ikon": "Icon button size",
+"Toolbar": "Toolbar",
+"Jarak header ke pencarian": "Header to search spacing",
+"Jarak antar baris toolbar": "Toolbar row spacing",
+"Tinggi kolom cari": "Search field height",
+"Tinggi tombol Atur": "Edit button height",
+"Tab": "Tabs",
+"Tinggi tab": "Tab height",
+"Font tab": "Tab font",
+"Font angka badge": "Badge number font",
+"Padding wadah tab": "Tab container padding",
+"Tombol Nyalakan / Matikan semua": "Turn all on / off buttons",
+"Tinggi tombol": "Button height",
+"Font tombol": "Button font",
+"Jarak toolbar ke kartu": "Toolbar to card spacing",
+"Jarak antar kartu": "Card spacing",
+"Padding kepala kartu": "Card header padding",
+"Jarak antar relay": "Relay spacing",
+"Tinggi baris relay": "Relay row height",
+"Tinggi tombol ON/OFF": "ON/OFF button height",
+"Tinggi Semua ON/OFF": "All ON/OFF height",
+"Volume": "Volume",
+"Nada awal": "Start tone",
+"Nada akhir": "End tone",
+"Durasi bunyi": "Sound duration",
+"Jeda minimum antar bunyi": "Minimum gap between sounds",
+"Password minimal 4 karakter.": "Password must be at least 4 characters.",
+"Memeriksa…": "Checking…",
+"Password salah.": "Wrong password.",
+"Terlalu banyak percobaan salah. Tunggu 1 menit lalu coba lagi.": "Too many wrong attempts. Wait 1 minute and try again.",
+"Device tidak menjawab. Pastikan UID benar & ESP32 online.": "The device did not respond. Make sure the UID is correct & the ESP32 is online.",
+"MQTT belum terhubung.": "MQTT is not connected.",
+"Gagal mengirim perintah": "Failed to send command",
+"Perubahan belum dikirim ke device (password dibatalkan)": "Changes not sent to the device (password cancelled)",
+"Menunggu…": "Waiting…",
+"Menunggu data…": "Waiting for data…",
+"Kirim…": "Sending…",
+"Cek…": "Checking…",
+"Sinkronisasi…": "Syncing…",
+"Verifikasi…": "Verifying…",
+"Memuat…": "Loading…",
+"Seret untuk mengubah urutan": "Drag to reorder",
+"Menu relay": "Relay menu",
+"Menu device": "Device menu",
+"Menu grup": "Group menu",
+"Saklar": "Switch",
+"Semua ON": "All ON",
+"Semua OFF": "All OFF",
+"Pilih grup": "Select group",
+"Belum ada device terdaftar": "No devices registered yet",
+"Belum ada device terdaftar.": "No devices registered yet.",
+"Tekan tombol": "Press the",
+"untuk menambahkan device. Setiap device berisi hingga": "button to add a device. Each device holds up to",
+"4 relay": "4 relays",
+"dengan nama dan ikon sendiri. UID 5 karakter ditampilkan di Serial Monitor ESP32 saat booting (": "each with its own name and icon. The 5-character UID is shown in the ESP32 Serial Monitor at boot (",
+"Tekan": "Press",
+"untuk menambahkan.": "to add one.",
+"Tambah Device Pertama": "Add First Device",
+"Cari grup atau relay…": "Search group or relay…",
+"Tambah grup": "Add group",
+"Refresh semua relay": "Refresh all relays",
+"Kustomisasi WiFi": "Customize WiFi",
+"Edit device": "Edit device",
+"Ganti UID": "Change UID",
+"Duplikat device": "Duplicate device",
+"Reset device": "Reset device",
+"Hapus device": "Delete device",
+"Refresh relay": "Refresh relay",
+"Edit nama & ikon": "Edit name & icon",
+"Edit grup": "Edit group",
+"Duplikat grup": "Duplicate group",
+"Hapus grup": "Delete group",
+"Refresh semua relay…": "Refreshing all relays…",
+"Relay sedang memproses perintah": "The relay is processing a command",
+"Masih sinkronisasi, tunggu sebentar": "Still syncing, please wait",
+"Pengaturan dikembalikan": "Settings restored",
+"Isi UID device baru, lalu simpan": "Enter the new device UID, then save",
+"Device dikembalikan": "Device restored",
+"Minimal 1 relay per device": "At least 1 relay per device",
+"Tidak bisa dikembalikan": "Cannot be restored",
+"Relay dikembalikan": "Relay restored",
+"Urungkan": "Undo",
+"Semua device dikembalikan": "All devices restored",
+"Grup dikembalikan": "Group restored",
+"Duplikat Device": "Duplicate Device",
+"Edit Device": "Edit Device",
+"Edit Grup": "Edit Group",
+"Duplikat Grup": "Duplicate Group",
+"Ikon": "Icon",
+"Nama relay": "Relay name",
+"Tidak ada ikon yang cocok.": "No matching icons.",
+"Tidak ada data dari ESP32 untuk UID ini. Pastikan UID benar & ESP32 online, atau isi manual.": "No data from the ESP32 for this UID. Make sure the UID is correct & the ESP32 is online, or fill it in manually.",
+"ESP32 ditemukan, tetapi belum pernah diatur. Isi nama & ikon secara manual lalu simpan.": "ESP32 found, but it has never been configured. Fill in the name & icons manually, then save.",
+"Isi UID 5 karakter dulu, lalu tekan Load data.": "Enter the 5-character UID first, then press Load data.",
+"MQTT belum terhubung. Tunggu status Terhubung, atau isi manual.": "MQTT is not connected. Wait for the Connected status, or fill in manually.",
+"Nama device tidak boleh kosong.": "Device name cannot be empty.",
+"Nama device maksimal 32 karakter.": "Device name: maximum 32 characters.",
+"Device diperbarui": "Device updated",
+"Relay diperbarui": "Relay updated",
+"Device ditambahkan": "Device added",
+"MQTT belum terhubung. Password device diverifikasi lewat MQTT.": "MQTT is not connected. The device password is verified via MQTT.",
+"UID baru sama dengan UID sekarang.": "The new UID is the same as the current one.",
+"Semua relay anggota sudah dihapus. Edit grup untuk memilih ulang.": "All member relays have been deleted. Edit the group to choose again.",
+"Tambah device dulu": "Add a device first",
+"Nama grup tidak boleh kosong.": "Group name cannot be empty.",
+"Nama grup maksimal 24 karakter.": "Group name: maximum 24 characters.",
+"Pilih minimal 1 relay.": "Select at least 1 relay.",
+"Ya, masukkan": "Yes, add them",
+"Grup diperbarui": "Group updated",
+"Grup ditambahkan": "Group added",
+"Nyalakan SEMUA relay di semua grup?": "Turn ON ALL relays in all groups?",
+"Nyalakan": "Turn on",
+"Nyalakan SEMUA relay di semua device?": "Turn ON ALL relays on all devices?",
+"Hapus SEMUA device dari dashboard ini?": "Delete ALL devices from this dashboard?",
+"Hapus semua": "Delete all",
+"Perintah massal masih berjalan — tunggu atau tekan Batal": "A bulk command is still running — wait or press Cancel",
+"MQTT terputus — perintah massal dihentikan": "MQTT disconnected — bulk command stopped",
+"Tidak ada hari": "No days",
+"Jadwal aktif:": "Active schedule:",
+"Jadwal Global diubah lewat ikon jam di header.": "Global schedules are edited via the clock icon in the header.",
+"Jadwal Device diubah lewat menu ⋯ device › Jadwal device.": "Device schedules are edited via the ⋯ device menu › Device schedule.",
+"Jadwal Relay diubah lewat menu ⋯ relay › Jadwal relay.": "Relay schedules are edited via the ⋯ relay menu › Relay schedule.",
+"· Nonaktif": "· Disabled",
+"Kosongkan": "Clear",
+"Pilih minimal 1 device.": "Select at least 1 device.",
+"Semua device offline, jadwal tidak dikirim": "All devices are offline, schedule not sent",
+"Device offline, jadwal tidak dikirim": "Device is offline, schedule not sent",
+"Tidak ada balasan dari:": "No reply from:",
+"Jadwal disimpan & dijalankan oleh ESP32 (maks. 20 event per device), akurat per detik, dan sinkron di semua HP.": "Schedules are stored & run by the ESP32 (max 20 events per device), accurate to the second, and synced across all phones.",
+"Jadwal tersimpan & dikonfirmasi ESP32": "Schedule saved & confirmed by ESP32",
+"Jadwal tersimpan di ESP32": "Schedule saved to ESP32",
+"WiFi ·": "WiFi ·",
+"Memuat data dari ESP32…": "Loading data from ESP32…",
+"Password device dibatalkan / belum terverifikasi.": "Device password cancelled / not verified.",
+"Tidak ada hasil scan dari ESP32.": "No scan results from the ESP32.",
+"Tersambung": "Connected",
+"Tidak tersambung": "Not connected",
+"Mode AP (belum tersambung ke router)": "AP mode (not connected to a router yet)",
+"Tidak ada jaringan ditemukan.": "No networks found.",
+"WiFi diterima ESP32. Menyambung ulang…": "WiFi accepted by the ESP32. Reconnecting…",
+"Diterima. ESP32 sedang berpindah jaringan…": "Accepted. The ESP32 is switching networks…",
+"SSID wajib diisi.": "SSID is required.",
+"SSID maksimal 32 byte.": "SSID: maximum 32 bytes.",
+"SSID/password tidak boleh memuat tab atau baris baru.": "SSID/password must not contain tabs or line breaks.",
+"Password WPA minimal 8 dan maksimal 63 karakter (kosongkan bila jaringan terbuka).": "WPA password must be 8 to 63 characters (leave empty for an open network).",
+"MQTT terputus.": "MQTT disconnected.",
+"Gagal mengenkripsi data.": "Failed to encrypt data.",
+"Terkirim (terenkripsi). Menunggu jawaban ESP32…": "Sent (encrypted). Waiting for the ESP32 to reply…",
+"Memindai WiFi di ESP32… (sekitar 5–10 detik)": "Scanning WiFi on the ESP32… (about 5–10 seconds)",
+"ESP32 tidak menjawab (offline atau firmware belum mendukung WiFi).": "The ESP32 did not respond (offline or the firmware does not support WiFi yet).",
+"Tidak ada jawaban. ESP32 mungkin sudah pindah jaringan — tekan Muat untuk memeriksa.": "No reply. The ESP32 may have switched networks — press Load to check.",
+"baru saja": "just now",
+"FPS terburuk:": "Worst FPS:",
+"Hapus": "Delete",
+"Konfirmasi": "Confirm"
+});
+Object.assign(EN, {
+"Seret pegangan titik-titik untuk memindah urutan grup (atau fokus ke pegangan lalu tekan tombol panah). Ketuk kartu untuk memilih.":"Drag the dotted handle to reorder groups (or focus the handle and use the arrow keys). Tap a card to select it.",
+"Seret pegangan titik-titik untuk memindah urutan device atau relay (atau fokus ke pegangan lalu tekan tombol panah). Ketuk kartu untuk memilih.":"Drag the dotted handle to reorder devices or relays (or focus the handle and use the arrow keys). Tap a card to select it."
+});
+Object.assign(EN, { "Menambah relay memakai nomor kosong terkecil; mengurangi menghapus relay bernomor terbesar (bisa diurungkan).":"Adding a relay uses the smallest free number; reducing the count deletes the highest-numbered relay (can be undone)." });
+Object.assign(EN, { "kosong":"empty" });
+const DW = "(?:Sen|Sel|Rab|Kam|Jum|Sab|Min)", trDays = x=>EN[x] || x.split(" ").map(w=>EN[w] || w).join(" "), q = x=>x;
+const ENX = [
+  [/^(\d+) device$/, (_, n)=>n + (n === "1" ? " device" : " devices")],
+  [/^(\d+) relay$/, (_, n)=>n + (n === "1" ? " relay" : " relays")],
+  [/^· (\d+) relay$/, (_, n)=>"· " + n + (n === "1" ? " relay" : " relays")],
+  [/^(\d+) dipilih$/, "$1 selected"],
+  [/^(\d+)\/(\d+) menyala$/, "$1/$2 on"],
+  [/^· (\d+) offline$/, "· $1 offline"],
+  [/^(\d+) \/ (\d+) device$/, "$1 / $2 devices"],
+  [/^(\d+)\/(\d+) device · (.*)$/, "$1/$2 devices · $3"],
+  [/^Semua device \((\d+)\)$/, "All devices ($1)"],
+  [new RegExp("^(Setiap hari|Hari kerja|Akhir pekan|Tidak ada hari|" + DW + "(?: " + DW + ")*)( · Nonaktif)?$"), (_, d, n)=>trDays(d) + (n ? " · Disabled" : "")],
+  [/^Jadwal global \((\d+) event\)$/, "Global schedule ($1 events)"],
+  [/^Jadwal aktif: (.+)$/, "Active schedule: $1"],
+  [/^Jadwal lain yang juga berlaku di (relay|device) ini$/, "Other schedules that also apply to this $1"],
+  [/^Device offline akan dilewati: (.+)$/, "Offline devices will be skipped: $1"],
+  [/^Tidak ada balasan dari: (.+)$/, "No reply from: $1"],
+  [/^Jadwal tersimpan\. Dilewati \(offline\): (.+)$/, "Schedule saved. Skipped (offline): $1"],
+  [/^Hapus jadwal "(.*)" \((ON|OFF) (\S+) · (.+)\)\?$/, (_, n, t, tm, d)=>`Delete schedule "${n}" (${t} ${tm} · ${trDays(d)})?`],
+  [/^Menu relay (.+)$/, "Relay menu $1"],
+  [/^Saklar (.+)$/, "Switch $1"],
+  [/^Nama relay (\d+)$/, "Relay $1 name"],
+  [/^Edit Relay (\d+)$/, "Edit Relay $1"],
+  [/^Ikon relay (\d+), kode (.+)$/, "Relay $1 icon, code $2"],
+  [/^Ikon device(?:,| ·) kode (.+)$/, "Device icon, code $1"],
+  [/^Geser (relay \d+|device|grup) \(atau tombol panah\)$/, (_, w)=>"Move " + w.replace("grup", "group") + " (or use the arrow keys)"],
+  [/^Data dimuat dari ESP32 \((\d+) relay\)\. Silakan edit bila perlu, lalu Simpan\.$/, "Data loaded from the ESP32 ($1 relays). Edit if needed, then Save."],
+  [/^Ikon grup, kode (.+)$/, "Group icon, code $1"],
+  [/^Ikon (.+), kode (.+)$/, "$1 icon, code $2"],
+  [/^Kode ikon: (.+)$/, "Icon code: $1"],
+  [/^(.+) · kode (.+)$/, "$1 · code $2"],
+  [/^"(.*)" sedang offline$/, '"$1" is offline'],
+  [/^Refresh relay (\d+)…$/, "Refreshing relay $1…"],
+  [/^Reset "(.*)" ke pengaturan awal\? Nama & ikon device serta semua relay dikembalikan ke default\. UID tidak berubah\.$/, 'Reset "$1" to default settings? The device name & icon and all relays are restored to default. The UID stays the same.'],
+  [/^Device "(.*)" direset$/, 'Device "$1" reset'],
+  [/^Device "(.*)" dihapus$/, 'Device "$1" deleted'],
+  [/^Relay (\d+) "(.*)" dihapus$/, 'Relay $1 "$2" deleted'],
+  [/^(\d+) relay dihapus dari "(.*)"$/, '$1 relay(s) removed from "$2"'],
+  [/^(\d+) relay ditambahkan$/, "$1 relay(s) added"],
+  [/^UID "(.*)" sudah dipakai oleh "(.*)"\.$/, 'UID "$1" is already used by "$2".'],
+  [/^UID harus 5 karakter \[0-9a-z\]\.$/, "The UID must be 5 characters [0-9a-z]."],
+  [/^Nama "(.*)" sudah dipakai device UID (.+)\.$/, 'Name "$1" is already used by device UID $2.'],
+  [/^Nama relay (\d+) maksimal 24 karakter\.$/, "Relay $1 name: maximum 24 characters."],
+  [/^Nama relay "(.*)" kembar dengan relay (\d+)\.$/, 'Relay name "$1" is the same as relay $2.'],
+  [/^Nama "(.*)" sudah dipakai grup lain\.$/, 'Name "$1" is already used by another group.'],
+  [/^Masukkan password device UID (.+)\. Password awal tertera di Serial Monitor ESP32 dan di panel pengaturan AP\.$/, "Enter the password for device UID $1. The initial password is shown in the ESP32 Serial Monitor and in the AP settings panel."],
+  [/^Pindahkan "(.*)" \(UID (.+)\) ke ESP32 dengan UID lain\. Pengaturan dashboard dipertahankan; bila ESP32 baru sudah pernah diatur, nama & ikon mengikuti ESP32 tersebut\.$/, 'Move "$1" (UID $2) to an ESP32 with a different UID. Dashboard settings are kept; if the new ESP32 has been configured before, the name & icons follow that ESP32.'],
+  [/^UID diganti: (.+) → (.+)$/, "UID changed: $1 → $2"],
+  [/^(Menyalakan|Mematikan) relay (\d+)\/(\d+)$/, (_, a, d, t)=>(a === "Menyalakan" ? "Turning on" : "Turning off") + ` relay ${d}/${t}`],
+  [/^(Menyalakan|Mematikan) (\d+) relay(?:, (\d+) dilewati \(offline\/sibuk\))?$/, (_, a, n, k)=>(a === "Menyalakan" ? "Turned on " : "Turned off ") + n + (n === "1" ? " relay" : " relays") + (k ? `, ${k} skipped (offline/busy)` : "")],
+  [/^Tidak ada relay yang bisa dikirim(?:, (\d+) dilewati \(offline\/sibuk\))?$/, (_, k)=>"No relays could be sent" + (k ? `, ${k} skipped (offline/busy)` : "")],
+  [/^Semua relay sudah (ON|OFF)$/, "All relays are already $1"],
+  [/^Dibatalkan — (\d+) dari (\d+) relay terkirim$/, "Cancelled — $1 of $2 relays sent"],
+  [/^Hapus (\d+) (grup|device) terpilih\?$/, (_, n, k)=>`Delete ${n} selected ${k === "grup" ? "groups" : "devices"}?`],
+  [/^(\d+) (grup|device) dihapus$/, (_, n, k)=>`${n} ${k === "grup" ? "group(s)" : "device(s)"} deleted`],
+  [/^Grup "(.*)" dihapus$/, 'Group "$1" deleted'],
+  [/^Grup · (.*)$/, "Group · $1"],
+  [/^Maksimal (\d+) grup\.?$/, "Maximum $1 groups"],
+  [/^(\d+) relay sudah ada di grup lain \((.*)\)\. Tetap masukkan ke grup ini\?$/, "$1 relay(s) already belong to another group ($2). Add them to this group anyway?"],
+  [/^SSID: (.*) · (Tersambung|Mode AP \(belum tersambung ke router\)|Tidak tersambung)(.*)$/, (_, a, st, r)=>"SSID: " + a + " · " + (EN[st] || st) + r],
+  [/^(\d+) jaringan ditemukan\. Ketuk untuk memilih\.$/, "$1 networks found. Tap to choose."],
+  [/^WiFi ditolak: (.*)$/, "WiFi rejected: $1"],
+  [/^Ditolak ESP32: (.*)$/, "Rejected by ESP32: $1"],
+  [/^(\d+) dtk lalu$/, "$1 s ago"], [/^(\d+) mnt lalu$/, "$1 min ago"], [/^(\d+) jam lalu$/, "$1 h ago"],
+  [/^FPS terburuk: (.*)$/, "Worst FPS: $1"],
+];
 let LANG = "id"; try{ LANG = localStorage.getItem("relay_lang_v1") === "en" ? "en" : "id"; }catch(e){}
-function trTxt(s){ const k = s.trim(); if(!k) return s; let v = EN[k]; if(v === undefined) for(const [r, x] of ENX) if(r.test(k)){ v = k.replace(r, x); break; } return v === undefined ? s : s.replace(k, v); }
+function trTxt(s){ const k = s.trim(); if(!k) return s; let v = EN[k]; if(v === undefined) for(const [r, x] of ENX) if(r.test(k)){ v = k.replace(r, x); break; } return v === undefined ? s : s.replace(k, ()=>v); }
 function trNode(n){
   if(n.nodeType === 3){
     const p = n.parentNode; if(!p || /^(SCRIPT|STYLE|TEXTAREA)$/.test(p.nodeName)) return;
