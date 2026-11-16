@@ -227,6 +227,8 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-o
 .field small{display:block;margin-top:7px;font-size:12px;line-height:1.5;color:var(--mut)}
 .field-err{display:none;margin-top:8px;padding:8px 12px;font-size:12px;color:var(--dk);background:var(--er);border:var(--b2) solid var(--bc);border-radius:calc(10px*var(--rk))}
 .field-err.show{display:block}
+.field-err.ok{background:var(--ok)}
+.field input.good{border-color:var(--ok)}
 
 .ch-count{display:flex;gap:8px}
 .ch-count button{flex:1;padding:12px 0;font-size:16px;font-weight:800;background:var(--card);border:var(--b3) solid var(--bc);border-radius:calc(12px*var(--rk));box-shadow:var(--s3);cursor:pointer}
@@ -834,7 +836,7 @@ html,*{scrollbar-width:none;-ms-overflow-style:none}
         <input type="text" id="uidInput" maxlength="5" placeholder="k9x2m" autocomplete="off" spellcheck="false">
         <button type="button" class="btn btn-primary" id="uidLoadBtn"><span data-ic="download" data-size="18"></span><span id="uidLoadTxt">Load data</span></button>
       </div>
-      <small id="uidHint">5 karakter, lihat di Serial Monitor ESP32 (115200) saat booting. Setelah mengisi UID: tekan <b>Load data</b> untuk mengambil nama &amp; ikon yang tersimpan di ESP32, atau isi manual di bawah.</small>
+      <small id="uidHint">5 karakter, lihat di Serial Monitor ESP32 (115200) saat booting. Setelah mengisi UID: tekan <b>Load data</b> untuk mengambil nama &amp; ikon yang tersimpan di ESP32, atau isi manual di bawah. Password device diminta (password awal tertera di Serial Monitor atau panel pengaturan AP).</small>
       <div class="field-err" id="uidErr"></div>
       <div class="load-note" id="loadNote"></div>
     </div>
@@ -1291,9 +1293,9 @@ function mqttUnsubscribe(uid){ if(M.up) M.client.unsubscribe(subTopics(uid)); }
 const cleanName = x => String(x).replace(/[\t\r\n]/g, " ").trim();
 /* ============ PASSWORD DEVICE ============
    ATURAN (satu, jelas, tidak berubah-ubah):
-   - TIDAK perlu password : jadwal, nama, ikon, struktur relay, ON/OFF relay, Tambah/Edit/Reset/Hapus device di dashboard, Load data.
-   - WAJIB password       : HANYA kirim WiFi (wifi/set). Jadwal (sched/set) TIDAK PERNAH memakai password.
-   - Popup SELALU muncul tiap aksi wajib itu (Kirim WiFi) diklik, dan HANYA dari klik pengguna (tidak pernah dari sinkronisasi latar belakang).
+   - TIDAK perlu password : jadwal, nama, ikon, struktur relay, ON/OFF relay, Edit/Reset/Hapus device di dashboard, Simpan device.
+   - WAJIB password       : (1) kirim WiFi (wifi/set), (2) "Load data" di modal Tambah device. Jadwal (sched/set) TIDAK PERNAH memakai password.
+   - Popup SELALU muncul tiap aksi wajib itu (Kirim WiFi / Load data) diklik, dan HANYA dari klik pengguna (tidak pernah dari sinkronisasi latar belakang).
    - Password diperiksa ke ESP32 (auth/req) lalu dipakai SEKALI & dibuang: tidak disimpan di halaman. Batal = aksi tidak dikirim sama sekali.
    Password TIDAK dikirim lewat MQTT. Setiap pesan dibuktikan dengan HMAC-SHA256 (kunci = password):
      payload = <isi>|<nonce>|<hmac hex>,  hmac = HMAC(password, "<aksi>|<nonce>|<isi>")  ; aksi = auth/req | wifi/set
@@ -1386,9 +1388,8 @@ function requirePw(uid, why){
   if(PWREQ) cancelPw();
   let resolve; const promise = new Promise(r=>{ resolve = r; });
   PWREQ = { uid, promise, resolve };
-  const dn = state.devices[uid] ? state.devices[uid].name : uid;
-  $("pwMsg").textContent = `Masukkan password device "${dn}" (UID ${uid}) untuk ${why}.`;
-  $("pwInput").value = ""; $("pwInput").type = "password"; $("pwShow").checked = false;
+  $("pwMsg").textContent = state.devices[uid] ? `Masukkan password device "${state.devices[uid].name}" (UID ${uid}) untuk ${why}.` : `Masukkan password device (UID ${uid}) untuk ${why}.`;
+  $("pwInput").value = ""; $("pwInput").classList.remove("bad", "good"); $("pwNo").disabled = false; $("pwErr").classList.remove("ok"); $("pwInput").type = "password"; $("pwShow").checked = false;
   $("pwErr").classList.remove("show"); $("pwYes").disabled = false; $("pwYes").textContent = "Verifikasi";
   $("pwModal").classList.add("show");
   setTimeout(()=>$("pwInput").focus(), 80);
@@ -1396,14 +1397,24 @@ function requirePw(uid, why){
 }
 async function submitPw(){
   const rq = PWREQ; if(!rq) return;
-  const pw = $("pwInput").value, err = m=>{ $("pwErr").textContent = m; $("pwErr").classList.add("show"); };
+  const pw = $("pwInput").value, err = m=>{ $("pwErr").classList.remove("ok"); $("pwErr").textContent = m; $("pwErr").classList.add("show"); $("pwInput").classList.remove("good"); $("pwInput").classList.add("bad"); };
   if(pw.length < 4) return err("Password minimal 4 karakter.");
   $("pwYes").disabled = true; $("pwYes").textContent = "Memeriksa…";
   const r = await verifyPw(rq.uid, pw);
   $("pwYes").disabled = false; $("pwYes").textContent = "Verifikasi";
   if(PWREQ !== rq) return;
-  if(r === "1"){ PWREQ = null; $("pwModal").classList.remove("show"); rq.resolve(pw); return; }
-  err(r === "0" ? "Password salah." : r === "L" ? "Terlalu banyak percobaan salah. Tunggu 1 menit lalu coba lagi." :
+  if(r === "1"){
+    // Umpan balik "benar": tampil sebentar (hijau) sebelum popup menutup, supaya jelas password diterima.
+    $("pwInput").classList.remove("bad"); $("pwInput").classList.add("good");
+    $("pwErr").textContent = "✓ Password benar. Device terverifikasi."; $("pwErr").classList.add("show", "ok");
+    $("pwYes").disabled = true; $("pwNo").disabled = true; $("pwYes").textContent = "Terverifikasi";
+    await new Promise(x=>setTimeout(x, 650));
+    if(PWREQ !== rq) return;
+    PWREQ = null; $("pwModal").classList.remove("show"); $("pwYes").textContent = "Verifikasi"; $("pwYes").disabled = false; $("pwNo").disabled = false;
+    toast("Password benar, device terverifikasi", "ok");
+    rq.resolve(pw); return;
+  }
+  err(r === "0" ? "✗ Password salah. Coba lagi." : r === "L" ? "Terlalu banyak percobaan salah. Tunggu 1 menit lalu coba lagi." :
       r === "T" ? "Device tidak menjawab. Pastikan UID benar & ESP32 online." : "MQTT belum terhubung.");
   $("pwInput").select();
 }
@@ -2408,6 +2419,7 @@ const EN = {
 "Belum ada event. Tambahkan ON atau OFF.":"No events yet. Add an ON or OFF.","Jadwal tersimpan di ESP32":"Schedule saved to ESP32","ESP32 tidak membalas, jadwal belum tersimpan":"ESP32 did not reply, schedule not saved","MQTT belum terhubung":"MQTT not connected","Batas 20 event per device terlampaui":"Limit of 20 events per device exceeded",
 "Sen":"Mon","Sel":"Tue","Rab":"Wed","Kam":"Thu","Jum":"Fri","Sab":"Sat","Min":"Sun","Terhubung":"Connected","Terputus":"Disconnected","Gagal":"Failed","Setiap hari":"Every day","Hari kerja":"Weekdays","Akhir pekan":"Weekends","Menyimpan…":"Saving…","Pilih minimal 1 hari":"Pick at least 1 day","Aktifkan jadwal":"Enable schedule","Ubah waktu dan hari":"Edit time and days","Nonaktif":"Disabled","Aktif":"Enabled","Jadwal tersimpan & dikonfirmasi ESP32":"Schedule saved & confirmed by ESP32"};
 Object.assign(EN, {
+"✓ Password benar. Device terverifikasi.":"✓ Password correct. Device verified.","✗ Password salah. Coba lagi.":"✗ Wrong password. Try again.","Terverifikasi":"Verified","Password benar, device terverifikasi":"Password correct, device verified","✓ Password benar. Memuat data dari ESP32…":"✓ Password correct. Loading data from the ESP32…","Load data dibatalkan: password device belum diverifikasi. Isi manual atau coba lagi.":"Load data cancelled: device password not verified. Fill in manually or try again.","MQTT terputus. Tunggu status Terhubung lalu coba lagi.":"MQTT disconnected. Wait for Connected status, then try again.",
 "5 karakter, lihat di Serial Monitor ESP32 (115200) saat booting. Setelah mengisi UID: tekan": "5 characters, shown in the ESP32 Serial Monitor (115200) at boot. After entering the UID, press",
 "untuk mengambil nama & ikon yang tersimpan di ESP32, atau isi manual di bawah. Password device diminta (password awal tertera di Serial Monitor atau panel pengaturan AP).": "to fetch the name & icons stored on the ESP32, or fill them in manually below. The device password is required (the initial password is shown in the Serial Monitor or the AP settings panel).",
 "Atur bunyi tik": "Adjust tick sound",
@@ -2712,6 +2724,7 @@ Object.assign(EN, {
   "untuk mengambil nama & ikon yang tersimpan di ESP32, atau isi manual di bawah.":"to fetch the name & icons stored on the ESP32, or fill them in manually below.",
   "Dikirim terenkripsi dengan password device (popup password muncul saat Kirim) & tidak disimpan di dashboard. Bila gagal tersambung, ESP32 sebaiknya kembali ke jaringan lama / mode AP.":"Sent encrypted with the device password (a password popup appears on Send) & not stored in the dashboard. If it fails to connect, the ESP32 should return to the old network / AP mode."
 });
+ENX.push([/^Masukkan password device \(UID (.+)\) untuk memuat data device\.$/, 'Enter the password for device (UID $1) to load device data.']);
 ENX.push([/^Masukkan password device "(.*)" \(UID (.+)\) untuk mengubah WiFi\.$/, 'Enter the password for device "$1" (UID $2) to change the WiFi.']);
 let LANG = "id"; try{ LANG = localStorage.getItem("relay_lang_v1") === "en" ? "en" : "id"; }catch(e){}
 function trTxt(s){ const k = s.trim(); if(!k) return s; let v = EN[k]; if(v === undefined) for(const [r, x] of ENX) if(r.test(k)){ v = k.replace(r, x); break; } return v === undefined ? s : s.replace(k, ()=>v); }
@@ -3167,7 +3180,7 @@ function clearErrs(){
 /* ============ LOAD DATA DARI ESP32 ============
    Berlangganan sementara ke PREFIX/<uid>/names dan /icons (retained, disimpan ESP32), lalu mengisi form modal.
    Hasilnya tetap bisa diedit sebelum disimpan. Bila ESP32 belum pernah diatur / tidak menjawab, user cukup isi manual. */
-const LOAD = { uid:null, timer:0, names:null, icons:null };
+const LOAD = { uid:null, timer:0, names:null, icons:null, asking:false };
 function setLoadBusy(b){
   $("uidLoadBtn").disabled = b;
   $("uidLoadTxt").textContent = b ? "Memuat…" : "Load data";
@@ -3227,6 +3240,14 @@ async function startLoad(){
   if(state.devices[uid]){ showErr("uidErr", `UID "${uid}" sudah dipakai oleh "${state.devices[uid].name}".`); return; }
   if(!M.up){ showErr("uidErr", "MQTT belum terhubung. Tunggu status Terhubung, atau isi manual."); return; }
   loadStop();
+  if(LOAD.asking) return;                          // popup password sedang terbuka
+  LOAD.asking = true; $("uidLoadBtn").disabled = true;
+  const pw = await requirePw(uid, "memuat data device");     // popup SELALU muncul; password hanya diperiksa ke ESP32 lalu dibuang
+  LOAD.asking = false; $("uidLoadBtn").disabled = false;
+  if(!$("deviceModal").classList.contains("show") || $("uidInput").value.trim().toLowerCase() !== uid) return;   // modal ditutup / UID diubah saat popup
+  if(!pw){ showLoadNote("Load data dibatalkan: password device belum diverifikasi. Isi manual atau coba lagi.", true); return; }
+  if(!M.up){ showErr("uidErr", "MQTT terputus. Tunggu status Terhubung lalu coba lagi."); return; }
+  showLoadNote("✓ Password benar. Memuat data dari ESP32…");
   LOAD.uid = uid;
   M.client.subscribe([tp(uid, "names"), tp(uid, "icons")], { qos:1 });
   M.client.publish(tp(uid, "get"), "1", { qos:0 });
@@ -4319,7 +4340,7 @@ $("confirmNo").onclick = ()=>settleConfirm(false);
 $("pwYes").onclick = submitPw;
 $("pwNo").onclick = cancelPw;
 $("pwInput").addEventListener("keydown", e=>{ if(e.key === "Enter"){ e.preventDefault(); submitPw(); } });
-$("pwInput").addEventListener("input", ()=>$("pwErr").classList.remove("show"));
+$("pwInput").addEventListener("input", ()=>{ $("pwErr").classList.remove("show", "ok"); $("pwInput").classList.remove("bad", "good"); });
 $("pwShow").onchange = e=>{ $("pwInput").type = e.target.checked ? "text" : "password"; };
 backdropClose($("pwModal"), cancelPw);
 
